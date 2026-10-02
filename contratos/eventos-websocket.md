@@ -2,7 +2,7 @@
 
 > **Estado:** Pendiente
 > **Responsable:** Royfrankly y David Montoya
-> **Relacionado:** [openapi.yaml](openapi.yaml), [jwt-claims.md](jwt-claims.md), [../diagramas/fuente/secuencia-gps-eta.puml](../diagramas/fuente/secuencia-gps-eta.puml)
+> **Relacionado:** [openapi.yaml](openapi.yaml), [jwt-claims.md](jwt-claims.md), [../diagramas/fuente/secuencia-gps-eta.mmd](../diagramas/fuente/secuencia-gps-eta.mmd)
 
 ## Qué va aquí
 

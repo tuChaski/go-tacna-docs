@@ -1,0 +1,26 @@
+%% Diagrama general del sistema
+%% Archivo editable. La imagen se exporta con el mismo nombre en
+%% diagramas/export/diagrama-general.png y se pega desde ahi en el informe.
+%% NUNCA se edita la imagen.
+flowchart TD
+    subgraph Actores
+        P[Pasajero]
+        C[Conductor]
+        A[Administrador]
+    end
+
+    subgraph Sistema
+        API["API REST (Laravel)<br/>datos, cuentas y reglas de negocio"]
+        RT["Servidor de tiempo real (Node.js + Socket.IO)<br/>posiciones y ETA"]
+        DB[("PostgreSQL + PostGIS")]
+        WEB[Panel web (React + Vite)]
+    end
+
+    P -->|consulta rutas y ETA| API
+    P -->|se suscribe a su ruta| RT
+    RT -->|posiciones en vivo| P
+    C -->|envia su posicion cada 3-5 s| RT
+    A -->|gestiona empresas, rutas, micros y conductores| API
+    API --> DB
+    RT --> DB
+    WEB --> API

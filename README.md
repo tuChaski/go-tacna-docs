@@ -48,10 +48,12 @@ Este repositorio está dividido en dos tipos de carpeta: las **fuentes**, donde 
 
 | Archivo | Qué es |
 |---|---|
-| `README.md` | Este índice |
+| `README.md` | Índice: qué hay en cada carpeta y por qué la documentación vive aquí |
 | `CONTRIBUTING.md` | Guía de escritura: dónde va cada tema, identificadores, redacción, nombres de archivo |
 | `glosario.md` | Términos oficiales del proyecto |
 | `INVENTARIO.md` | Mapa de todos los archivos y carpetas |
+| `general/` | Vista de control: los 5 repos, la configuración general, el checklist y las decisiones abiertas |
+| `general/` | Vista de control del proyecto: los 5 repos, la configuración, qué falta y qué decisiones están abiertas |
 
 ### Fuentes: aquí se trabaja el contenido
 
@@ -65,7 +67,7 @@ Este repositorio está dividido en dos tipos de carpeta: las **fuentes**, donde 
 | `planificacion/` | Recursos, cronograma (Gantt) y tareas por fase (T001 a T109) | Alimenta la sección 1.7 |
 | `pruebas/` | Plan de pruebas, matriz de trazabilidad e informes de pruebas de campo | |
 | `manuales/` | Guía del pasajero y manual del administrador | |
-| `diagramas/` | `fuente/` con los `.puml` editables y `export/` con las imágenes | Alimenta la sección 1.12 |
+| `diagramas/` | `fuente/` con los `.mmd` editables (Mermaid) y `export/` con las imágenes | Alimenta la sección 1.12 |
 | `assets/` | Logos, capturas y recursos compartidos | |
 
 ### Salida
@@ -75,10 +77,11 @@ Este repositorio está dividido en dos tipos de carpeta: las **fuentes**, donde 
 | `informe/capitulo-1/` | Un archivo por sección de la guía del Trabajo Final (1.1 a 1.12): resumen y enlaces, sin repetir el detalle |
 | `informe/final/` | Documento consolidado exportado a `.docx` y `.pdf`, versionado (v1.0.0). Se arma al final |
 
-### Guías y plantillas
+### Guías y control
 
 | Carpeta | Qué contiene |
 |---|---|
+| `general/` | Vista de control: ficha de los 5 repos, configuración general, checklist de puesta en marcha y decisiones pendientes. **Empieza por acá si no sabes dónde buscar** |
 | `guias/` | Guías transversales del equipo. Hoy solo `git.md`, la fuente de verdad de las reglas de Git |
 | `plantillas/` | Moldes para crear documentos (`requerimiento.md`, `caso-de-uso.md`, `decision.md`, `prueba.md`) y `setup-git-rules.sh` |
 
@@ -90,7 +93,7 @@ Este repositorio está dividido en dos tipos de carpeta: las **fuentes**, donde 
 |---|---|
 | **Markdown** | Formato de toda la documentación |
 | **OpenAPI** | Archivo que describe **todos** los endpoints; es la fuente de verdad para web y móvil |
-| **PlantUML / Mermaid** | Diagramas UML escritos como código, para que se puedan versionar y diffear |
+| **Mermaid** | Única sintaxis de diagramas del proyecto: los diagramas se escriben como texto (`.mmd`), se versionan y se pueden revisar en un Pull Request |
 | **Figma** | Diseño y prototipos de pantallas |
 | **ProjectLibre** | Cronograma Gantt |
 

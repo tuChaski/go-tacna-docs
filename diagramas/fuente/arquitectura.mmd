@@ -1,0 +1,31 @@
+%% Arquitectura de componentes
+%% Archivo editable. La imagen se exporta con el mismo nombre en
+%% diagramas/export/arquitectura.png y se pega desde ahi en el informe 1.9.
+%% NUNCA se edita la imagen.
+flowchart LR
+    subgraph Cliente
+        M[App movil<br/>Pasajero y Modo Conductor]
+        W[Panel web<br/>Administrador]
+    end
+
+    N[Nginx<br/>unico puerto publicado]
+
+    subgraph Servicios
+        B[API Laravel :8000<br/>/api]
+        R[Servidor de tiempo real Node.js :3001<br/>/socket.io]
+        V[Panel web compilado :4173]
+    end
+
+    D[("PostgreSQL 16 + PostGIS")]
+
+    M -->|HTTPS /api| N
+    M <-->|WebSocket| N
+    W -->|HTTPS| N
+    N -->|/api| B
+    N -->|/socket.io| R
+    N -->|/| V
+    B --> D
+    R --> D
+
+    note1["El GPS viaja por HTTPS:<br/>Android lo bloquea sobre HTTP"]
+    M --- note1

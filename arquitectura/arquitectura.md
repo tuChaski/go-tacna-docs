@@ -14,7 +14,7 @@
 
 ## Notas
 
-El diagrama de componentes vive en [../diagramas/fuente/arquitectura.puml](../diagramas/fuente/arquitectura.puml) y la imagen exportada en `../diagramas/export/`.
+El diagrama de componentes vive en [../diagramas/fuente/arquitectura.mmd](../diagramas/fuente/arquitectura.mmd) y la imagen exportada en `../diagramas/export/`.
 
 ## Contenido
 

@@ -2,7 +2,7 @@
 
 > **Estado:** Pendiente
 > **Responsable:** David Montoya
-> **Relacionado:** [../diagramas/fuente/erd.puml](../diagramas/fuente/erd.puml), [arquitectura.md](arquitectura.md)
+> **Relacionado:** [../diagramas/fuente/erd.mmd](../diagramas/fuente/erd.mmd), [arquitectura.md](arquitectura.md)
 
 ## Qué va aquí
 

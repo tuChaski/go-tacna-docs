@@ -21,6 +21,7 @@ Los estados posibles son `Pendiente` (existe el archivo, vacío), `Borrador` (ti
 | `glosario.md` | Términos oficiales del proyecto y los sinónimos prohibidos (`bus`, `chofer`, `tiempo exacto`...) | Todo el equipo | Aprobado |
 | `INVENTARIO.md` | Este archivo. Mapa de todos los archivos y carpetas | Todo el equipo | En revisión |
 | `guias/git.md` | **Fuente de verdad de las reglas de Git** de los 5 repos: ramas, commits, PR, releases, GitHub | Royfrankly Navarro | Borrador |
+| `general/` | Vista de control del proyecto: repos, configuración, checklist y decisiones abiertas | Royfrankly Navarro | Esqueleto |
 | `plantillas/` | Moldes para crear documentos + `setup-git-rules.sh` | Todo el equipo | Activa |
 | `.github/` | CODEOWNERS, plantilla de PR y validación del título | Royfrankly Navarro | Activa |
 
@@ -30,6 +31,7 @@ Los estados posibles son `Pendiente` (existe el archivo, vacío), `Borrador` (ti
 
 | Carpeta | Tipo | Qué contiene | Responsable | Estado |
 |---|---|---|---|---|
+| `general/` | Control | Vista de arriba del proyecto: repos, configuración, checklist y decisiones abiertas | Royfrankly Navarro | Esqueleto |
 | `requisitos/` | Fuente | RF-01 a RF-20, RNF-01 a RNF-07, RN-01 a RN-10 y alcance del MVP | Royfrankly | Esqueleto |
 | `casos-de-uso/` | Fuente | Diagrama general y una especificación por caso de uso | Todo el equipo | Esqueleto |
 | `arquitectura/` | Fuente | Modelo del sistema, modelo de datos y decisiones | David Montoya | Esqueleto |
@@ -47,7 +49,21 @@ Los estados posibles son `Pendiente` (existe el archivo, vacío), `Borrador` (ti
 
 ---
 
-## 3. `informe/` — la salida
+## 3. `general/` — la vista de control
+
+No es el mapa de archivos (eso es este `INVENTARIO.md`): es la vista de arriba del proyecto. Resume y enlaza, no repite.
+
+| Archivo | Qué resuelve | Estado |
+|---|---|---|
+| `general/README.md` | Índice de la carpeta y tabla "quiero hacer X, mira Y" | Pendiente |
+| `general/repos.md` | Ficha de los 5 repos: qué contienen, con qué stack, quién lo trabaja, qué consumen de `docs/` y en qué estado están | Pendiente |
+| `general/configuracion.md` | Toda la configuración en una vista: repos, ramas, GitHub, contratos, puertos, secretos, variables y HTTPS | Pendiente |
+| `general/checklist.md` | Qué falta, con casillas, en 8 bloques ordenados por dependencia | Pendiente |
+| `general/decisiones-pendientes.md` | Decisiones abiertas con opciones, responsable y a qué desbloquean; y las ya cerradas | Pendiente |
+
+---
+
+## 4. `informe/` — la salida
 
 `informe/capitulo-1/` sigue la guía del Trabajo Final sección por sección, para que se vea de un vistazo qué falta. Cada archivo **resume y enlaza** a la carpeta de detalle, no copia contenido.
 
@@ -69,7 +85,7 @@ Los estados posibles son `Pendiente` (existe el archivo, vacío), `Borrador` (ti
 
 ---
 
-## 4. Carpetas de fuente
+## 5. Carpetas de fuente
 
 ### `requisitos/` — Royfrankly
 
@@ -84,7 +100,7 @@ Los estados posibles son `Pendiente` (existe el archivo, vacío), `Borrador` (ti
 
 | Archivo | Contenido | Estado |
 |---|---|---|
-| `diagrama-general.puml` | Diagrama del sistema completo | Borrador |
+| `diagrama-general.mmd` | Diagrama del sistema completo (Mermaid) | Borrador |
 | `especificaciones/CU-01-iniciar-sesion.md` | Un caso de uso por archivo: `CU-XX-nombre.md` | Pendiente |
 
 ### `arquitectura/` — David Montoya
@@ -141,13 +157,13 @@ Los estados posibles son `Pendiente` (existe el archivo, vacío), `Borrador` (ti
 
 | Archivo | Contenido | Estado |
 |---|---|---|
-| `fuente/arquitectura.puml` | Diagrama de componentes | Borrador |
-| `fuente/secuencia-autenticacion.puml` | Secuencia del login y refresh | Borrador |
-| `fuente/secuencia-gps-eta.puml` | Secuencia de posición del micro y ETA | Borrador |
-| `fuente/erd.puml` | Entidades y relaciones | Borrador |
+| `fuente/arquitectura.mmd` | Diagrama de componentes (Mermaid `flowchart`) | Borrador |
+| `fuente/secuencia-autenticacion.mmd` | Secuencia del login y refresh (Mermaid `sequenceDiagram`) | Borrador |
+| `fuente/secuencia-gps-eta.mmd` | Secuencia de posición del micro y ETA (Mermaid `sequenceDiagram`) | Borrador |
+| `fuente/erd.mmd` | Entidades y relaciones (Mermaid `erDiagram`) | Borrador |
 | `export/` | PNG o SVG exportado de cada fuente, con el mismo nombre | Vacía (`.gitkeep`) |
 
-> Existe además un diagrama Mermaid en `rutas-en-tiempo-real-frontend/docs/diagrams/architecture.mmd`. Hay que migrarlo y decidir si el diagrama de arquitectura queda en PlantUML o en Mermaid (ver `plantillas/` y CONTRIBUTING §6).
+> **Mermaid es la única sintaxis de diagramas del proyecto.** Ya se absorbió el diagrama Mermaid que vivía en `rutas-en-tiempo-real-frontend/docs/diagrams/architecture.mmd`; ese archivo se elimina al migrar el resto de la documentación de ese repo (ver sección 5).
 
 ### `plantillas/` y `guias/` — Todo el equipo
 
@@ -172,7 +188,7 @@ Los mismos archivos existen en los cinco repos del equipo.
 
 ---
 
-## 5. Documentos que están en otro repo y deben migrar acá
+## 6. Documentos que están en otro repo y deben migrar acá
 
 | Ubicación actual | Qué es | Destino oficial | Acción pendiente |
 |---|---|---|---|
@@ -183,7 +199,7 @@ Los mismos archivos existen en los cinco repos del equipo.
 
 ---
 
-## 6. Problemas abiertos de la documentación
+## 7. Problemas abiertos de la documentación
 
 | # | Problema | Dónde se resuelve |
 |---|---|---|
@@ -197,9 +213,9 @@ Los mismos archivos existen en los cinco repos del equipo.
 
 ---
 
-## 7. Cómo se mantiene este inventario
+## 8. Cómo se mantiene este inventario
 
-1. Al crear un archivo, se agrega su fila en la sección 3 o 4 de este archivo, y también en la tabla de la sección 2 si es una carpeta nueva.
+1. Al crear un archivo, se agrega su fila en la sección 5 de este archivo, y también en la tabla de la sección 2 si es una carpeta nueva.
 2. Al mover o renombrar un archivo, se actualiza su fila y los enlaces que lo apuntan.
 3. Al eliminar un archivo, se elimina su fila y se busca quién lo enlazaba (`Ctrl+Shift+F` en GitHub).
 4. El responsable de la carpeta es quien mantiene las filas de sus documentos.

@@ -14,6 +14,7 @@
 
 | Tema | Carpeta | Responsable |
 |---|---|---|
+| Vista general, configuración y pendientes | `general/` | Royfrankly |
 | Requisitos y reglas de negocio | `requisitos/` | Royfrankly |
 | Casos de uso | `casos-de-uso/` | Todo el equipo |
 | Arquitectura y decisiones | `arquitectura/` | David |
@@ -25,13 +26,15 @@
 | Diagramas como código | `diagramas/` | David |
 | Imágenes y logos | `assets/` | Alex |
 | Informe del Trabajo Final | `informe/` | Todo el equipo |
+| Reglas de Git de los 5 repos | `guias/` | Royfrankly |
 
-Hay dos tipos de carpeta y se mezclan fácil:
+Hay tres tipos de carpeta y se mezclan fácil:
 
 - **Fuentes** (`requisitos/`, `casos-de-uso/`, `arquitectura/`, `diseno/`, `planificacion/`, `pruebas/`, `manuales/`): aquí se trabaja el contenido completo.
 - **Salida** (`informe/`): resume y enlaza lo que está en las fuentes, sin repetirlo.
+- **Control** (`general/`, `guias/`): la vista de arriba del proyecto: repos, configuración, pendientes y reglas. No repite el detalle, lo enlaza.
 
-`informe/capitulo-1/` sigue la guía del Trabajo Final sección por sección (1.1 a 1.12), así se ve de un vistazo qué falta. `informe/final/` guarda el documento consolidado exportado (.docx y .pdf) y nunca se escribe a mano.
+`general/` es la puerta de entrada cuando no se sabe dónde buscar. `informe/capitulo-1/` sigue la guía del Trabajo Final sección por sección (1.1 a 1.12), así se ve de un vistazo qué falta. `informe/final/` guarda el documento consolidado exportado (.docx y .pdf) y nunca se escribe a mano.
 
 Si dudas de dónde va algo, la tabla de esta sección es la respuesta. Antes de crear un archivo nuevo, revisa [INVENTARIO.md](INVENTARIO.md) para no duplicar un documento que ya existe.
 
@@ -76,7 +79,7 @@ La fecha y el historial los registra Git; no se escriben a mano.
 
 ## 6. Diagramas, tablas y figuras
 
-- El diagrama editable va en `diagramas/fuente/` (`.puml` o `.mermaid`) y su imagen exportada en `diagramas/export/`, con el mismo nombre. Se edita siempre la fuente.
+- **Los diagramas son Mermaid, siempre.** El archivo editable va en `diagramas/fuente/` con extensión `.mmd` y su imagen exportada en `diagramas/export/`, con el mismo nombre. Se edita siempre la fuente, nunca la imagen.
 - En los archivos se inserta la imagen con ruta relativa y una descripción.
 - **La numeración "Figura 1.x" y "Tabla 1.x" se asigna solo al armar el informe final**, para no renumerar cada vez que se agrega una.
 

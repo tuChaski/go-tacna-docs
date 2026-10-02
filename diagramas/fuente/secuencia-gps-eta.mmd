@@ -1,0 +1,39 @@
+%% Secuencia de GPS y calculo de ETA
+%% Archivo editable. La imagen se exporta con el mismo nombre en
+%% diagramas/export/secuencia-gps-eta.png para el informe 1.12.
+%% NUNCA se edita la imagen.
+sequenceDiagram
+    autonumber
+    actor Conductor
+    actor Pasajero
+    participant App as App movil (Modo Conductor)
+    participant RT as Servidor de tiempo real
+    participant API as API Laravel
+    participant DB as PostgreSQL
+
+    Conductor->>App: iniciar recorrido
+    App->>RT: POST /tracking/position (micro_id, lat, lng, speed)
+    RT->>RT: valida el JWT del conductor
+    RT->>RT: guarda la velocidad en memoria (60 muestras)
+    RT->>DB: guarda la posicion
+    RT-->>App: 202 { ok: true }
+
+    loop cada 3-5 segundos con la pantalla apagada
+        App->>RT: POST /tracking/position
+    end
+
+    Note over RT: tras OFFLINE_AFTER_MS sin senal,<br/>el micro pasa a sin_conexion
+
+    Pasajero->>RT: route:join (rutaId)
+    RT-->>Pasajero: micros de esa ruta
+    RT-->>Pasajero: micro:position (micro_id, lat, lng, speed, status, lastSeen)
+
+    Pasajero->>RT: eta:request (micro_id, lat, lng)
+    RT->>RT: distancia haversine y velocidad promedio
+    RT-->>Pasajero: metros, seconds, estimated: true
+
+    Conductor->>App: detener recorrido
+    App->>RT: POST /tracking/stop
+    RT-->>Pasajero: micro:stopped (micro_id)
+
+    Note over RT,Pasajero: el ETA siempre se marca como estimado (RN-08)<br/>no considera trafico ni recorridos

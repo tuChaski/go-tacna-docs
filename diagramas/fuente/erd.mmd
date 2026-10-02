@@ -1,0 +1,65 @@
+%% Entidades y relaciones
+%% Archivo editable. La imagen se exporta con el mismo nombre en
+%% diagramas/export/erd.png para el informe 1.9.
+%% Debe coincidir con arquitectura/modelo-de-datos.md: si cambia la base,
+%% cambian los dos.
+erDiagram
+    EMPRESA ||--o{ RUTA : agrupa
+    EMPRESA ||--o{ MICRO : opera
+    RUTA ||--|{ PARADERO_RUTA : recorre
+    PARADERO ||--|{ PARADERO_RUTA : "es parte de"
+    MICRO ||--o| CONDUCTOR : "conduce"
+    MICRO ||--o{ POSICION : reporta
+    USUARIO ||--o| CONDUCTOR : "es"
+    USUARIO ||--o{ POSICION : "consulta"
+
+    EMPRESA {
+        id PK
+        nombre
+        activo
+    }
+    RUTA {
+        id PK
+        empresa_id FK
+        nombre
+        descripcion
+        trazado
+    }
+    PARADERO {
+        id PK
+        nombre
+        latitud
+        longitud
+    }
+    PARADERO_RUTA {
+        id PK
+        ruta_id FK
+        paradero_id FK
+        orden
+    }
+    MICRO {
+        id PK
+        empresa_id FK
+        placa
+        activo
+    }
+    CONDUCTOR {
+        id PK
+        usuario_id FK
+        micro_id FK
+        ruta_id FK
+    }
+    POSICION {
+        id PK
+        micro_id FK
+        latitud
+        longitud
+        velocidad
+        recorded_at
+    }
+    USUARIO {
+        id PK
+        correo
+        password_hash
+        role
+    }

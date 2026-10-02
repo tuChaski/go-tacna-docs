@@ -1,0 +1,37 @@
+%% Secuencia de autenticacion
+%% Archivo editable. La imagen se exporta con el mismo nombre en
+%% diagramas/export/secuencia-autenticacion.png para el informe 1.12.
+%% NUNCA se edita la imagen.
+sequenceDiagram
+    autonumber
+    actor Pasajero
+    participant App as App movil
+    participant API as API Laravel
+    participant RT as Servidor de tiempo real
+    participant DB as PostgreSQL
+
+    Pasajero->>App: abrir la app
+    App->>API: POST /auth/login (correo, contrasena)
+    API->>DB: buscar usuario
+    DB-->>API: usuario y hash
+    API->>API: verifica el hash y firma el JWT (HS256)
+    API-->>App: access token + refresh token
+    App->>App: guarda el token en expo-secure-store
+
+    Note over API,RT: el mismo JWT_SECRET valida en los dos servicios
+
+    App->>API: GET /perfil (Authorization: Bearer)
+    API-->>App: datos del usuario
+
+    opt El token caduca
+        App->>API: POST /auth/refresh (refresh token)
+        API-->>App: nuevo access token
+    end
+
+    opt El conductor entra a su recorrido
+        App->>RT: POST /tracking/position
+        RT->>RT: valida role, micro_id y ruta_id del token
+        RT-->>App: 202 { ok: true }
+    end
+
+    Note over App,RT: si falta role, micro_id o ruta_id el servidor responde 403
