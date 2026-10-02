@@ -1,0 +1,59 @@
+@startuml erd
+' Archivo editable. La imagen se exporta con el mismo nombre en diagramas/export/ y se pega desde ahi en el informe. NUNCA se edita la imagen.
+' Sincronizar con arquitectura/modelo-de-datos.md: si cambia la base, cambian los dos.
+hide circle
+
+entity "empresa" as Empresa {
+  id PK
+  nombre
+  activo
+}
+entity "ruta" as Ruta {
+  id PK
+  empresa_id FK
+  nombre
+  descripcion
+}
+entity "micro" as Micro {
+  id PK
+  empresa_id FK
+  placa
+}
+entity "paradero" as Paradero {
+  id PK
+  latitud
+  longitud
+}
+entity "paradero_ruta" as ParaderoRuta {
+  id PK
+  ruta_id FK
+  paradero_id FK
+  orden
+}
+entity "conductor" as Conductor {
+  id PK
+  micro_id FK
+}
+entity "usuario" as Usuario {
+  id PK
+  correo UK
+  password_hash
+  role
+}
+entity "posicion" as Posicion {
+  id PK
+  micro_id FK
+  latitud
+  longitud
+  velocidad
+  recorded_at
+}
+
+Empresa ||--o{ Ruta
+Empresa ||--o{ Micro
+Ruta ||--o{ ParaderoRuta
+Paradero ||--o{ ParaderoRuta
+Micro ||--o| Conductor
+Micro ||--o{ Posicion
+Usuario ||--o| Conductor
+@enduml

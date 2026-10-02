@@ -4,6 +4,8 @@ Reúne el **informe, los requisitos, los diagramas, los contratos entre componen
 
 > **Pregunta que responde el sistema:** "¿Dónde está mi micro y cuánto falta para que llegue?"
 
+> **Antes de escribir cualquier documento**, lee [CONTRIBUTING.md](CONTRIBUTING.md) (guía de escritura), [glosario.md](glosario.md) (términos oficiales) e [INVENTARIO.md](INVENTARIO.md) (mapa de qué hay en cada carpeta). Las reglas de Git están en [guias/git.md](guias/git.md).
+
 ---
 
 ## ⚠️ Estado actual
@@ -38,20 +40,47 @@ Así ninguna persona implementa "lo que le pareció" y luego se descubren tres v
 
 ---
 
-## 2. Qué debe vivir aquí
+## 2. Qué hay en cada carpeta
 
-```
-docs/
-  openapi.yaml           Contrato de la API (fuente de verdad)
-  websocket.md           Eventos Socket.io: nombres, dirección y payloads
-  jwt.md                 Claims del token y cómo se validan
-  architecture.md        Cómo encajan los componentes
-  diagrams/              Diagramas UML y de flujo
-  requirements/          Requisitos funcionales y no funcionales
-  informe/               Capítulos del informe final
+Este repositorio está dividido en dos tipos de carpeta: las **fuentes**, donde se trabaja el contenido completo, y la **salida** (`informe/`), que resume y enlaza. La estructura oficial y quién responde por cada carpeta están en [CONTRIBUTING.md](CONTRIBUTING.md) §2; el detalle archivo por archivo en [INVENTARIO.md](INVENTARIO.md).
 
-cronograma/              Spec del cronograma (el Gantt real se arma en ProjectLibre)
-```
+### Raíz
+
+| Archivo | Qué es |
+|---|---|
+| `README.md` | Este índice |
+| `CONTRIBUTING.md` | Guía de escritura: dónde va cada tema, identificadores, redacción, nombres de archivo |
+| `glosario.md` | Términos oficiales del proyecto |
+| `INVENTARIO.md` | Mapa de todos los archivos y carpetas |
+
+### Fuentes: aquí se trabaja el contenido
+
+| Carpeta | Qué contiene | Detalle |
+|---|---|---|
+| `requisitos/` | RF-01 a RF-20, RNF-01 a RNF-07, RN-01 a RN-10 y el alcance del MVP | Alimenta la sección 1.6 |
+| `casos-de-uso/` | Diagrama general y una especificación por caso de uso | Alimenta la sección 1.11 |
+| `arquitectura/` | Modelo del sistema, modelo de datos y el "por qué" de cada decisión | Alimenta la sección 1.9 |
+| `contratos/` | `openapi.yaml`, eventos WebSocket y claims del JWT. **Los demás repos implementan lo que está aquí** | Consumido por backend, web y móvil |
+| `diseno/` | Guía de estilos, mapa del sitio, inventario de vistas y enlaces a Figma | Alimenta la sección 1.8 |
+| `planificacion/` | Recursos, cronograma (Gantt) y tareas por fase (T001 a T109) | Alimenta la sección 1.7 |
+| `pruebas/` | Plan de pruebas, matriz de trazabilidad e informes de pruebas de campo | |
+| `manuales/` | Guía del pasajero y manual del administrador | |
+| `diagramas/` | `fuente/` con los `.puml` editables y `export/` con las imágenes | Alimenta la sección 1.12 |
+| `assets/` | Logos, capturas y recursos compartidos | |
+
+### Salida
+
+| Carpeta | Qué contiene |
+|---|---|
+| `informe/capitulo-1/` | Un archivo por sección de la guía del Trabajo Final (1.1 a 1.12): resumen y enlaces, sin repetir el detalle |
+| `informe/final/` | Documento consolidado exportado a `.docx` y `.pdf`, versionado (v1.0.0). Se arma al final |
+
+### Guías y plantillas
+
+| Carpeta | Qué contiene |
+|---|---|
+| `guias/` | Guías transversales del equipo. Hoy solo `git.md`, la fuente de verdad de las reglas de Git |
+| `plantillas/` | Moldes para crear documentos (`requerimiento.md`, `caso-de-uso.md`, `decision.md`, `prueba.md`) y `setup-git-rules.sh` |
 
 ---
 
@@ -152,12 +181,15 @@ Los 11 frentes de trabajo del proyecto, con su cronograma completo, están en el
 
 ## 8. Problemas conocidos
 
-1. **El `openapi.yaml` no cubre lo que ya existe**: `realtime/` tiene `/health`, `/tracking/position` y `/tracking/stop`, y ninguno está en el contrato.
-2. **Faltan los contratos de WebSocket y de JWT** por escrito.
-3. **No hay informe**: no existen los capítulos del informe final, que es una de las entregas del proyecto.
-4. **No hay requisitos** funcionales ni no funcionales.
-5. **Conflicto de nomenclatura** `bus`/`micro` entre el contrato y el código.
-6. **El cronograma solo existe** como tablero de GitHub, no como documento versionado.
+El detalle completo, con responsable y archivo destino, está en [INVENTARIO.md](INVENTARIO.md) §5. Resumen:
+
+1. El `openapi.yaml` no cubre lo que ya existe: `realtime/` tiene `/health`, `/tracking/position` y `/tracking/stop`, y ninguno está en el contrato.
+2. Faltan los contratos de WebSocket y de JWT por escrito.
+3. No hay informe: no existen los capítulos del informe final, que es una de las entregas del proyecto.
+4. No hay requisitos funcionales ni no funcionales.
+5. Conflicto de nomenclatura `bus`/`micro` entre el contrato y el código.
+6. El cronograma solo existe como tablero de GitHub, no como documento versionado.
+7. Los documentos técnicos siguen en `rutas-en-tiempo-real-frontend/docs/` y hay que migrarlos.
 
 ---
 
@@ -166,7 +198,7 @@ Los 11 frentes de trabajo del proyecto, con su cronograma completo, están en el
 1. **Un contrato, un dueño.** Si algo cambia, se cambia primero aquí.
 2. **Cada repo funciona solo:** su README explica cómo ejecutarlo sin clonar los demás.
 3. **Nunca se suban archivos `.env`.**
-4. **Ramas y commits:** Gitflow y Conventional Commits (`feat:`, `fix:`, `docs:`).
+4. **Ramas y commits:** las reglas completas están en [guias/git.md](guias/git.md) (`develop` es staging, squash merge, `tipo(alcance): descripción`).
 5. **Todo cambio entra por Pull Request** con revisión de otro integrante.
 6. **Un solo tablero de tareas** en la organización para todo el equipo.
 
@@ -186,6 +218,8 @@ Todos participan en todas las áreas; el rol prioritario indica quién lidera ca
 ---
 
 ## 11. Glosario
+
+Los términos del proyecto (micro, ruta, paradero, pasajero, ETA...) están en [glosario.md](glosario.md) y son obligatorios. Los términos de documentación son:
 
 - **Contrato:** acuerdo escrito sobre cómo se comunican dos componentes. Aquí vive la definición; en el código, solo la implementación.
 - **OpenAPI:** formato de archivo que describe todos los endpoints de una API.

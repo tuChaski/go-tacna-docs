@@ -1,0 +1,22 @@
+@startuml arquitectura
+' Archivo editable. La imagen se exporta con el mismo nombre en diagramas/export/ y se pega desde ahi en el informe. NUNCA se edita la imagen.
+' Pendiente de migrar: hoy el diagrama de componentes vive como Mermaid en
+' rutas-en-tiempo-real-frontend/docs/diagrams/architecture.mmd
+title Arquitectura del sistema
+
+actor "Pasajero / Conductor / Administrador" as Usuario
+node "Nginx (proxy)" as Nginx
+rectangle "Servicios" {
+  component "API Laravel :8000" as API
+  component "Servidor de tiempo real :3001" as RT
+  component "Panel web (Vite) :4173" as Web
+}
+database "PostgreSQL + PostGIS" as DB
+
+Usuario --> Nginx
+Nginx --> API
+Nginx --> RT
+Nginx --> Web
+API --> DB
+RT --> DB
+@enduml

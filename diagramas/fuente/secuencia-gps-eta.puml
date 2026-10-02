@@ -1,0 +1,18 @@
+@startuml secuencia-gps-eta
+' Archivo editable. La imagen se exporta con el mismo nombre en diagramas/export/ y se pega desde ahi en el informe. NUNCA se edita la imagen.
+title Secuencia de GPS y cálculo de ETA
+
+actor Conductor
+participant "App móvil (Modo Conductor)" as App
+participant "Servidor de tiempo real" as RT
+participant "API Laravel" as API
+actor Pasajero
+
+Conductor -> App : inicia recorrido
+App -> RT : POST /tracking/position (micro_id, lat, lng)
+RT -> API : guarda la posición
+RT -> RT : emite micro:position a la sala ruta:{rutaId}
+RT -> Pasajero : posición actualizada y ETA estimada
+App -> RT : POST /tracking/stop (fin del recorrido)
+RT -> Pasajero : micro:stopped
+@enduml

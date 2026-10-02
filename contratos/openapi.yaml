@@ -1,0 +1,20 @@
+# CONTRATO DE LA API - fuente de verdad para backend, web y movil
+# OpenAPI 3.1, prefijo /api/v1
+# Responsable: Royfrankly (revisado por David)
+# Nombres de payloads: glosario oficial (micro, no bus)
+# Pendiente (T086): migrar el borrador de rutas-en-tiempo-real-frontend/docs/openapi.yaml
+#   y agregar los endpoints que ya usa el codigo y no estan declarados:
+#   POST /auth/login, POST /auth/refresh,
+#   CRUD /empresas /rutas /micros /conductores,
+#   POST /tracking/position, POST /tracking/stop
+# Referencia:INVENTARIO.md seccion 4
+openapi: 3.1.0
+info:
+  title: Rutas en Tiempo Real API
+  version: 0.1.0
+  description: Contrato de la API compartida por web y movil.
+servers:
+  - url: /api/v1
+paths: {}
+components:
+  schemas: {}
