@@ -10,14 +10,15 @@ Reúne el **informe, los requisitos, los diagramas, los contratos entre componen
 
 ## ⚠️ Estado actual
 
-**Este repositorio está vacío.** La documentación vive hoy en el monorepo `rutas-en-tiempo-real-frontend/docs/`:
+**Este repositorio contiene la estructura documental y borradores de requisitos.** La arquitectura y el contrato de API implementados como documentación todavía están en el monorepo `rutas-en-tiempo-real-frontend/docs/`:
 
 | Contenido | Ruta actual | Estado |
 |---|---|---|
 | Arquitectura | `docs/architecture.md` | borrador, 29 líneas |
 | Contrato de la API | `docs/openapi.yaml` | **borrador**: 3 endpoints |
 | Diagrama de componentes | `docs/diagrams/architecture.mmd` | esqueleto |
-| Informe final | — | **no existe** |
+| Requisitos funcionales y no funcionales | `requisitos/` | borradores; falta revisión y completar umbrales |
+| Informe final | Google Docs (fuera de este repositorio) | pendiente de elaboración y consolidación |
 | Cronograma | — | vive en GitHub Projects, no en Markdown |
 
 ---
@@ -64,7 +65,7 @@ Este repositorio está dividido en dos tipos de carpeta: las **fuentes**, donde 
 | `arquitectura/` | Modelo del sistema, modelo de datos y el "por qué" de cada decisión | Alimenta la sección 1.9 |
 | `contratos/` | `openapi.yaml`, eventos WebSocket y claims del JWT. **Los demás repos implementan lo que está aquí** | Consumido por backend, web y móvil |
 | `diseno/` | Guía de estilos, mapa del sitio, inventario de vistas y enlaces a Figma | Alimenta la sección 1.8 |
-| `planificacion/` | Recursos, cronograma (Gantt) y tareas por fase (T001 a T109) | Alimenta la sección 1.7 |
+| `planificacion/` | Resumen de las seis fases y cronograma detallado en ProjectLibre (`.pod`) | Alimenta la sección 1.7 |
 | `pruebas/` | Plan de pruebas, matriz de trazabilidad e informes de pruebas de campo | |
 | `manuales/` | Guía del pasajero y manual del administrador | |
 | `diagramas/` | `fuente/` con los `.mmd` editables (Mermaid) y `export/` con las imágenes | Alimenta la sección 1.12 |
@@ -189,7 +190,7 @@ El detalle completo, con responsable y archivo destino, está en [INVENTARIO.md]
 1. El `openapi.yaml` no cubre lo que ya existe: `realtime/` tiene `/health`, `/tracking/position` y `/tracking/stop`, y ninguno está en el contrato.
 2. Faltan los contratos de WebSocket y de JWT por escrito.
 3. No hay informe: no existen los capítulos del informe final, que es una de las entregas del proyecto.
-4. No hay requisitos funcionales ni no funcionales.
+4. Los requisitos funcionales y no funcionales están en borrador en `requisitos/`; falta validar el alcance, acordar umbrales y completar las pruebas asociadas.
 5. Conflicto de nomenclatura `bus`/`micro` entre el contrato y el código.
 6. El cronograma solo existe como tablero de GitHub, no como documento versionado.
 7. Los documentos técnicos siguen en `rutas-en-tiempo-real-frontend/docs/` y hay que migrarlos.
@@ -212,7 +213,7 @@ El detalle completo, con responsable y archivo destino, está en [INVENTARIO.md]
 | Integrante | Rol prioritario |
 |---|---|
 | Royfrankly Navarro | Coordinación general, Backend y DevOps |
-| David Montador | Arquitectura de software y módulo GPS en tiempo real |
+| David Montoya | Arquitectura de software y módulo GPS en tiempo real |
 | Alex Huaracha | Diseño UI/UX y desarrollo Frontend/Móvil |
 | Edison Catari | Calidad (QA), pruebas y automatización |
 

@@ -1,0 +1,40 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Conductor" as conductor
+actor "Sistema_GPS_Movil" as gps_servicio
+
+rectangle "Sistema_Capaqnan-Modulo_del_Conductor" {
+
+    ' RF-26: Inicio de sesión conductor
+    usecase "CU-20:_Iniciar_Sesion_Modo_Conductor\n(RF-26)" as CU_LoginConductor
+    
+    ' RF-27: Identificación de unidad
+    usecase "CU-21:_Vincular_y_Confirmar_Micro_Asignado\n(RF-27)" as CU_IdentificarMicro
+    
+    ' RF-28, RF-29: Inicio de recorrido y transmisión
+    usecase "CU-22:_Iniciar_Recorrido_y_Transmitir_Ubicacion\n(RF-28,_RF-29)" as CU_IniciarTransmision
+    
+    ' RF-30, RF-31: Finalización de recorrido
+    usecase "CU-23:_Finalizar_Recorrido_y_Cambiar_Estado\n(RF-30,_RF-31)" as CU_FinalizarRecorrido
+    
+    ' RF-32: Estado del GPS y conectividad
+    usecase "CU-24:_Monitorear_Estado_de_GPS_y_Conexion\n(RF-32)" as CU_EstadoGPS
+}
+
+' Relaciones con Conductor
+conductor -- CU_LoginConductor
+conductor -- CU_IdentificarMicro
+conductor -- CU_IniciarTransmision
+conductor -- CU_FinalizarRecorrido
+
+' Servicio externo de GPS en el celular
+gps_servicio -- CU_IniciarTransmision
+gps_servicio -- CU_EstadoGPS
+
+' Relaciones de Inclusión
+CU_IniciarTransmision .> CU_IdentificarMicro : <<include>>
+CU_IniciarTransmision .> CU_EstadoGPS : <<include>>
+
+@enduml

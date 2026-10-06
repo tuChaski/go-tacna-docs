@@ -1,0 +1,46 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Pasajero" as pasajero
+actor "Usuario No Registrado" as visitante
+actor "Conductor" as conductor
+actor "Administrador" as admin
+
+rectangle "Sistema_Capaqnan_-_Modulo_de_Autenticacion_y_Cuentas" {
+
+    ' RF-01: Registro de Pasajero
+    usecase "CU-01:_Registrar_Cuenta_de_Pasajero\n(RF-01)" as CU_Registro
+    
+    ' RF-02: Inicio de Sesión
+    usecase "CU-02:_Iniciar_Sesion\n(RF-02)" as CU_Login
+    
+    ' RF-03: Recuperación de Contraseña
+    usecase "CU-03:_Recuperar_Contrasena\n(RF-03)" as CU_Recuperar
+    
+    ' RF-04: Acceso Básico sin Cuenta
+    usecase "CU-04:_Consultar_Rutas_y_Micros_sin_Cuenta\n(RF-04)" as CU_AccesoLibre
+
+    note right of CU_Registro
+      **Requisito_Asociado:**_RF-01
+      Permite_que_una_persona_cree_una_cuenta
+      para_utilizar_funciones_identificadas.
+    end note
+}
+
+' Relaciones para el Registro de Pasajero (RF-01)
+pasajero -- CU_Registro
+visitante -- CU_Registro
+
+' Relaciones para el Inicio de Sesión (RF-02)
+pasajero -- CU_Login
+conductor -- CU_Login
+admin -- CU_Login
+
+' Relación de Recuperación de Contraseña (RF-03)
+CU_Login .> CU_Recuperar : <<extend>>
+
+' Acceso Libre sin Cuenta (RF-04)
+visitante -- CU_AccesoLibre
+
+@enduml

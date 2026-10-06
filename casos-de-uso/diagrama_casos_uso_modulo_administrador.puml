@@ -1,0 +1,40 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Administrador" as admin
+
+rectangle "Sistema_Capaqnan_-_Modulo_de_Administracion" {
+
+    ' RF-33: Gestionar empresas
+    usecase "CU-25:_Gestionar_Empresas_de_Transporte\n(RF-33)" as CU_GestEmpresas
+    
+    ' RF-34: Gestionar rutas
+    usecase "CU-26:_Gestionar_Rutas_y_Paraderos\n(RF-34)" as CU_GestRutas
+    
+    ' RF-35: Gestionar micros
+    usecase "CU-27:_Gestionar_Unidades_Micros\n(RF-35)" as CU_GestMicros
+    
+    ' RF-36: Gestionar conductores
+    usecase "CU-28:_Gestionar_Cuentas_de_Conductores\n(RF-36)" as CU_GestConductores
+    
+    ' RF-37, RF-38: Supervisión en tiempo real
+    usecase "CU-29:_Supervisar_Unidades_y_Estados_en_Tiempo_Real\n(RF-37,_RF-38)" as CU_Supervisar
+    
+    ' RF-39: Gestionar usuarios
+    usecase "CU-30:_Gestionar_Cuentas_de_Pasajeros\n(RF-39)" as CU_GestUsuarios
+    
+    ' RF-40: Gestionar Premium
+    usecase "CU-31:_Gestionar_Suscripciones_Premium\n(RF-40)" as CU_GestPremium
+}
+
+' Relaciones del Administrador
+admin -- CU_GestEmpresas
+admin -- CU_GestRutas
+admin -- CU_GestMicros
+admin -- CU_GestConductores
+admin -- CU_Supervisar
+admin -- CU_GestUsuarios
+admin -- CU_GestPremium
+
+@enduml

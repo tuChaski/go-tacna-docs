@@ -77,13 +77,10 @@ Hoy el código vive dentro de `rutas-en-tiempo-real-frontend`.
 ## 5. Documentación
 
 - [ ] Migrar `architecture.md`, `openapi.yaml` y `diagrams/architecture.mmd` desde el monorepo y borrarlos de ahí
-- [ ] Llenar `requisitos/requerimientos-funcionales.md` con RF-01 a RF-20
-- [ ] Llenar `requisitos/requerimientos-no-funcionales.md` con RNF-01 a RNF-07
-- [ ] Llenar `requisitos/reglas-de-negocio.md` con RN-01 a RN-10
-- [ ] Llenar `requisitos/mvp.md`
+- [ ] Revisar y aprobar los borradores de `requisitos/requerimientos-funcionales.md` (RF-01 a RF-20), `requerimientos-no-funcionales.md` (RNF-01 a RNF-07), `reglas-de-negocio.md` (RN-01 a RN-10) y `mvp.md`.
+- [ ] Definir umbrales pendientes de GPS, tiempo de respuesta, disponibilidad, ubicación desactualizada, aforo y Premium antes de cerrar los requisitos.
 - [ ] Escribir los casos de uso: `CU-01-iniciar-sesion.md` ya existe como formato
-- [ ] Volcar el cronograma del tablero a `planificacion/tareas/fase-1.md` a `fase-6.md`
-- [ ] Exportar el Gantt a `planificacion/cronograma/`
+- [ ] Revisar que el cronograma de ProjectLibre en `planificacion/Planificacion_ProjectLibre_tuChaski.xml.pod` refleje las tareas y dependencias vigentes.
 - [ ] Exportar los diagramas de `diagramas/fuente/` a `diagramas/export/`
 - [ ] Escribir los 12 apartados de `informe/capitulo-1/`
 - [ ] Completar `pruebas/plan-de-pruebas.md` y `pruebas/matriz-de-trazabilidad.md`

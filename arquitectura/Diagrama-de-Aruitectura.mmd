@@ -1,0 +1,30 @@
+graph RL
+    %% Subgrafos de Clientes Móviles
+    subgraph Dispositivo_Movil["Dispositivo Móvil (Smartphone)"]
+        AppConductor["App Modo Conductor<br/>(Transmisión GPS)"]
+        AppPasajero["App Modo Pasajero<br/>(Mapa / Consulta ETA)"]
+    end
+
+    %% Servidor Backend API
+    subgraph Backend_Server["Servidor Backend (API REST / WebSockets)"]
+        API["<b>Lógica de Negocio y Endpoints REST / WS</b><br/>• Autenticación y Control de Roles (JWT)<br/>• Procesamiento de Coordenadas GPS<br/>• Cálculo de ETA "]
+    end
+
+    %% Persistencia de Datos
+    subgraph Persistencia["Capa de Datos"]
+        BD[("Base de Datos Geoespacial<br/><b>PostgreSQL + PostGIS</b>")]
+    end
+
+    %% Plataforma Web
+    subgraph Plataforma_Web["Plataforma Web Multirrol"]
+        WebFront["<b>Cliente Web (Frontend)</b><br/>• Dashboard Administrador / Gestor<br/>• Presentación y Monitoreo de Rutas"]
+    end
+
+    %% Relaciones y Flujos de Información
+    AppConductor -->|Envío de Coordenadas GPS<br/>HTTP / WebSockets| API
+    API -->|Consumo de Rutas, Micros y ETA<br/>Actualización en Tiempo Real| AppPasajero
+
+    API -->|Consultas y Persistencia Geoespacial| BD
+    BD -->|Lectura de Datos Geográficos y Usuarios| API
+
+    WebFront <-->|Consumo de Servicios / Endpoints según Rol| API

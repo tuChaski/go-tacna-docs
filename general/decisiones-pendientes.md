@@ -22,17 +22,7 @@ Cuando se toma una decisión, se escribe el archivo en `arquitectura/decisiones/
 | **Decide** | Royfrankly |
 | **Desbloquea** | `contratos/openapi.yaml` (T086), el modelo de datos y el ERD |
 
-### 2. ¿Cómo se reparten T001 a T109 en las 6 fases?
-
-| | |
-|---|---|
-| **Qué está suponiendo** | Los archivos `planificacion/tareas/fase-1.md` a `fase-6.md` existen, pero el rango de IDs de cada fase no está confirmado |
-| **Opciones** | (a) Sacar los rangos del tablero de GitHub Projects, (b) Definirlos por el orden de las milestones |
-| **Recomendación** | (a) El tablero ya tiene los IDs reales; copiarlos evita inventarlos |
-| **Decide** | Royfrankly |
-| **Desbloquea** | `planificacion/tareas/`, la sección 1.7 del informe y el calendario de entregas |
-
-### 3. ¿`admin` o `administrador` en el token?
+### 2. ¿`admin` o `administrador` en el token?
 
 | | |
 |---|---|
@@ -42,7 +32,7 @@ Cuando se toma una decisión, se escribe el archivo en `arquitectura/decisiones/
 | **Decide** | David |
 | **Desbloquea** | `contratos/jwt-claims.md` y la validación de roles |
 
-### 4. ¿El estado del tiempo real sigue en memoria?
+### 3. ¿El estado del tiempo real sigue en memoria?
 
 | | |
 |---|---|
@@ -52,7 +42,7 @@ Cuando se toma una decisión, se escribe el archivo en `arquitectura/decisiones/
 | **Decide** | David |
 | **Desbloquea** | `arquitectura/decisiones/`, requisito no funcional sobre disponibilidad |
 
-### 5. ¿k3s con Traefik o Docker Compose en producción?
+### 4. ¿k3s con Traefik o Docker Compose en producción?
 
 | | |
 |---|---|
@@ -62,7 +52,7 @@ Cuando se toma una decisión, se escribe el archivo en `arquitectura/decisiones/
 | **Decide** | Royfrankly |
 | **Desbloquea** | `planificacion/`, el despliegue y la sección de arquitectura del informe |
 
-### 6. ¿Qué dominio y certificado se usan?
+### 5. ¿Qué dominio y certificado se usan?
 
 | | |
 |---|---|
@@ -72,7 +62,7 @@ Cuando se toma una decisión, se escribe el archivo en `arquitectura/decisiones/
 | **Decide** | Royfrankly |
 | **Desbloquea** | Pruebas de campo con el conductor y la app |
 
-### 7. ¿El MVP incluye el panel de administración completo?
+### 6. ¿El MVP incluye el panel de administración completo?
 
 | | |
 |---|---|
@@ -90,6 +80,7 @@ Cuando se toma una decisión, se escribe el archivo en `arquitectura/decisiones/
 |---|---|---|
 | Nombre del vehículo: micro, bus o unidad | **micro**; "unidad" es el sinónimo formal en textos técnicos | [../glosario.md](../glosario.md) |
 | Numeración de los requerimientos | Gana la guía TF: RF-01 a RF-20, RNF-01 a RNF-07. La numeración hasta RF-45 se descarta | [../CONTRIBUTING.md](../CONTRIBUTING.md) §3 |
+| Organización de las fases de planificación | Seis fases resumidas en `planificacion/README.md`; tareas y dependencias detalladas en el archivo ProjectLibre `.pod` | [../planificacion/README.md](../planificacion/README.md) |
 | Flujo de Git | Gitflow simplificado, squash a `develop`, merge commit a `main`, sin ramas `release/` | [../guias/git.md](../guias/git.md) |
 | Sintaxis de los diagramas | Solo Mermaid (`.mmd`), con la fuente en `diagramas/fuente/` | [../CONTRIBUTING.md](../CONTRIBUTING.md) §6 |
 | Tiempo de llegada siempre estimado | El ETA se marca como estimado, nunca como hora exacta (RN-08) | [../glosario.md](../glosario.md), [../requisitos/reglas-de-negocio.md](../requisitos/reglas-de-negocio.md) |

@@ -32,12 +32,12 @@ Los estados posibles son `Pendiente` (existe el archivo, vacío), `Borrador` (ti
 | Carpeta | Tipo | Qué contiene | Responsable | Estado |
 |---|---|---|---|---|
 | `general/` | Control | Vista de arriba del proyecto: repos, configuración, checklist y decisiones abiertas | Royfrankly Navarro | Esqueleto |
-| `requisitos/` | Fuente | RF-01 a RF-20, RNF-01 a RNF-07, RN-01 a RN-10 y alcance del MVP | Royfrankly | Esqueleto |
+| `requisitos/` | Fuente | RF-01 a RF-20, RNF-01 a RNF-07, RN-01 a RN-10 y alcance del MVP | Royfrankly | Borrador |
 | `casos-de-uso/` | Fuente | Diagrama general y una especificación por caso de uso | Todo el equipo | Esqueleto |
 | `arquitectura/` | Fuente | Modelo del sistema, modelo de datos y decisiones | David Montoya | Esqueleto |
 | `contratos/` | Fuente | API, WebSocket y JWT. **Los otros repos implementan lo de aquí** | Royfrankly y David | Esqueleto |
 | `diseno/` | Fuente | Estilos, mapa del sitio, inventario de vistas y Figma | Alex Huaracha | Esqueleto |
-| `planificacion/` | Fuente | Recursos, cronograma y tareas por fase | Royfrankly | Esqueleto |
+| `planificacion/` | Fuente | Resumen de seis fases y cronograma detallado en ProjectLibre | Royfrankly | Borrador |
 | `pruebas/` | Fuente | Plan de pruebas, trazabilidad e informes de campo | Edison Catari | Esqueleto |
 | `manuales/` | Fuente | Guía del pasajero y manual del administrador | Alex y Royfrankly | Esqueleto |
 | `diagramas/` | Fuente | Diagramas como código, en `fuente/` y `export/` | David Montoya | Esqueleto |
@@ -91,10 +91,10 @@ No es el mapa de archivos (eso es este `INVENTARIO.md`): es la vista de arriba d
 
 | Archivo | Contenido | Estado |
 |---|---|---|
-| `requerimientos-funcionales.md` | RF-01 a RF-20, con la numeración oficial de la guía TF | Pendiente |
-| `requerimientos-no-funcionales.md` | RNF-01 a RNF-07 | Pendiente |
-| `reglas-de-negocio.md` | RN-01 a RN-10, incluida RN-08 (el ETA siempre es estimado) | Pendiente |
-| `mvp.md` | Qué entra en el MVP y qué queda para Premium o para después | Pendiente |
+| `requerimientos-funcionales.md` | RF-01 a RF-20, con la numeración oficial de la guía TF | Borrador |
+| `requerimientos-no-funcionales.md` | RNF-01 a RNF-07 | Borrador |
+| `reglas-de-negocio.md` | RN-01 a RN-10, incluida RN-08 (el ETA siempre es estimado) | Borrador |
+| `mvp.md` | Qué entra en el MVP y qué queda para Premium o para después | Borrador |
 
 ### `casos-de-uso/` — Todo el equipo
 
@@ -134,9 +134,8 @@ No es el mapa de archivos (eso es este `INVENTARIO.md`): es la vista de arriba d
 
 | Archivo | Contenido | Estado |
 |---|---|---|
-| `recursos.md` | Hardware, software, servicios y costos | Pendiente |
-| `cronograma/` | Gantt: `.pod` editable y `.png` exportado | Vacía (`.gitkeep`) |
-| `tareas/fase-1.md` ... `fase-6.md` | Tareas por fase (T001 a T109). Falta confirmar el rango de IDs de cada fase contra el tablero | Pendiente |
+| `README.md` | Resumen breve del objetivo y resultado de cada una de las seis fases | Borrador |
+| `Planificacion_ProjectLibre_tuChaski.xml.pod` | Cronograma detallado de ProjectLibre, con tareas y dependencias | Borrador |
 
 ### `pruebas/` — Edison Catari
 
@@ -195,7 +194,7 @@ Los mismos archivos existen en los cinco repos del equipo.
 | `rutas-en-tiempo-real-frontend/docs/architecture.md` | Arquitectura del monorepo: componentes, puertos y flujo de ubicación (29 líneas) | `arquitectura/arquitectura.md` | Migrar y quitar la advertencia de "directorios pendientes" |
 | `rutas-en-tiempo-real-frontend/docs/openapi.yaml` | OpenAPI con solo 3 endpoints | `contratos/openapi.yaml` | Migrar y completar con auth, CRUD y `/tracking/*` |
 | `rutas-en-tiempo-real-frontend/docs/diagrams/architecture.mmd` | Diagrama de componentes en Mermaid | `diagramas/fuente/` + `export/` | Migrar |
-| Tablero de GitHub Projects | Cronograma real de tareas | `planificacion/cronograma/` y `tareas/` | Volcar el cronograma a Markdown |
+| Tablero de GitHub Projects | Fuente de tareas para el cronograma | `planificacion/Planificacion_ProjectLibre_tuChaski.xml.pod` | Revisar que el cronograma ProjectLibre refleje las tareas vigentes |
 
 ---
 
