@@ -1,0 +1,27 @@
+# Diagrama de Casos de Uso - Conductor
+> **Estado:** En revisión
+> **Responsable:** David Montador
+> **Relacionado:** [T079]
+
+flowchart LR
+    Conductor(["👤 Conductor"])
+
+    subgraph SIS["Sistema de Monitoreo de Buses - Conductor"]
+        direction LR
+        CU1([Iniciar sesión])
+        CU2([Cerrar sesión])
+        CU3([Ver ruta asignada])
+        CU4([Iniciar recorrido])
+        CU5([Enviar posición de GPS])
+        CU6([Ver estado de conexión de GPS])
+        CU7([Finalizar recorrido])
+    end
+
+    Conductor --- CU1
+    Conductor --- CU2
+    Conductor --- CU3
+    Conductor --- CU4
+    Conductor --- CU7
+
+    CU4 -.->|"«include»"| CU5
+    CU6 -.->|"«extend»"| CU4
