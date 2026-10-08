@@ -8,13 +8,13 @@ Cada repositorio es independiente: se clona solo, se ejecuta solo y tiene su pro
 
 | Repo | Rama de trabajo | Raíz en GitHub | Clonar |
 |---|---|---|---|
-| `rutas-en-tiempo-real-docs` | `main` | [tuChaski/rutas-en-tiempo-real-docs](https://github.com/tuChaski/rutas-en-tiempo-real-docs) | `git clone https://github.com/tuChaski/rutas-en-tiempo-real-docs.git` |
-| `rutas-en-tiempo-real-backend` | `develop` | [tuChaski/rutas-en-tiempo-real-backend](https://github.com/tuChaski/rutas-en-tiempo-real-backend) | `git clone https://github.com/tuChaski/rutas-en-tiempo-real-backend.git` |
-| `rutas-en-tiempo-real-frontend` | `develop` | [tuChaski/rutas-en-tiempo-real-frontend](https://github.com/tuChaski/rutas-en-tiempo-real-frontend) | `git clone https://github.com/tuChaski/rutas-en-tiempo-real-frontend.git` |
-| `rutas-en-tiempo-real-movil` | `develop` | [tuChaski/rutas-en-tiempo-real-movil](https://github.com/tuChaski/rutas-en-tiempo-real-movil) | `git clone https://github.com/tuChaski/rutas-en-tiempo-real-movil.git` |
-| `rutas-en-tiempo-real-infraestructura` | `develop` | [tuChaski/rutas-en-tiempo-real-infraestructura](https://github.com/tuChaski/rutas-en-tiempo-real-infraestructura) | `git clone https://github.com/tuChaski/rutas-en-tiempo-real-infraestructura.git` |
+| `go-tacna-docs` | `main` | [go-tacna/go-tacna-docs](https://github.com/go-tacna/go-tacna-docs) | `git clone https://github.com/go-tacna/go-tacna-docs.git` |
+| `go-tacna-backend` | `develop` | [go-tacna/go-tacna-backend](https://github.com/go-tacna/go-tacna-backend) | `git clone https://github.com/go-tacna/go-tacna-backend.git` |
+| `go-tacna-frontend` | `develop` | [go-tacna/go-tacna-frontend](https://github.com/go-tacna/go-tacna-frontend) | `git clone https://github.com/go-tacna/go-tacna-frontend.git` |
+| `go-tacna-movil` | `develop` | [go-tacna/go-tacna-movil](https://github.com/go-tacna/go-tacna-movil) | `git clone https://github.com/go-tacna/go-tacna-movil.git` |
+| `go-tacna-infraestructura` | `develop` | [go-tacna/go-tacna-infraestructura](https://github.com/go-tacna/go-tacna-infraestructura) | `git clone https://github.com/go-tacna/go-tacna-infraestructura.git` |
 
-Tablero de tareas: [Planificación rutas-en-tiempo-real](https://github.com/orgs/tuChaski/projects/1)
+Tablero de tareas: [Planificación go-tacna](https://github.com/orgs/go-tacna/projects/1)
 
 ---
 
@@ -70,14 +70,14 @@ Consume: los contratos de `docs/` y los certificados HTTPS de `infraestructura`.
 
 ### `infraestructura` — Royfrankly
 
-Todo lo que corre en el servidor: Docker Compose, proxy Nginx, scripts de despliegue y el diseño objetivo con k3s, Kustomize y Traefik.
+Compose, gateway de la aplicación y scripts de despliegue. El Nginx global y los certificados TLS son compartidos y se administran en el host VPS Contabo, no desde el Compose de go-tacna. Ver [infraestructura de go-tacna](../INFRASTRUCTURE.md).
 
 | Pieza | Qué hace |
 |---|---|
 | `docker/docker-compose.yml` | Base de todos los servicios en local |
 | `docker/docker-compose.prod.yml` | Se sobrepone al base para producción |
-| `deploy/nginx/default.conf` | Único punto de entrada: `/api`, `/socket.io` y `/` |
-| `deploy/scripts/` | `deploy.sh` y `certbot.sh` |
+| `deploy/nginx/default.conf` | Gateway interno: enruta `/api`, `/socket.io` y `/` dentro de la aplicación |
+| `deploy/scripts/` | Automatización del despliegue; los certificados del Nginx global se gestionan en el host |
 | `.github/workflows/deploy.yml` | Despliegue automático al hacer push a `main` |
 
 Consume: nada de `docs/`. **Los demás dependen de él** para publicarse.

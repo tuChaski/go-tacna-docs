@@ -1,0 +1,50 @@
+@startuml C4_Container
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+!define DEVICONS https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/devicons
+!include DEVICONS/laravel.puml
+!include DEVICONS/nodejs.puml
+!include DEVICONS/postgresql.puml
+!include DEVICONS/react.puml
+
+LAYOUT_LEFT_RIGHT()
+' --- PERSONAS (ACTORES) ---
+Person(pasajero, "Pasajero", "Consulta rutas, ubicación de micros y tiempo estimado (ETA)")
+Person(conductor, "Conductor", "Operador de micro que transmite GPS y gestiona su recorrido")
+Person(admin, "Administrador", "Gestiona la flota, empresas, rutas y monitoreo global")
+
+' --- CONTENEDORES CLIENTE (FRONTEND MULTIPLATAFORMA) ---
+Container(app_movil, "Aplicación Móvil", "React Native", "Interfaz móvil para Pasajero, Modo Conductor y Monitoreo Admin", $sprite="react")
+Container(app_web, "Plataforma Web", "React + Vite", "Portal web responsive para Pasajero, Modo Conductor y Panel Admin", $sprite="react")
+
+' --- CLUSTER K3S (BACKEND & PERSISTENCIA) ---
+System_Boundary(k3s, "Cluster K3s (Docker)") {
+    Container(gateway, "API Gateway", "Traefik / Nginx", "Punto único de entrada, enrutamiento SSL, CORS y Rate Limiting")
+    Container(realtime, "Realtime GPS", "Node.js + Sockets", "Recepción y Broadcast de coordenadas GPS a baja latencia", $sprite="nodejs")
+    Container(backend, "Backend API", "Laravel 13", "Gestión de datos, Autenticación JWT, RBAC y cálculo de ETA", $sprite="laravel")
+    ContainerDb(db, "Base de Datos", "PostgreSQL + PostGIS", "Almacena usuarios, roles, rutas (LINESTRING) y lecturas GPS (POINT)", $sprite="postgresql")
+}
+
+' --- RELACIONES ACTORES -> CLIENTES (ACCESO MULTIPLATAFORMA) ---
+Rel(pasajero, app_movil, "Consulta rutas y ETA", "Android")
+Rel(pasajero, app_web, "Consulta visor de rutas", "HTTPS")
+
+Rel(conductor, app_movil, "Transmite GPS / Modo Conductor", "Android")
+Rel(conductor, app_web, "Acceso a panel / Estado", "HTTPS")
+
+Rel(admin, app_movil, "Monitoreo en campo", "Android")
+Rel(admin, app_web, "Gestión de flota y configuración", "HTTPS")
+
+' --- RELACIONES CLIENTES -> BACKEND (API GATEWAY) ---
+Rel(app_movil, gateway, "Peticiones HTTP REST / Sockets WSS", "Puerto 443")
+Rel(app_web, gateway, "Peticiones HTTP REST / Sockets WSS", "Puerto 443")
+
+' --- ENRUTAMIENTO INTERNO EN K3S ---
+Rel(gateway, realtime, "Enruta tráfico GPS / Sockets", "/ws/*")
+Rel(gateway, backend, "Enruta peticiones REST / Auth", "/api/v1/*")
+
+' --- PERSISTENCIA ---
+Rel(backend, db, "Consultas relacionales / PostGIS", "TCP 5432")
+Rel(realtime, db, "Persistencia de lecturas GPS", "TCP 5432")
+Rel(realtime, backend, "Validación interna de tokens", "HTTP")
+
+@enduml

@@ -1,4 +1,4 @@
-# Rutas en Tiempo Real — Documentación
+# go-tacna — Documentación
 
 Reúne el **informe, los requisitos, los diagramas, los contratos entre componentes y el cronograma** del proyecto.
 
@@ -10,7 +10,7 @@ Reúne el **informe, los requisitos, los diagramas, los contratos entre componen
 
 ## ⚠️ Estado actual
 
-**Este repositorio contiene la estructura documental y borradores de requisitos.** La arquitectura y el contrato de API implementados como documentación todavía están en el monorepo `rutas-en-tiempo-real-frontend/docs/`:
+**Este repositorio contiene la estructura documental y borradores de requisitos.** La arquitectura y el contrato de API implementados como documentación todavía están en el monorepo `go-tacna-frontend/docs/`:
 
 | Contenido | Ruta actual | Estado |
 |---|---|---|
@@ -30,11 +30,11 @@ Reúne el **informe, los requisitos, los diagramas, los contratos entre componen
 Los contratos —el `openapi.yaml`, los eventos WebSocket, los claims del JWT— **viven aquí**. Si algo cambia, se cambia primero en este repositorio y después se ajusta el código que lo consume.
 
 ```
-rutas-tiempo-real-docs/          ← el contrato se define AQUÍ
-        │
-        ├──▶ rutas-tiempo-real-backend/     lo implementa
-        ├──▶ rutas-tiempo-real-frontend/    lo consume
-        └──▶ rutas-tiempo-real-mobile/      lo consume
+go-tacna-docs/       ← los contratos se definen AQUÍ
+        ├──▶ go-tacna-backend/         los implementa
+        ├──▶ go-tacna-frontend/        los consume
+        ├──▶ go-tacna-movil/           los consume
+        └──▶ go-tacna-infraestructura/ los publica
 ```
 
 Así ninguna persona implementa "lo que le pareció" y luego se descubren tres versiones distintas de la misma cosa.
@@ -53,6 +53,7 @@ Este repositorio está dividido en dos tipos de carpeta: las **fuentes**, donde 
 | `CONTRIBUTING.md` | Guía de escritura: dónde va cada tema, identificadores, redacción, nombres de archivo |
 | `glosario.md` | Términos oficiales del proyecto |
 | `INVENTARIO.md` | Mapa de todos los archivos y carpetas |
+| `INFRASTRUCTURE.md` | Host Contabo, flujo multidominio, Nginx global y aislamiento de los servicios |
 | `general/` | Vista de control: los 5 repos, la configuración general, el checklist y las decisiones abiertas |
 | `general/` | Vista de control del proyecto: los 5 repos, la configuración, qué falta y qué decisiones están abiertas |
 
@@ -70,6 +71,10 @@ Este repositorio está dividido en dos tipos de carpeta: las **fuentes**, donde 
 | `manuales/` | Guía del pasajero y manual del administrador | |
 | `diagramas/` | `fuente/` con los `.mmd` editables (Mermaid) y `export/` con las imágenes | Alimenta la sección 1.12 |
 | `assets/` | Logos, capturas y recursos compartidos | |
+
+La arquitectura del VPS de Contabo, el Nginx global y el enrutamiento multidominio están documentados en [INFRASTRUCTURE.md](INFRASTRUCTURE.md).
+
+La arquitectura de despliegue del VPS y su diagrama están descritos en [INFRASTRUCTURE.md](INFRASTRUCTURE.md).
 
 ### Salida
 
@@ -179,7 +184,7 @@ Roles previstos: `conductor`, `pasajero`, `admin`.
 
 `docs/architecture.md` describe hoy el diseño objetivo, y su propio primer párrafo lo advierte: *"la estructura objetivo del monorepo... los directorios todavía deben incorporarse"*. Cuando este repositorio absorba la documentación, esa nota debe desaparecer.
 
-Los 11 frentes de trabajo del proyecto, con su cronograma completo, están en el tablero de GitHub: [Planificación rutas-en-tiempo-real](https://github.com/orgs/tuChaski/projects/1).
+Los 11 frentes de trabajo del proyecto, con su cronograma completo, están en el tablero de GitHub: [Planificación go-tacna](https://github.com/orgs/go-tacna/projects/1).
 
 ---
 
@@ -193,7 +198,7 @@ El detalle completo, con responsable y archivo destino, está en [INVENTARIO.md]
 4. Los requisitos funcionales y no funcionales están en borrador en `requisitos/`; falta validar el alcance, acordar umbrales y completar las pruebas asociadas.
 5. Conflicto de nomenclatura `bus`/`micro` entre el contrato y el código.
 6. El cronograma solo existe como tablero de GitHub, no como documento versionado.
-7. Los documentos técnicos siguen en `rutas-en-tiempo-real-frontend/docs/` y hay que migrarlos.
+7. Los documentos técnicos siguen en `go-tacna-frontend/docs/` y hay que migrarlos.
 
 ---
 
@@ -239,10 +244,10 @@ Los términos del proyecto (micro, ruta, paradero, pasajero, ETA...) están en [
 
 | Repositorio | Propósito |
 |---|---|
-| `rutas-en-tiempo-real-docs` | Este repositorio. Informe, requisitos, contratos y cronograma. |
-| `rutas-en-tiempo-real-backend` | API Laravel y servidor de tiempo real. |
-| `rutas-en-tiempo-real-frontend` | Web pública y panel de administración. |
-| `rutas-en-tiempo-real-movil` | App Android (Pasajero y Modo Conductor). |
-| `rutas-en-tiempo-real-infraestructura` | Docker, k3s, Traefik y despliegue. |
+| `go-tacna-docs` | Este repositorio. Informe, requisitos, contratos y cronograma. |
+| `go-tacna-backend` | API Laravel y servidor de tiempo real. |
+| `go-tacna-frontend` | Web pública y panel de administración. |
+| `go-tacna-movil` | App Android (Pasajero y Modo Conductor). |
+| `go-tacna-infraestructura` | Docker Compose, gateway y despliegue. |
 
-Tablero de tareas: [Planificación rutas-en-tiempo-real](https://github.com/orgs/tuChaski/projects/1)
+Tablero de tareas: [Planificación go-tacna](https://github.com/orgs/go-tacna/projects/1)

@@ -255,11 +255,11 @@ bash setup-git-rules.sh "<nombre-repo>" "<alcances separados por coma>" "<@dueñ
 ```
 
 ```bash
-bash setup-git-rules.sh "rutas-en-tiempo-real-backend" "api, realtime, auth, rutas, micros, gps, eta, db, deps, ci" "@royfrankly @DavidMontoyaHolgado"
-bash setup-git-rules.sh "rutas-en-tiempo-real-frontend" "admin, public, login, map, ui, deps, ci" "@Alex-Huaracha-Bellido"
-bash setup-git-rules.sh "rutas-en-tiempo-real-movil" "pasajero, conductor, mapa, gps, auth, ui, deps, ci" "@Alex-Huaracha-Bellido @DavidMontoyaHolgado"
-bash setup-git-rules.sh "rutas-en-tiempo-real-infraestructura" "k3s, compose, ingress, db, scripts, ci" "@royfrankly"
-bash setup-git-rules.sh "rutas-en-tiempo-real-docs" "requisitos, contratos, arquitectura, diagramas, diseno, planificacion, pruebas, informe" "@royfrankly @EdCatari"
+bash setup-git-rules.sh "go-tacna-backend" "api, realtime, auth, rutas, micros, gps, eta, db, deps, ci" "@royfrankly @DavidMontoyaHolgado"
+bash setup-git-rules.sh "go-tacna-frontend" "admin, public, login, map, ui, deps, ci" "@Alex-Huaracha-Bellido"
+bash setup-git-rules.sh "go-tacna-movil" "pasajero, conductor, mapa, gps, auth, ui, deps, ci" "@Alex-Huaracha-Bellido @DavidMontoyaHolgado"
+bash setup-git-rules.sh "go-tacna-infraestructura" "k3s, compose, ingress, db, scripts, ci" "@royfrankly"
+bash setup-git-rules.sh "go-tacna-docs" "requisitos, contratos, arquitectura, diagramas, diseno, planificacion, pruebas, informe" "@royfrankly @EdCatari"
 ```
 
 El script también genera un `CONTRIBUTING.md` corto **si no existe**. En `docs` ese archivo ya está escrito, así que el script solo crea `.github/`.

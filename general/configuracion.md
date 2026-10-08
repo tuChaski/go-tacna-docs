@@ -83,13 +83,14 @@ Orden de un cambio de contrato:
 
 | Servicio | Puerto interno | Ruta pública | Quién lo publica |
 |---|---|---|---|
-| API Laravel | 8000 | `/api/` | Nginx |
-| Servidor de tiempo real | 3001 | `/socket.io/` | Nginx |
-| Panel web | 4173 | `/` | Nginx |
-| PostgreSQL + PostGIS | 5432 | — | No se publica: solo red interna |
-| Nginx | — | 80 y 443 | Único puerto público |
+| API Laravel | 8000 | `/api/` | Gateway de go-tacna, solo red Docker |
+| Servidor de tiempo real | 3001 | `/socket.io/` | Gateway de go-tacna, solo red Docker |
+| Panel web | 4173 | `/` | Gateway de go-tacna, solo red Docker |
+| PostgreSQL + PostGIS | 5432 | — | No se publica: solo red Docker |
+| Gateway de go-tacna | 80 en el contenedor | — | Publicado solo en `127.0.0.1:8001` del VPS |
+| Nginx global del host Contabo | — | 80 y 443 | Único punto de entrada público; TLS y selección por dominio |
 
-En Nginx, `/socket.io/` necesita `proxy_read_timeout 3600s` y cabeceras de `Upgrade`: sin eso, las conexiones de los pasajeros se cortan.
+El Nginx global del host reenvía el dominio de go-tacna al gateway local en `127.0.0.1:8001`. El gateway enruta `/api/`, `/socket.io/` y `/` a los servicios internos. `/socket.io/` necesita cabeceras de `Upgrade` y un `proxy_read_timeout` adecuado para conexiones de larga duración. Ver [INFRASTRUCTURE.md](../INFRASTRUCTURE.md).
 
 ---
 
@@ -103,7 +104,7 @@ Nunca se suben. Solo se versiona `.env.example`.
 | `APP_KEY` | `.env` de Laravel | Obligatoria: el arranque falla sin ella |
 | `DB_PASSWORD` | `.env` y secretos de CI | Obligatoria |
 | `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_SSH_KEY`, `DEPLOY_PATH` | Secretos del repositorio | Los usa el workflow de despliegue |
-| `DOMAIN`, `CERTBOT_EMAIL` | `.env` | Necesarios para el certificado HTTPS |
+| `DOMAIN`, `CERTBOT_EMAIL` | Configuración de despliegue | Dominio y correo para TLS; la emisión/renovación se gestiona en el host Contabo |
 
 > Si un secreto se sube por error, **se rota primero**. Borrar el commit no alcanza (ver la sección 9 de `guias/git.md`).
 
@@ -116,7 +117,7 @@ Nunca se suben. Solo se versiona `.env.example`.
 | `backend` | `APP_KEY`, `DB_*`, `JWT_SECRET`, `PORT`, `CORS_ORIGIN`, `OFFLINE_AFTER_MS` | `OFFLINE_AFTER_MS` marca el micro sin conexión tras ese tiempo sin señal |
 | `frontend` | `VITE_API_URL`, `VITE_REALTIME_URL` | Se compilan dentro del bundle |
 | `movil` | `EXPO_PUBLIC_API_URL`, `EXPO_PUBLIC_REALTIME_URL` | El prefijo `EXPO_PUBLIC_` las expone al bundle: nunca un secreto ahí |
-| `infraestructura` | `APP_*`, `DB_*`, `JWT_SECRET`, `HTTP_PORT`, `HTTPS_PORT`, `DOMAIN`, `CERTBOT_EMAIL` | Un solo `.env` alimenta todos los servicios |
+| `infraestructura` | `APP_*`, `DB_*`, `JWT_SECRET` | El gateway publica `127.0.0.1:8001:80`; `DOMAIN` y `CERTBOT_EMAIL` se configuran para el Nginx global del host, no en Compose |
 
 Detalle y valores por defecto: el README de cada repositorio.
 
@@ -128,10 +129,12 @@ Detalle y valores por defecto: el README de cada repositorio.
 
 | Paso | Cómo |
 |---|---|
-| 1 | Configurar `DOMAIN` y `CERTBOT_EMAIL` en el `.env` |
-| 2 | Apuntar el DNS al servidor y dejar libre el puerto 80 |
-| 3 | `./deploy/scripts/certbot.sh` |
-| 4 | Programar la renovación: `certbot renew` desde cron |
+| 1 | Configurar el dominio en DNS para que apunte a la IP pública del VPS Contabo |
+| 2 | Configurar el `server_name` y el proxy del dominio en el Nginx global del host |
+| 3 | Emitir el certificado TLS en el host para el dominio y habilitar el bloque HTTPS |
+| 4 | Verificar con `nginx -t` y programar/confirmar la renovación automática del certificado |
+
+El gateway del proyecto se publica solo en una interfaz local (por ejemplo, `127.0.0.1:8001`). No ejecutar Certbot ni publicar 80/443 desde el Compose de go-tacna cuando esos puertos pertenecen al Nginx global. Para el ejemplo completo, consultar [INFRASTRUCTURE.md](../INFRASTRUCTURE.md).
 
 En el celular físico, `localhost` es el propio teléfono: hay que usar la IP de la computadora en la red local.
 

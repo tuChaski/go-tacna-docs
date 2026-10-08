@@ -42,27 +42,17 @@ Cuando se toma una decisión, se escribe el archivo en `arquitectura/decisiones/
 | **Decide** | David |
 | **Desbloquea** | `arquitectura/decisiones/`, requisito no funcional sobre disponibilidad |
 
-### 4. ¿k3s con Traefik o Docker Compose en producción?
+### 4. ¿Qué dominio y certificado se usan?
 
 | | |
 |---|---|
-| **Qué está suponiendo** | El Compose con Nginx ya funciona; k3s con Kustomize y Traefik es el diseño objetivo y **todavía no ha empezado** |
-| **Opciones** | (a) Quedarse en Compose para la entrega, (b) Migrar a k3s antes de presentar |
-| **Recomendación** | Depende de la fecha. Si hay tiempo, (b) queda mejor; si no, (a) y documentar k3s como trabajo futuro |
-| **Decide** | Royfrankly |
-| **Desbloquea** | `planificacion/`, el despliegue y la sección de arquitectura del informe |
-
-### 5. ¿Qué dominio y certificado se usan?
-
-| | |
-|---|---|
-| **Qué está suponiendo** | El `.env.example` trae `rutas.example.com` y `DOMAIN` configurable |
+| **Qué está suponiendo** | El VPS de Contabo y el patrón de Nginx global → gateway local están definidos; falta elegir el dominio real de go-tacna y emitir su certificado TLS |
 | **Opciones** | (a) Dominio propio, (b) Subdominio de prueba, (c) IP con certificado autofirmado |
 | **Recomendación** | Hace falta HTTPS real: sin eso el Modo Conductor no funciona en un celular físico |
 | **Decide** | Royfrankly |
-| **Desbloquea** | Pruebas de campo con el conductor y la app |
+| **Desbloquea** | Configuración del DNS, del `server_name` en el Nginx global del host y las pruebas de campo con el conductor y la app. Ver [INFRASTRUCTURE.md](../INFRASTRUCTURE.md) |
 
-### 6. ¿El MVP incluye el panel de administración completo?
+### 5. ¿El MVP incluye el panel de administración completo?
 
 | | |
 |---|---|
@@ -85,6 +75,7 @@ Cuando se toma una decisión, se escribe el archivo en `arquitectura/decisiones/
 | Sintaxis de los diagramas | Solo Mermaid (`.mmd`), con la fuente en `diagramas/fuente/` | [../CONTRIBUTING.md](../CONTRIBUTING.md) §6 |
 | Tiempo de llegada siempre estimado | El ETA se marca como estimado, nunca como hora exacta (RN-08) | [../glosario.md](../glosario.md), [../requisitos/reglas-de-negocio.md](../requisitos/reglas-de-negocio.md) |
 | Arquitectura de 5 repositorios | Cinco repos independientes, no un monorepo. El código se migra desde `frontend/` | [README.md](README.md), [repos.md](repos.md) |
+| Despliegue de aplicaciones | Docker Compose independiente por proyecto; Nginx global y certificados TLS compartidos en el host VPS Contabo. k3s queda fuera del despliegue actual | [../INFRASTRUCTURE.md](../INFRASTRUCTURE.md) |
 
 ---
 

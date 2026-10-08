@@ -21,11 +21,11 @@ No es un monorepo: son 5 repositorios independientes, cada uno con su propio REA
 
 | Repositorio | Qué es | Dueño principal |
 |---|---|---|
-| `rutas-en-tiempo-real-docs` | Este. Informe, requisitos, contratos, cronograma | Royfrankly y Edison |
-| `rutas-en-tiempo-real-backend` | API Laravel y servidor de tiempo real (Node.js) | Royfrankly y David |
-| `rutas-en-tiempo-real-frontend` | Web pública y panel de administración | Alex |
-| `rutas-en-tiempo-real-movil` | App Android: Pasajero y Modo Conductor | Alex y David |
-| `rutas-en-tiempo-real-infraestructura` | Docker, proxy, despliegue y k3s | Royfrankly |
+| `go-tacna-docs` | Este. Informe, requisitos, contratos, cronograma | Royfrankly y Edison |
+| `go-tacna-backend` | API Laravel y servidor de tiempo real (Node.js) | Royfrankly y David |
+| `go-tacna-frontend` | Web pública y panel de administración | Alex |
+| `go-tacna-movil` | App Android: Pasajero y Modo Conductor | Alex y David |
+| `go-tacna-infraestructura` | Docker Compose, gateway y despliegue | Royfrankly |
 
 ## La regla que ordena todo
 
@@ -46,6 +46,7 @@ Si un contrato cambia, el PR va primero en `docs/`. Ver [../CONTRIBUTING.md](../
 |---|---|
 | Saber qué hace cada repositorio | [repos.md](repos.md) |
 | Saber qué hay que configurar: ramas, puertos, secretos, contratos | [configuracion.md](configuracion.md) |
+| Consultar el VPS Contabo, el proxy global y el despliegue multidominio | [../INFRASTRUCTURE.md](../INFRASTRUCTURE.md) |
 | Saber qué falta | [checklist.md](checklist.md) |
 | Desbloquear una decisión que está frenando el trabajo | [decisiones-pendientes.md](decisiones-pendientes.md) |
 | Cambiar las reglas de Git | [../guias/git.md](../guias/git.md) |

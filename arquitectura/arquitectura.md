@@ -9,8 +9,8 @@
 - Componentes y qué responsabilidad tiene cada uno.
 - Stack por capa: móvil, web, API, tiempo real, datos, infraestructura.
 - Flujo completo de una posición del micro, de punta a punta.
-- Red y puertos: Nginx publica 80 y 443; enruta /api, /socket.io y el resto.
-- Migrar aquí el contenido de rutas-en-tiempo-real-frontend/docs/architecture.md y quitar la nota de "directorios pendientes".
+- Red de despliegue: el Nginx global del VPS Contabo recibe 80/443 y enruta por dominio al gateway local de cada proyecto. Ver [INFRASTRUCTURE.md](../INFRASTRUCTURE.md).
+- Migrar aquí el contenido de go-tacna-frontend/docs/architecture.md y quitar la nota de "directorios pendientes".
 
 ## Notas
 

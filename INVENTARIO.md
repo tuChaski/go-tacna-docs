@@ -20,6 +20,7 @@ Los estados posibles son `Pendiente` (existe el archivo, vacío), `Borrador` (ti
 | `CONTRIBUTING.md` | Guía de escritura: dónde va cada tema, identificadores, redacción, nombres de archivo y uso de Git | Todo el equipo | Aprobado |
 | `glosario.md` | Términos oficiales del proyecto y los sinónimos prohibidos (`bus`, `chofer`, `tiempo exacto`...) | Todo el equipo | Aprobado |
 | `INVENTARIO.md` | Este archivo. Mapa de todos los archivos y carpetas | Todo el equipo | En revisión |
+| `INFRASTRUCTURE.md` | Host Contabo, proxy global, flujo multidominio y aislamiento de servicios | Royfrankly Navarro | Borrador |
 | `guias/git.md` | **Fuente de verdad de las reglas de Git** de los 5 repos: ramas, commits, PR, releases, GitHub | Royfrankly Navarro | Borrador |
 | `general/` | Vista de control del proyecto: repos, configuración, checklist y decisiones abiertas | Royfrankly Navarro | Esqueleto |
 | `plantillas/` | Moldes para crear documentos + `setup-git-rules.sh` | Todo el equipo | Activa |
@@ -108,6 +109,7 @@ No es el mapa de archivos (eso es este `INVENTARIO.md`): es la vista de arriba d
 | Archivo | Contenido | Estado |
 |---|---|---|
 | `arquitectura.md` | Componentes, stack, flujo de una posición y red/puertos | Pendiente |
+| `Diagrama-de-infraestructura-multidominio-independiente.mmd` | Diagrama Mermaid del VPS Contabo, Nginx global y los proyectos independientes | Borrador |
 | `modelo-de-datos.md` | Tablas, columnas y relaciones. Debe coincidir con el ERD | Pendiente |
 | `decisiones/001-node-separado-de-laravel.md` | Por qué el tiempo real es un servicio aparte | Pendiente |
 | `decisiones/002-expo-y-maplibre.md` | Por qué Expo y MapLibre | Pendiente |
@@ -135,7 +137,7 @@ No es el mapa de archivos (eso es este `INVENTARIO.md`): es la vista de arriba d
 | Archivo | Contenido | Estado |
 |---|---|---|
 | `README.md` | Resumen breve del objetivo y resultado de cada una de las seis fases | Borrador |
-| `Planificacion_ProjectLibre_tuChaski.xml.pod` | Cronograma detallado de ProjectLibre, con tareas y dependencias | Borrador |
+| `Planificacion_ProjectLibre_go-tacna.xml.pod` | Cronograma detallado de ProjectLibre, con tareas y dependencias | Borrador |
 
 ### `pruebas/` — Edison Catari
 
@@ -162,7 +164,7 @@ No es el mapa de archivos (eso es este `INVENTARIO.md`): es la vista de arriba d
 | `fuente/erd.mmd` | Entidades y relaciones (Mermaid `erDiagram`) | Borrador |
 | `export/` | PNG o SVG exportado de cada fuente, con el mismo nombre | Vacía (`.gitkeep`) |
 
-> **Mermaid es la única sintaxis de diagramas del proyecto.** Ya se absorbió el diagrama Mermaid que vivía en `rutas-en-tiempo-real-frontend/docs/diagrams/architecture.mmd`; ese archivo se elimina al migrar el resto de la documentación de ese repo (ver sección 5).
+> **Mermaid es la única sintaxis de diagramas del proyecto.** Ya se absorbió el diagrama Mermaid que vivía en `go-tacna-frontend/docs/diagrams/architecture.mmd`; ese archivo se elimina al migrar el resto de la documentación de ese repo (ver sección 5).
 
 ### `plantillas/` y `guias/` — Todo el equipo
 
@@ -191,10 +193,10 @@ Los mismos archivos existen en los cinco repos del equipo.
 
 | Ubicación actual | Qué es | Destino oficial | Acción pendiente |
 |---|---|---|---|
-| `rutas-en-tiempo-real-frontend/docs/architecture.md` | Arquitectura del monorepo: componentes, puertos y flujo de ubicación (29 líneas) | `arquitectura/arquitectura.md` | Migrar y quitar la advertencia de "directorios pendientes" |
-| `rutas-en-tiempo-real-frontend/docs/openapi.yaml` | OpenAPI con solo 3 endpoints | `contratos/openapi.yaml` | Migrar y completar con auth, CRUD y `/tracking/*` |
-| `rutas-en-tiempo-real-frontend/docs/diagrams/architecture.mmd` | Diagrama de componentes en Mermaid | `diagramas/fuente/` + `export/` | Migrar |
-| Tablero de GitHub Projects | Fuente de tareas para el cronograma | `planificacion/Planificacion_ProjectLibre_tuChaski.xml.pod` | Revisar que el cronograma ProjectLibre refleje las tareas vigentes |
+| `go-tacna-frontend/docs/architecture.md` | Arquitectura del monorepo: componentes, puertos y flujo de ubicación (29 líneas) | `arquitectura/arquitectura.md` | Migrar y quitar la advertencia de "directorios pendientes" |
+| `go-tacna-frontend/docs/openapi.yaml` | OpenAPI con solo 3 endpoints | `contratos/openapi.yaml` | Migrar y completar con auth, CRUD y `/tracking/*` |
+| `go-tacna-frontend/docs/diagrams/architecture.mmd` | Diagrama de componentes en Mermaid | `diagramas/fuente/` + `export/` | Migrar |
+| Tablero de GitHub Projects | Fuente de tareas para el cronograma | `planificacion/Planificacion_ProjectLibre_go-tacna.xml.pod` | Revisar que el cronograma ProjectLibre refleje las tareas vigentes |
 
 ---
 

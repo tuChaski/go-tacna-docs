@@ -1,0 +1,26 @@
+graph TD
+    %% Estilos visuales
+    classDef actorStyle fill:#084298,stroke:#084298,color:#ffffff,font-weight:bold;
+    classDef systemStyle fill:#1168bd,stroke:#0b4884,color:#ffffff,font-weight:bold;
+    classDef externalStyle fill:#6c757d,stroke:#495057,color:#ffffff,font-style:italic;
+
+    %% Actores Humanos
+    Pasajero["👤 Pasajero<br/><i>(Usuario del Transporte)</i>"]:::actorStyle
+    Conductor["👤 Conductor<br/><i>(Operador del Vehículo)</i>"]:::actorStyle
+    Admin["👤 Administrador<br/><i>(Gestor del Sistema)</i>"]:::actorStyle
+
+    %% Sistema Central
+    Capaqnan["🚌 <b>Sistema go-tacna</b><br/><i>[Sistema de Software]</i><br/>Permite el monitoreo en tiempo real del transporte urbano, recepción de coordenadas GPS y cálculo de tiempos estimados de llegada (ETA)."]:::systemStyle
+
+    %% Sistemas/Servicios Externos
+    GPS_Mobile["📱 Servicio GPS del Dispositivo Móvil<br/><i>[Sistema Externo]</i><br/>Captura de coordenadas de geolocalización."]:::externalStyle
+    Map_Service["🗺️ Proveedor de Cartografía<br/><i>(OpenStreetMap / Mapbox)</i><br/><i>[Sistema Externo]</i><br/>Renderizado de teselas y mapas vectoriales."]:::externalStyle
+
+    %% Interacciones de los Actores
+    Pasajero -->|Consulta rutas, micros en mapa en vivo, ETA y paraderos| Capaqnan
+    Conductor -->|Inicia/finaliza recorrido y transmite ubicación| Capaqnan
+    Admin -->|Gestiona empresas, rutas, micros, conductores y usuarios| Capaqnan
+
+    %% Interacciones con Sistemas Externos
+    GPS_Mobile -->|Suministra coordenadas de latitud/longitud en tiempo real| Capaqnan
+    Capaqnan -->|Solicita capas de mapas y renderizado gráfico| Map_Service

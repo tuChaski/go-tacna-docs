@@ -44,7 +44,8 @@ Detalle: sección 10 de [../guias/git.md](../guias/git.md).
 - [ ] `DB_PASSWORD` definida
 - [ ] Secretos de despliegue: `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_SSH_KEY`, `DEPLOY_PATH`
 - [ ] `.env.example` al día en cada repo, con los mismos nombres de variable
-- [ ] `DOMAIN` y `CERTBOT_EMAIL` definidos
+- [ ] Dominio real apuntando al VPS Contabo y certificado TLS emitido/renovado desde el host
+- [ ] Nginx global del host enruta el dominio al gateway de go-tacna publicado solo en `127.0.0.1:8001`
 
 Detalle: [configuracion.md](configuracion.md) §5 y §6.
 
@@ -56,21 +57,21 @@ Detalle: [configuracion.md](configuracion.md) §5 y §6.
 - [ ] `contratos/openapi.yaml`: declarar `/auth/login`, `/auth/refresh`, CRUD de empresas, rutas, micros y conductores, `/tracking/position` y `/tracking/stop`
 - [ ] `contratos/eventos-websocket.md`: payload de `route:join`, `route:leave`, `eta:request`, `micro:position`, `micro:offline` y `micro:stopped`
 - [ ] `contratos/jwt-claims.md`: `role`, `micro_id`, `ruta_id`, `exp`, firma HS256
-- [ ] Corregir las referencias viejas a `rutas-tiempo-real-docs/docs/openapi.yaml` en los README de los otros repos
+- [ ] Corregir las referencias viejas al contrato de API en los README de los otros repos, enlazando `go-tacna-docs/contratos/openapi.yaml`
 - [ ] Revisar que lo implementado en `realtime/` coincida con el contrato
 
 ---
 
 ## 4. Migración del código a los repos correctos
 
-Hoy el código vive dentro de `rutas-en-tiempo-real-frontend`.
+Hoy el código vive dentro de `go-tacna-frontend`.
 
-- [ ] `backend/` (Laravel) → `rutas-en-tiempo-real-backend/api/`
-- [ ] `realtime/` (Node.js, ya funcional) → `rutas-en-tiempo-real-backend/realtime/`
-- [ ] `web/` (panel) → `rutas-en-tiempo-real-frontend/`
-- [ ] `mobile/` (Expo) → `rutas-en-tiempo-real-movil/`
-- [ ] `docker/` y `deploy/` → `rutas-en-tiempo-real-infraestructura/`
-- [ ] `docs/` → `rutas-en-tiempo-real-docs/` (ver bloque 5)
+- [ ] `backend/` (Laravel) → `go-tacna-backend/api/`
+- [ ] `realtime/` (Node.js, ya funcional) → `go-tacna-backend/realtime/`
+- [ ] `web/` (panel) → `go-tacna-frontend/`
+- [ ] `mobile/` (Expo) → `go-tacna-movil/`
+- [ ] `docker/` y `deploy/` → `go-tacna-infraestructura/`
+- [ ] `docs/` → `go-tacna-docs/` (ver bloque 5)
 
 ---
 
@@ -80,7 +81,7 @@ Hoy el código vive dentro de `rutas-en-tiempo-real-frontend`.
 - [ ] Revisar y aprobar los borradores de `requisitos/requerimientos-funcionales.md` (RF-01 a RF-20), `requerimientos-no-funcionales.md` (RNF-01 a RNF-07), `reglas-de-negocio.md` (RN-01 a RN-10) y `mvp.md`.
 - [ ] Definir umbrales pendientes de GPS, tiempo de respuesta, disponibilidad, ubicación desactualizada, aforo y Premium antes de cerrar los requisitos.
 - [ ] Escribir los casos de uso: `CU-01-iniciar-sesion.md` ya existe como formato
-- [ ] Revisar que el cronograma de ProjectLibre en `planificacion/Planificacion_ProjectLibre_tuChaski.xml.pod` refleje las tareas y dependencias vigentes.
+- [ ] Revisar que el cronograma de ProjectLibre en `planificacion/Planificacion_ProjectLibre_go-tacna.xml.pod` refleje las tareas y dependencias vigentes.
 - [ ] Exportar los diagramas de `diagramas/fuente/` a `diagramas/export/`
 - [ ] Escribir los 12 apartados de `informe/capitulo-1/`
 - [ ] Completar `pruebas/plan-de-pruebas.md` y `pruebas/matriz-de-trazabilidad.md`
@@ -111,7 +112,7 @@ Las que faltan están en [decisiones-pendientes.md](decisiones-pendientes.md). C
 - [ ] `bus` → `micro` en contratos y código
 - [ ] Roles del token: `admin` o `administrador`
 - [ ] Si el estado del tiempo real sigue en memoria o se persiste
-- [ ] k3s con Traefik para producción, o Compose
+- [x] Docker Compose independiente por proyecto y Nginx global compartido en el host (decisión documentada en [INFRASTRUCTURE.md](../INFRASTRUCTURE.md))
 - [ ] Dominio real y emisión del certificado
 
 ---
