@@ -1,61 +1,61 @@
-@startuml
-left to right direction
-skinparam packageStyle rectangle
+  @startuml
+  left to right direction
+  skinparam packageStyle rectangle
 
-actor "Pasajero" as pasajero
-actor "Usuario_No_Registrado" as visitante
+  actor "Pasajero" as pasajero
+  actor "Usuario_No_Registrado" as visitante
 
-rectangle "Sistema_Capaqnan_-_Modulo_del_Pasajero" {
+  rectangle "Sistema_Capaqnan_-_Modulo_del_Pasajero" {
 
-    ' RF-05: Visualización de rutas
-    usecase "CU-05:_Visualizar_Rutas_Disponibles\n(RF-05)" as CU_VerRutas
-    
-    ' RF-06: Selección de una ruta
-    usecase "CU-06:_Seleccionar_Ruta_Especifica\n(RF-06)" as CU_SeleccionarRuta
-    
-    ' RF-07 y RF-08: Visualización y actualización de micros en mapa
-    usecase "CU-07:_Visualizar_Micros_en_Mapa_en_Tiempo_Real\n(RF-07,_RF-08)" as CU_VerMicrosMapa
-    
-    ' RF-09: Información del micro
-    usecase "CU-08:_Consultar_Informacion_Detallada_del_Micro\n(RF-09)" as CU_InfoMicro
-    
-    ' RF-10: Estimación de llegada
-    usecase "CU-09:_Ver_Estimacion_de_Tiempo_de_Llegada\n(RF-10)" as CU_TiempoLlegada
-    
-    ' RF-11: Consulta del recorrido
-    usecase "CU-10:_Visualizar_Recorrido_de_la_Ruta\n(RF-11)" as CU_VerRecorrido
-    
-    ' RF-12: Selección de punto de espera
-    usecase "CU-11:_Seleccionar_Punto_de_Espera_o_Paradero\n(RF-12)" as CU_PuntoEspera
-    
-    ' RF-13: Consulta de micros cercanos
-    usecase "CU-12:_Consultar_Micros_Cercanos_al_Usuario\n(RF-13)" as CU_MicrosCercanos
+      ' RF-05: Visualización de rutas
+      usecase "CU-05:_Visualizar_Rutas_Disponibles\n(RF-05)" as CU_VerRutas
+      
+      ' RF-06: Selección de una ruta
+      usecase "CU-06:_Seleccionar_Ruta_Especifica\n(RF-06)" as CU_SeleccionarRuta
+      
+      ' RF-07 y RF-08: Visualización y actualización de micros en mapa
+      usecase "CU-07:_Visualizar_Micros_en_Mapa_en_Tiempo_Real\n(RF-07,_RF-08)" as CU_VerMicrosMapa
+      
+      ' RF-09: Información del micro
+      usecase "CU-08:_Consultar_Informacion_Detallada_del_Micro\n(RF-09)" as CU_InfoMicro
+      
+      ' RF-10: Estimación de llegada
+      usecase "CU-09:_Ver_Estimacion_de_Tiempo_de_Llegada\n(RF-10)" as CU_TiempoLlegada
+      
+      ' RF-11: Consulta del recorrido
+      usecase "CU-10:_Visualizar_Recorrido_de_la_Ruta\n(RF-11)" as CU_VerRecorrido
+      
+      ' RF-12: Selección de punto de espera
+      usecase "CU-11:_Seleccionar_Punto_de_Espera_o_Paradero\n(RF-12)" as CU_PuntoEspera
+      
+      ' RF-13: Consulta de micros cercanos
+      usecase "CU-12:_Consultar_Micros_Cercanos_al_Usuario\n(RF-13)" as CU_MicrosCercanos
 
-    note right of CU_MicrosCercanos
-      **Requisito_Asociado:**_RF-13
-      Utiliza_la_ubicacion_del_pasajero
-      para_filtrar_micros_proximos.
-    end note
-}
+      note right of CU_MicrosCercanos
+        **Requisito_Asociado:**_RF-13
+        Utiliza_la_ubicacion_del_pasajero
+        para_filtrar_micros_proximos.
+      end note
+  }
 
-' Relaciones para Usuario No Registrado (Acceso básico público)
-visitante -- CU_VerRutas
-visitante -- CU_VerRecorrido
+  ' Relaciones para Usuario No Registrado (Acceso básico público)
+  visitante -- CU_VerRutas
+  visitante -- CU_VerRecorrido
 
-' Relaciones para Pasajero Registrado
-pasajero -- CU_VerRutas
-pasajero -- CU_SeleccionarRuta
-pasajero -- CU_VerMicrosMapa
-pasajero -- CU_InfoMicro
-pasajero -- CU_TiempoLlegada
-pasajero -- CU_VerRecorrido
-pasajero -- CU_PuntoEspera
-pasajero -- CU_MicrosCercanos
+  ' Relaciones para Pasajero Registrado
+  pasajero -- CU_VerRutas
+  pasajero -- CU_SeleccionarRuta
+  pasajero -- CU_VerMicrosMapa
+  pasajero -- CU_InfoMicro
+  pasajero -- CU_TiempoLlegada
+  pasajero -- CU_VerRecorrido
+  pasajero -- CU_PuntoEspera
+  pasajero -- CU_MicrosCercanos
 
-' Relaciones de Inclusión / Extensión entre casos de uso
-CU_SeleccionarRuta .> CU_VerRutas : <<include>>
-CU_VerMicrosMapa .> CU_SeleccionarRuta : <<include>>
-CU_InfoMicro .> CU_VerMicrosMapa : <<extend>>
-CU_TiempoLlegada .> CU_VerMicrosMapa : <<extend>>
+  ' Relaciones de Inclusión / Extensión entre casos de uso
+  CU_SeleccionarRuta .> CU_VerRutas : <<include>>
+  CU_VerMicrosMapa .> CU_SeleccionarRuta : <<include>>
+  CU_InfoMicro .> CU_VerMicrosMapa : <<extend>>
+  CU_TiempoLlegada .> CU_VerMicrosMapa : <<extend>>
 
-@enduml
+  @enduml

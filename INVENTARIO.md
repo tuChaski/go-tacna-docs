@@ -21,6 +21,7 @@ Los estados posibles son `Pendiente` (existe el archivo, vacío), `Borrador` (ti
 | `glosario.md` | Términos oficiales del proyecto y los sinónimos prohibidos (`bus`, `chofer`, `tiempo exacto`...) | Todo el equipo | Aprobado |
 | `INVENTARIO.md` | Este archivo. Mapa de todos los archivos y carpetas | Todo el equipo | En revisión |
 | `INFRASTRUCTURE.md` | Host Contabo, proxy global, flujo multidominio y aislamiento de servicios | Royfrankly Navarro | Borrador |
+| `CONTEXTO_PROYECTO_GO_TACNA.md` | Contexto general, stack, repositorios, diagrama Mermaid y estado del proyecto | Todo el equipo | Borrador |
 | `guias/git.md` | **Fuente de verdad de las reglas de Git** de los 5 repos: ramas, commits, PR, releases, GitHub | Royfrankly Navarro | Borrador |
 | `general/` | Vista de control del proyecto: repos, configuración, checklist y decisiones abiertas | Royfrankly Navarro | Esqueleto |
 | `plantillas/` | Moldes para crear documentos + `setup-git-rules.sh` | Todo el equipo | Activa |

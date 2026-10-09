@@ -54,6 +54,7 @@ Este repositorio está dividido en dos tipos de carpeta: las **fuentes**, donde 
 | `glosario.md` | Términos oficiales del proyecto |
 | `INVENTARIO.md` | Mapa de todos los archivos y carpetas |
 | `INFRASTRUCTURE.md` | Host Contabo, flujo multidominio, Nginx global y aislamiento de los servicios |
+| `CONTEXTO_PROYECTO_GO_TACNA.md` | Contexto, repositorios, estado e infraestructura del proyecto para colaboradores |
 | `general/` | Vista de control: los 5 repos, la configuración general, el checklist y las decisiones abiertas |
 | `general/` | Vista de control del proyecto: los 5 repos, la configuración, qué falta y qué decisiones están abiertas |
 
