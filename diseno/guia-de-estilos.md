@@ -1,6 +1,6 @@
 # Guía de estilos
 
-> **Estado:** Pendiente
+> **Estado:** Terminado
 > **Responsable:** Alex Huaracha
 > **Relacionado:** [../informe/capitulo-1/1.8-arquitectura-de-contenido.md](../informe/capitulo-1/1.8-arquitectura-de-contenido.md), [figma.md](figma.md)
 
@@ -1122,4 +1122,7 @@ Las casillas son una plantilla de revisión del equipo. No representan una aprob
 
 ## Contenido
 
-_Pendiente de completar._
+completado
+
+
+
