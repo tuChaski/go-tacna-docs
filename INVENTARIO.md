@@ -23,6 +23,7 @@ Los estados posibles son `Pendiente` (existe el archivo, vacío), `Borrador` (ti
 | `INFRASTRUCTURE.md` | Host Contabo, proxy global, flujo multidominio y aislamiento de servicios | Royfrankly Navarro | Borrador |
 | `CONTEXTO_PROYECTO_GO_TACNA.md` | Contexto general, stack, repositorios, diagrama Mermaid y estado del proyecto | Todo el equipo | Borrador |
 | `guias/git.md` | **Fuente de verdad de las reglas de Git** de los 5 repos: ramas, commits, PR, releases, GitHub | Royfrankly Navarro | Borrador |
+| `guias/proyectos/` | Guías de contexto para los cinco componentes de aplicación; no incluye infraestructura | Todo el equipo | Borrador |
 | `general/` | Vista de control del proyecto: repos, configuración, checklist y decisiones abiertas | Royfrankly Navarro | Esqueleto |
 | `plantillas/` | Moldes para crear documentos + `setup-git-rules.sh` | Todo el equipo | Activa |
 | `.github/` | CODEOWNERS, plantilla de PR y validación del título | Royfrankly Navarro | Activa |
@@ -171,6 +172,12 @@ No es el mapa de archivos (eso es este `INVENTARIO.md`): es la vista de arriba d
 
 | Archivo | Contenido | Estado |
 |---|---|---|
+| `guias/proyectos/README.md` | Índice de las cinco guías de contexto por componente | Borrador |
+| `guias/proyectos/gotacna-api-gateway.md` | Alcance y referencias del API Gateway Laravel | Borrador |
+| `guias/proyectos/gotacna-backend-core.md` | Alcance y referencias del Backend Core Laravel | Borrador |
+| `guias/proyectos/go-tacna-location-service.md` | Alcance e integración del servicio GPS Node.js | Borrador |
+| `guias/proyectos/go-tacna-frontend.md` | Alcance e integración de la plataforma web | Borrador |
+| `guias/proyectos/go-tacna-movil.md` | Alcance e integración de la aplicación móvil | Borrador |
 | `plantillas/requerimiento.md` | Molde de RF, RNF o RN | Aprobado |
 | `plantillas/caso-de-uso.md` | Molde de CU | Aprobado |
 | `plantillas/decision.md` | Molde de DEC | Aprobado |
