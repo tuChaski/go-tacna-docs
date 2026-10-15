@@ -1,15 +1,18 @@
-# Figma
+Figma
+Estado: Pendiente Responsable: Alex Huaracha Relacionado: guia-de-estilos.md
 
-> **Estado:** Pendiente
-> **Responsable:** Alex Huaracha
-> **Relacionado:** [guia-de-estilos.md](guia-de-estilos.md)
+Qué va aquí
 
-## Qué va aquí
 
-- Enlace al proyecto de Figma.
-- Qué pantalla está en construcción y cuál está solo como maqueta.
-- Cómo se exportan los recursos a ../assets/.
 
-## Contenido
+# T092 · Disenar el Kit de Componentes UI en Figma (botones,cards, pines de mapa vectoriales, modales) #47
 
-_Pendiente de completar._
+**Enlace:** [Abrir kit de componentes UI](https://www.figma.com/design/Lw9Pbwc65lMKyjsW5IWZaD/go-tacna?node-id=96-2)
+
+
+
+
+
+
+
+Pendiente de completar.
