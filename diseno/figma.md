@@ -1,15 +1,36 @@
-# Figma
+## T050 — Prototipo interactivo de Login y Registro
 
-> **Estado:** Pendiente
+> **Estado:** En revisión
 > **Responsable:** Alex Huaracha
-> **Relacionado:** [guia-de-estilos.md](guia-de-estilos.md)
+> **Requisitos relacionados:** 
+> **Plataforma:** 
+> **Herramienta:** Figma
 
-## Qué va aquí
+### 1. Descripción
 
-- Enlace al proyecto de Figma.
-- Qué pantalla está en construcción y cuál está solo como maqueta.
-- Cómo se exportan los recursos a ../assets/.
 
-## Contenido
 
-_Pendiente de completar._
+
+
+
+
+
+
+
+
+
+
+
+# T051 . Prototipo interactivo de pantallas del Pasajero (mapa, detalle de micro, ETA, favoritos) #44
+
+**Prototipo de autenticación:**
+
+[Ver pantallas Login y Registro](https://www.figma.com/design/Lw9Pbwc65lMKyjsW5IWZaD/go-tacna?node-id=73-1147)
+
+**Guía de pruebas y permisos:**
+
+[Ver guía de pruebas T050](https://www.figma.com/design/Lw9Pbwc65lMKyjsW5IWZaD/go-tacna?node-id=179-222)
+
+### 8. Resultado
+
+
