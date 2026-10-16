@@ -12,9 +12,9 @@ La obtención de ubicación en segundo plano puede requerir módulos nativos y u
 
 ## Integración y seguridad
 
-- API REST: [`contratos/openapi.yaml`](../../contratos/openapi.yaml).
-- Eventos de tiempo real: [`contratos/eventos-websocket.md`](../../contratos/eventos-websocket.md).
-- Claims y sesión: [`contratos/jwt-claims.md`](../../contratos/jwt-claims.md).
+- API REST: [`contratos/openapi.yaml`](contratos/openapi.yaml).
+- Eventos de tiempo real: [`contratos/eventos-websocket.md`](contratos/eventos-websocket.md).
+- Claims y sesión: [`contratos/jwt-claims.md`](contratos/jwt-claims.md).
 - URLs de servicios en Expo deben usar únicamente variables `EXPO_PUBLIC_*` no secretas. Nunca incluyas JWT secrets, claves privadas ni credenciales en el bundle.
 - En producción, usa HTTPS/WSS. Para desarrollo en un teléfono físico, `localhost` se refiere al propio dispositivo, no a la computadora de desarrollo.
 

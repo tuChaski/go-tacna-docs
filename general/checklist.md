@@ -78,7 +78,7 @@ Hoy el código vive dentro de `go-tacna-frontend`.
 ## 5. Documentación
 
 - [ ] Migrar `architecture.md`, `openapi.yaml` y `diagrams/architecture.mmd` desde el monorepo y borrarlos de ahí
-- [ ] Revisar y aprobar los borradores de `requisitos/requerimientos-funcionales.md` (RF-01 a RF-20), `requerimientos-no-funcionales.md` (RNF-01 a RNF-07), `reglas-de-negocio.md` (RN-01 a RN-10) y `mvp.md`.
+- [ ] Decidir si se creará `requisitos/` o si se mantendrán las reglas y necesidades cubiertas por los casos de uso y el contexto existentes; no revisar borradores que aún no están en el repositorio.
 - [ ] Definir umbrales pendientes de GPS, tiempo de respuesta, disponibilidad, ubicación desactualizada, aforo y Premium antes de cerrar los requisitos.
 - [ ] Escribir los casos de uso: `CU-01-iniciar-sesion.md` ya existe como formato
 - [ ] Revisar que el cronograma de ProjectLibre en `planificacion/Planificacion_ProjectLibre_go-tacna.xml.pod` refleje las tareas y dependencias vigentes.

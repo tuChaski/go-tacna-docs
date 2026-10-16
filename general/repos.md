@@ -26,12 +26,12 @@ Documentación e informe. Es la fuente de verdad de los contratos.
 
 | Carpeta | Qué guarda |
 |---|---|
-| `requisitos/` | RF, RNF, reglas de negocio y alcance del MVP |
+| `requisitos/` | Carpeta no creada; decidir si se incorpora documentación de requisitos o se evita duplicar fuentes actuales |
 | `contratos/` | `openapi.yaml`, eventos WebSocket y claims del JWT. **Los otros repos los consumen** |
 | `arquitectura/` | Modelo del sistema, modelo de datos y decisiones |
 | `casos-de-uso/`, `diseno/`, `planificacion/`, `pruebas/`, `manuales/` | El resto del contenido del proyecto |
 | `diagramas/` | Mermaid en `fuente/`, imágenes en `export/` |
-| `informe/` | Los 12 apartados de `capitulo-1/` y el documento final |
+| `informe/` | Carpeta no creada; se organizará cuando inicie la preparación del informe |
 | `guias/` | Reglas transversales, hoy solo `git.md` |
 
 Ramas: solo `main`. No hay `develop` porque no hay staging.

@@ -1,42 +1,36 @@
 # go-tacna-docs
 
-Documentación compartida del sistema Go-Tacna: arquitectura, contratos, decisiones, casos de uso, diagramas, diseño, pruebas y material del proyecto final.
+Documentación compartida de Go-Tacna: contexto del sistema, guías por componente, contratos, arquitectura, planificación y estado del proyecto.
 
 ## Empieza aquí
 
-- [Contexto del proyecto](CONTEXTO_PROYECTO_GO_TACNA.md): panorama general, infraestructura, repositorios, estado y relaciones entre componentes. Léelo para entender cómo está armado el sistema.
-- [Guías por componente](guias/proyectos/README.md): contexto práctico para trabajar con el API Gateway, Backend Core, Location Service, frontend o móvil.
-- [Infraestructura del VPS](INFRASTRUCTURE.md): referencia del host, Nginx global y publicación multidominio.
-- [Contribuir a la documentación](CONTRIBUTING.md): dónde va cada tema y convenciones para nuevos documentos.
+- [Contexto del proyecto](CONTEXTO_PROYECTO_GO_TACNA.md): panorama del sistema y estado de los cinco repositorios.
+- [CI/CD y despliegues](CI-CD.md): cómo trabajar en local con Docker y cuál es el estado y flujo previsto para producción.
+- [Infraestructura del VPS](INFRASTRUCTURE.md): red, Nginx global, puertos y enrutamiento multidominio.
 
 ## Guías por componente
 
 | Componente | Guía |
 |---|---|
-| API Gateway Laravel | [gotacna-api-gateway.md](guias/proyectos/gotacna-api-gateway.md) |
-| Backend Core Laravel | [gotacna-backend-core.md](guias/proyectos/gotacna-backend-core.md) |
-| Servicio GPS en tiempo real | [go-tacna-location-service.md](guias/proyectos/go-tacna-location-service.md) |
-| Plataforma web | [go-tacna-frontend.md](guias/proyectos/go-tacna-frontend.md) |
-| Aplicación móvil | [go-tacna-movil.md](guias/proyectos/go-tacna-movil.md) |
+| API Gateway | [gotacna-api-gateway.md](gotacna-api-gateway.md) |
+| Backend Core Laravel | [gotacna-backend-core.md](gotacna-backend-core.md) |
+| Location Service | [go-tacna-location-service.md](go-tacna-location-service.md) |
+| Frontend web | [go-tacna-frontend.md](go-tacna-frontend.md) |
+| Aplicación móvil | [go-tacna-movil.md](go-tacna-movil.md) |
 
-No se crea una guía separada para `go-tacna-infraestructura`: sus archivos de Compose, Nginx o Kubernetes deben documentar directamente la configuración que implementan. El contexto general y [INFRASTRUCTURE.md](INFRASTRUCTURE.md) explican el panorama del host.
+## Documentación por tema
 
-## Documentación especializada
-
-- [Arquitectura y decisiones](arquitectura/)
+- [Arquitectura y modelo de datos](arquitectura/)
 - [Casos de uso](casos-de-uso/)
 - [Contratos API, WebSocket y JWT](contratos/)
 - [Diagramas](diagramas/)
-- [Diseño de interfaz](diseno/)
-- [Control y configuración general](general/)
-- [Manuales](manuales/)
+- [Diseño](diseno/)
 - [Planificación](planificacion/)
 - [Pruebas](pruebas/)
+- [Manuales](manuales/)
+- [Guía para contribuir](CONTRIBUTING.md)
 - [Glosario](glosario.md)
-- [Inventario de documentos](INVENTARIO.md)
+- [Inventario documental](INVENTARIO.md)
+- [Reglas de Git](guias/git.md)
 
-## Fuente de verdad
-
-El contexto y las guías por componente orientan al lector, pero no reemplazan el código ni los contratos. Para cambiar un endpoint, evento WebSocket o claim JWT, actualizar primero el documento correspondiente en [`contratos/`](contratos/) y luego implementar el cambio en los repos consumidores.
-
-Las guías deben mantenerse concisas: describen responsabilidad, límites, estado y cómo orientarse en el código; no copian READMEs, contratos ni especificaciones completas. Verifica el código y sus manifiestos antes de asumir que algo está implementado.
+El [contexto general](CONTEXTO_PROYECTO_GO_TACNA.md) orienta sobre el sistema; las guías por componente orientan sobre cada aplicación; los contratos y documentos especializados son sus fuentes de detalle. No copies el mismo contenido entre ellos: resume y enlaza.

@@ -2,7 +2,7 @@
 
 > **Estado:** En revisión
 > **Responsable:** Todo el equipo
-> **Relacionado:** [README.md](README.md), [CONTRIBUTING.md](CONTRIBUTING.md), [glosario.md](glosario.md), [guias/git.md](guias/git.md), [plantillas/](plantillas/)
+> **Relacionado:** [README.md](README.md), [CONTRIBUTING.md](CONTRIBUTING.md), [glosario.md](glosario.md), [guias/git.md](guias/git.md)
 
 Este archivo es el **mapa del repositorio**: dice qué hay en la raíz, qué hay en cada carpeta y para qué sirve cada archivo. Se actualiza en el mismo Pull Request que crea, mueve o elimina un documento.
 
@@ -21,11 +21,15 @@ Los estados posibles son `Pendiente` (existe el archivo, vacío), `Borrador` (ti
 | `glosario.md` | Términos oficiales del proyecto y los sinónimos prohibidos (`bus`, `chofer`, `tiempo exacto`...) | Todo el equipo | Aprobado |
 | `INVENTARIO.md` | Este archivo. Mapa de todos los archivos y carpetas | Todo el equipo | En revisión |
 | `INFRASTRUCTURE.md` | Host Contabo, proxy global, flujo multidominio y aislamiento de servicios | Royfrankly Navarro | Borrador |
+| `CI-CD.md` | Estado de automatización y flujos locales y manuales de producción | Todo el equipo | Borrador |
 | `CONTEXTO_PROYECTO_GO_TACNA.md` | Contexto general, stack, repositorios, diagrama Mermaid y estado del proyecto | Todo el equipo | Borrador |
+| `gotacna-api-gateway.md` | Contexto y referencias del API Gateway | Todo el equipo | Borrador |
+| `gotacna-backend-core.md` | Contexto y estado de Backend Core Laravel | Todo el equipo | Borrador |
+| `go-tacna-location-service.md` | Contexto e integración del servicio GPS Node.js | Todo el equipo | Borrador |
+| `go-tacna-frontend.md` | Contexto e integración de la plataforma web | Todo el equipo | Borrador |
+| `go-tacna-movil.md` | Contexto e integración de la aplicación móvil | Todo el equipo | Borrador |
 | `guias/git.md` | **Fuente de verdad de las reglas de Git** de los 5 repos: ramas, commits, PR, releases, GitHub | Royfrankly Navarro | Borrador |
-| `guias/proyectos/` | Guías de contexto para los cinco componentes de aplicación; no incluye infraestructura | Todo el equipo | Borrador |
 | `general/` | Vista de control del proyecto: repos, configuración, checklist y decisiones abiertas | Royfrankly Navarro | Esqueleto |
-| `plantillas/` | Moldes para crear documentos + `setup-git-rules.sh` | Todo el equipo | Activa |
 | `.github/` | CODEOWNERS, plantilla de PR y validación del título | Royfrankly Navarro | Activa |
 
 ---
@@ -35,20 +39,18 @@ Los estados posibles son `Pendiente` (existe el archivo, vacío), `Borrador` (ti
 | Carpeta | Tipo | Qué contiene | Responsable | Estado |
 |---|---|---|---|---|
 | `general/` | Control | Vista de arriba del proyecto: repos, configuración, checklist y decisiones abiertas | Royfrankly Navarro | Esqueleto |
-| `requisitos/` | Fuente | RF-01 a RF-20, RNF-01 a RNF-07, RN-01 a RN-10 y alcance del MVP | Royfrankly | Borrador |
-| `casos-de-uso/` | Fuente | Diagrama general y una especificación por caso de uso | Todo el equipo | Esqueleto |
+| `casos-de-uso/` | Fuente | Diagramas de casos de uso | Todo el equipo | Borrador |
 | `arquitectura/` | Fuente | Modelo del sistema, modelo de datos y decisiones | David Montoya | Esqueleto |
 | `contratos/` | Fuente | API, WebSocket y JWT. **Los otros repos implementan lo de aquí** | Royfrankly y David | Esqueleto |
 | `diseno/` | Fuente | Estilos, mapa del sitio, inventario de vistas y Figma | Alex Huaracha | Esqueleto |
 | `planificacion/` | Fuente | Resumen de seis fases y cronograma detallado en ProjectLibre | Royfrankly | Borrador |
-| `pruebas/` | Fuente | Plan de pruebas, trazabilidad e informes de campo | Edison Catari | Esqueleto |
+| `pruebas/` | Fuente | Plan de pruebas, trazabilidad e informes de campo | Edison Catari | Borrador |
 | `manuales/` | Fuente | Guía del pasajero y manual del administrador | Alex y Royfrankly | Esqueleto |
 | `diagramas/` | Fuente | Diagramas como código, en `fuente/` y `export/` | David Montoya | Esqueleto |
-| `assets/` | Fuente | Logos, capturas y recursos compartidos | Alex Huaracha | Vacía (`.gitkeep`) |
-| `informe/` | Salida | Capítulos del Trabajo Final y documento consolidado | Todo el equipo | Esqueleto |
 | `guias/` | Guía | Guías transversales del equipo | Royfrankly Navarro | Activa |
+| `.github/` | Automatización | CODEOWNERS, plantilla de PR y workflow de título | Royfrankly Navarro | Activa |
 
-> Las carpetas con `.gitkeep` están creadas pero vacías. Las demás tienen archivos de arranque: al abrirlos se ve qué va en cada uno.
+> `requisitos/`, `informe/`, `plantillas/` y `assets/` no están creadas en el repositorio. No deben aparecer como contenido existente hasta que se agreguen.
 
 ---
 
@@ -58,61 +60,46 @@ No es el mapa de archivos (eso es este `INVENTARIO.md`): es la vista de arriba d
 
 | Archivo | Qué resuelve | Estado |
 |---|---|---|
-| `general/README.md` | Índice de la carpeta y tabla "quiero hacer X, mira Y" | Pendiente |
-| `general/repos.md` | Ficha de los 5 repos: qué contienen, con qué stack, quién lo trabaja, qué consumen de `docs/` y en qué estado están | Pendiente |
-| `general/configuracion.md` | Toda la configuración en una vista: repos, ramas, GitHub, contratos, puertos, secretos, variables y HTTPS | Pendiente |
-| `general/checklist.md` | Qué falta, con casillas, en 8 bloques ordenados por dependencia | Pendiente |
-| `general/decisiones-pendientes.md` | Decisiones abiertas con opciones, responsable y a qué desbloquean; y las ya cerradas | Pendiente |
+| `general/README.md` | Índice de la carpeta y tabla "quiero hacer X, mira Y" | Borrador |
+| `general/repos.md` | Ficha de los 5 repos: qué contienen, con qué stack, quién lo trabaja, qué consumen de `docs/` y en qué estado están | Borrador |
+| `general/configuracion.md` | Vista de repos, ramas, GitHub, contratos, puertos, secretos, variables y HTTPS | Borrador |
+| `general/checklist.md` | Lista de trabajo pendiente por bloques | Borrador |
+| `general/decisiones-pendientes.md` | Decisiones abiertas con opciones, responsable y a qué desbloquean; y las ya cerradas | Borrador |
 
 ---
 
-## 4. `informe/` — la salida
+## 4. Informe del Trabajo Final
 
-`informe/capitulo-1/` sigue la guía del Trabajo Final sección por sección, para que se vea de un vistazo qué falta. Cada archivo **resume y enlaza** a la carpeta de detalle, no copia contenido.
-
-| Archivo | Sección de la guía | El detalle vive en | Estado |
-|---|---|---|---|
-| `1.1-contexto.md` | Contexto, justificación, objetivos y antecedentes | — | Pendiente |
-| `1.2-proceso-as-is-to-be.md` | Proceso actual y proceso propuesto | `casos-de-uso/` | Pendiente |
-| `1.3-definicion-del-sistema.md` | Definición, límites y stakeholders | `arquitectura/` | Pendiente |
-| `1.4-cuadro-comparativo.md` | Cuadro comparativo AS-IS / TO-BE | `1.2-proceso-as-is-to-be.md` | Pendiente |
-| `1.5-distribucion-de-roles.md` | Quién hizo qué | `planificacion/` | Pendiente |
-| `1.6-requerimientos.md` | Tabla resumen de RF y RNF | `requisitos/` | Pendiente |
-| `1.7-planificacion.md` | Cronograma y hitos | `planificacion/` | Pendiente |
-| `1.8-arquitectura-de-contenido.md` | Mapa del sitio y jerarquía de pantallas | `diseno/` | Pendiente |
-| `1.9-arquitectura-web.md` | Modelo del sistema y diagramas | `arquitectura/`, `diagramas/` | Pendiente |
-| `1.10-perfiles-de-usuario.md` | Pasajero, Conductor y Administrador | `casos-de-uso/` | Pendiente |
-| `1.11-casos-de-uso.md` | Índice de casos de uso | `casos-de-uso/` | Pendiente |
-| `1.12-diagramas-de-secuencia.md` | Imágenes de secuencia con su descripción | `diagramas/export/` | Pendiente |
-| `final/README.md` | Dónde va el `.docx` y el `.pdf` consolidados | — | Pendiente |
+La carpeta `informe/` aún no existe. Sus capítulos y entregables no se incluyen como archivos disponibles hasta que se creen.
 
 ---
 
 ## 5. Carpetas de fuente
 
-### `requisitos/` — Royfrankly
+### Requisitos
 
-| Archivo | Contenido | Estado |
-|---|---|---|
-| `requerimientos-funcionales.md` | RF-01 a RF-20, con la numeración oficial de la guía TF | Borrador |
-| `requerimientos-no-funcionales.md` | RNF-01 a RNF-07 | Borrador |
-| `reglas-de-negocio.md` | RN-01 a RN-10, incluida RN-08 (el ETA siempre es estimado) | Borrador |
-| `mvp.md` | Qué entra en el MVP y qué queda para Premium o para después | Borrador |
+La carpeta `requisitos/` no existe actualmente. La numeración y las reglas mencionadas en las guías son contexto previo; decidir si se crearán documentos de requisitos o si su contenido se mantendrá en las fuentes existentes antes de generar archivos duplicados.
 
 ### `casos-de-uso/` — Todo el equipo
 
 | Archivo | Contenido | Estado |
 |---|---|---|
-| `diagrama-general.mmd` | Diagrama del sistema completo (Mermaid) | Borrador |
-| `especificaciones/CU-01-iniciar-sesion.md` | Un caso de uso por archivo: `CU-XX-nombre.md` | Pendiente |
+| `diagrama_casos_uso_autenticacion.puml` | Casos de uso de autenticación | Borrador |
+| `diagrama_casos_uso_modulo_administrador.puml` | Casos de uso del administrador | Borrador |
+| `diagrama_casos_uso_modulo_conductor.puml` | Casos de uso del conductor | Borrador |
+| `diagrama_casos_uso_modulo_pasajero.puml` | Casos de uso del pasajero | Borrador |
+| `diagrama_casos_uso_modulo_planificacion_premium.puml` | Casos de uso de planificación premium | Borrador |
 
 ### `arquitectura/` — David Montoya
 
 | Archivo | Contenido | Estado |
 |---|---|---|
-| `arquitectura.md` | Componentes, stack, flujo de una posición y red/puertos | Pendiente |
+| `arquitectura.md` | Plantilla para componentes, flujo de posición y red/puertos; aún sin completar | Borrador |
+| `Diagrama-de-Arquitectura.mmd` | Diagrama de arquitectura del sistema | Borrador |
+| `Diagrama-de-Contexto.mmd` | Diagrama de contexto | Borrador |
+| `Diagrama-de-contenedores.puml` | Diagrama de contenedores | Borrador |
 | `Diagrama-de-infraestructura-multidominio-independiente.mmd` | Diagrama Mermaid del VPS Contabo, Nginx global y los proyectos independientes | Borrador |
-| `modelo-de-datos.md` | Tablas, columnas y relaciones. Debe coincidir con el ERD | Pendiente |
+| `modelo-de-datos.md` | Resumen provisional del esquema implementado; debe revisarse junto con el ERD | Borrador |
 | `decisiones/001-node-separado-de-laravel.md` | Por qué el tiempo real es un servicio aparte | Pendiente |
 | `decisiones/002-expo-y-maplibre.md` | Por qué Expo y MapLibre | Pendiente |
 | `decisiones/003-gps-por-http-post.md` | Por qué la posición llega por HTTP POST | Pendiente |
@@ -121,9 +108,9 @@ No es el mapa de archivos (eso es este `INVENTARIO.md`): es la vista de arriba d
 
 | Archivo | Contenido | Estado |
 |---|---|---|
-| `openapi.yaml` | OpenAPI 3.1 con prefijo `/api/v1`. Faltan auth, CRUD y `/tracking/*` (T086) | Pendiente |
+| `openapi.yaml` | Esqueleto OpenAPI 3.1; `paths` está vacío aunque Backend Core ya expone rutas v1 | Borrador |
 | `eventos-websocket.md` | Eventos de Socket.io con su payload y el uso de salas (T087) | Pendiente |
-| `jwt-claims.md` | `role`, `micro_id`, `ruta_id`, `exp`, firma HS256 | Pendiente |
+| `jwt-claims.md` | Diferencia entre claims JWT implementados y contrato objetivo pendiente de conciliar | Borrador |
 
 ### `diseno/` — Alex Huaracha
 
@@ -166,28 +153,19 @@ No es el mapa de archivos (eso es este `INVENTARIO.md`): es la vista de arriba d
 | `fuente/erd.mmd` | Entidades y relaciones (Mermaid `erDiagram`) | Borrador |
 | `export/` | PNG o SVG exportado de cada fuente, con el mismo nombre | Vacía (`.gitkeep`) |
 
-> **Mermaid es la única sintaxis de diagramas del proyecto.** Ya se absorbió el diagrama Mermaid que vivía en `go-tacna-frontend/docs/diagrams/architecture.mmd`; ese archivo se elimina al migrar el resto de la documentación de ese repo (ver sección 5).
+> Hay fuentes `.mmd` y `.puml` en el repositorio. Antes de convertir o eliminar diagramas, confirmar la convención acordada y comparar los contenidos para evitar perder información.
 
-### `plantillas/` y `guias/` — Todo el equipo
+### `guias/` — Todo el equipo
 
 | Archivo | Contenido | Estado |
 |---|---|---|
-| `guias/proyectos/README.md` | Índice de las cinco guías de contexto por componente | Borrador |
-| `guias/proyectos/gotacna-api-gateway.md` | Alcance y referencias del API Gateway Laravel | Borrador |
-| `guias/proyectos/gotacna-backend-core.md` | Alcance y referencias del Backend Core Laravel | Borrador |
-| `guias/proyectos/go-tacna-location-service.md` | Alcance e integración del servicio GPS Node.js | Borrador |
-| `guias/proyectos/go-tacna-frontend.md` | Alcance e integración de la plataforma web | Borrador |
-| `guias/proyectos/go-tacna-movil.md` | Alcance e integración de la aplicación móvil | Borrador |
-| `plantillas/requerimiento.md` | Molde de RF, RNF o RN | Aprobado |
-| `plantillas/caso-de-uso.md` | Molde de CU | Aprobado |
-| `plantillas/decision.md` | Molde de DEC | Aprobado |
-| `plantillas/prueba.md` | Molde de PRB | Aprobado |
-| `plantillas/setup-git-rules.sh` | Deja un repo listo: plantilla de PR, CODEOWNERS, workflow y CONTRIBUTING | Aprobado |
 | `guias/git.md` | Reglas de Git de los 5 repos | Borrador |
+
+`plantillas/` no existe todavía. Las referencias a moldes o scripts se deben tratar como propuestas, no como archivos disponibles.
 
 ### `.github/` — Royfrankly Navarro
 
-Los mismos archivos existen en los cinco repos del equipo.
+Esta tabla enumera los archivos presentes en este repositorio. Los workflows y reglas de los otros repos deben verificarse en sus propios árboles; no se asume que tengan archivos idénticos.
 
 | Archivo | Qué es | Estado |
 |---|---|---|
@@ -197,14 +175,14 @@ Los mismos archivos existen en los cinco repos del equipo.
 
 ---
 
-## 6. Documentos que están en otro repo y deben migrar acá
+## 6. Documentación relacionada que aún requiere sincronización
 
-| Ubicación actual | Qué es | Destino oficial | Acción pendiente |
+| Tema / ubicación conocida | Destino en este repo | Estado / acción pendiente |
 |---|---|---|---|
-| `go-tacna-frontend/docs/architecture.md` | Arquitectura del monorepo: componentes, puertos y flujo de ubicación (29 líneas) | `arquitectura/arquitectura.md` | Migrar y quitar la advertencia de "directorios pendientes" |
-| `go-tacna-frontend/docs/openapi.yaml` | OpenAPI con solo 3 endpoints | `contratos/openapi.yaml` | Migrar y completar con auth, CRUD y `/tracking/*` |
-| `go-tacna-frontend/docs/diagrams/architecture.mmd` | Diagrama de componentes en Mermaid | `diagramas/fuente/` + `export/` | Migrar |
-| Tablero de GitHub Projects | Fuente de tareas para el cronograma | `planificacion/Planificacion_ProjectLibre_go-tacna.xml.pod` | Revisar que el cronograma ProjectLibre refleje las tareas vigentes |
+| Arquitectura técnica | `arquitectura/arquitectura.md` | El archivo existe, pero sigue siendo una plantilla; completar con el flujo vigente sin duplicar el contexto general. |
+| Contrato de API | `contratos/openapi.yaml` | El archivo existe, pero `paths` está vacío; declarar las rutas implementadas y separar las planificadas. |
+| Diagramas del sistema | `diagramas/fuente/` | Mantener los diagramas fuente aquí y enlazarlos desde las guías, evitando copias por repositorio. |
+| Tablero de GitHub Projects y cronograma | `planificacion/` | Revisar que el cronograma ProjectLibre refleje las tareas y fases vigentes. |
 
 ---
 
@@ -214,17 +192,17 @@ Los mismos archivos existen en los cinco repos del equipo.
 |---|---|---|
 | 1 | Hay dos numeraciones de requerimientos (hasta RF-45 en un borrador, RF-01 a RF-20 en la guía TF) | Resuelto: gana la guía TF, ver [CONTRIBUTING.md](CONTRIBUTING.md) §3 |
 | 2 | Tres nombres para lo mismo: micro, bus y unidad | Resuelto por [glosario.md](glosario.md) |
-| 3 | El `openapi.yaml` usa `bus`/`buses` y el código usa `micro` | Pendiente: DEC con Royfrankly |
-| 4 | `/tracking/*` ya está implementado en `realtime/` y no está en el contrato | Pendiente: Royfrankly (T086) |
+| 3 | El contrato OpenAPI aún no refleja rutas ni nombres del Backend Core | Pendiente: actualizar `contratos/openapi.yaml` desde las rutas verificadas |
+| 4 | La difusión WebSocket/Socket.IO y el almacenamiento de posiciones no están documentados como un flujo integrado | Pendiente: especificar el contrato y verificar la integración con Location Service |
 | 5 | El informe final no existe | Pendiente: `informe/capitulo-1/` |
-| 6 | El cronograma solo existe como tablero de GitHub | Pendiente: `planificacion/` |
+| 6 | Hay un cronograma ProjectLibre y un tablero de GitHub; falta confirmar que ambos reflejen el mismo plan | Pendiente: `planificacion/` |
 | 7 | No están confirmadas las 6 fases ni el reparto de T001 a T109 | Pendiente: Royfrankly |
 
 ---
 
 ## 8. Cómo se mantiene este inventario
 
-1. Al crear un archivo, se agrega su fila en la sección 5 de este archivo, y también en la tabla de la sección 2 si es una carpeta nueva.
+1. Al crear un archivo en la raíz, se agrega en la sección 1; los archivos de una carpeta se agregan en la subsección correspondiente de la sección 5. Si se crea una carpeta nueva, también se agrega en la sección 2.
 2. Al mover o renombrar un archivo, se actualiza su fila y los enlaces que lo apuntan.
 3. Al eliminar un archivo, se elimina su fila y se busca quién lo enlazaba (`Ctrl+Shift+F` en GitHub).
 4. El responsable de la carpeta es quien mantiene las filas de sus documentos.

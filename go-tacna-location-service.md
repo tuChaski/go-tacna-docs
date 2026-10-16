@@ -13,10 +13,10 @@ Este servicio atiende conexiones y eventos en tiempo real; la API Laravel sigue 
 
 ## Contratos e integración
 
-- Eventos y payloads: [`contratos/eventos-websocket.md`](../../contratos/eventos-websocket.md).
-- Autenticación y claims: [`contratos/jwt-claims.md`](../../contratos/jwt-claims.md).
-- Esquema REST asociado: [`contratos/openapi.yaml`](../../contratos/openapi.yaml).
-- Arquitectura y separación de servicios: [`arquitectura/decisiones/001-node-separado-de-laravel.md`](../../arquitectura/decisiones/001-node-separado-de-laravel.md).
+- Eventos y payloads: [`contratos/eventos-websocket.md`](contratos/eventos-websocket.md).
+- Autenticación y claims: [`contratos/jwt-claims.md`](contratos/jwt-claims.md).
+- Esquema REST asociado: [`contratos/openapi.yaml`](contratos/openapi.yaml).
+- Arquitectura y separación de servicios: [`arquitectura/decisiones/001-node-separado-de-laravel.md`](arquitectura/decisiones/001-node-separado-de-laravel.md).
 
 El secreto JWT usado para validar tokens debe coincidir con el de Backend Core, pero solo se configura en variables de entorno; nunca se copia a la documentación ni al código.
 

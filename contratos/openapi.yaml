@@ -1,18 +1,19 @@
-# CONTRATO DE LA API - fuente de verdad para backend, web y movil
+# CONTRATO DE LA API - fuente de verdad prevista para backend, web y móvil
 # OpenAPI 3.1, prefijo /api/v1
 # Responsable: Royfrankly (revisado por David)
-# Nombres de payloads: glosario oficial (micro, no bus)
-# Pendiente (T086): migrar el borrador de go-tacna-frontend/docs/openapi.yaml
-#   y agregar los endpoints que ya usa el codigo y no estan declarados:
-#   POST /auth/login, POST /auth/refresh,
-#   CRUD /empresas /rutas /micros /conductores,
-#   POST /tracking/position, POST /tracking/stop
-# Referencia:INVENTARIO.md seccion 4
+# Estado: incompleto. `paths` aún está vacío; no usar este archivo como
+# especificación de endpoints hasta completar y validar cada operación.
+# Backend Core ya implementa las rutas v1 anotadas en INVENTARIO.md y
+# CONTEXTO_PROYECTO_GO_TACNA.md. La ruta implementada no implica que el
+# contrato OpenAPI ya la describa.
+# Usar los términos oficiales del glosario (micro, no bus).
 openapi: 3.1.0
 info:
   title: go-tacna API
   version: 0.1.0
-  description: Contrato de la API compartida por web y movil.
+  description: >
+    Esqueleto del contrato compartido por web y móvil. Los paths están
+    pendientes de completar a partir de las rutas implementadas y acordadas.
 servers:
   - url: /api/v1
 paths: {}

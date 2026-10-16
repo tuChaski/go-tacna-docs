@@ -9,7 +9,7 @@ Go-Tacna permite consultar rutas del transporte público de Tacna, seguir micros
 
 La web es un cliente del sistema. El backend es responsable de persistencia, reglas de negocio, autenticación y autorización. El frontend debe consumir contratos confirmados y no inventar endpoints, payloads, claims JWT ni eventos WebSocket.
 
-Para el panorama general, roles y arquitectura entre repositorios, consultar [Contexto del proyecto](../../CONTEXTO_PROYECTO_GO_TACNA.md). Para objetivos por rol, consultar los diagramas en [`casos-de-uso/`](../../casos-de-uso/).
+Para el panorama general, roles y arquitectura entre repositorios, consultar [Contexto del proyecto](CONTEXTO_PROYECTO_GO_TACNA.md). Para objetivos por rol, consultar los diagramas en [`casos-de-uso/`](casos-de-uso/).
 
 ## 2. Stack actual
 
@@ -104,11 +104,11 @@ VITE_WS_URL=http://localhost:8001
 
 ## 6. Contratos y diseño
 
-- API REST: [contrato OpenAPI](../../contratos/openapi.yaml).
-- Eventos Socket.IO: [contrato de eventos WebSocket](../../contratos/eventos-websocket.md).
-- Autenticación: [claims JWT](../../contratos/jwt-claims.md).
-- Navegación y pantallas: [`diseno/`](../../diseno/), especialmente [mapa del sitio](../../diseno/mapa-del-sitio.md) e [inventario de vistas](../../diseno/inventario-de-vistas.md).
-- Estilo visual: [guía de estilos](../../diseno/guia-de-estilos.md) y [referencia Figma](../../diseno/figma.md).
+- API REST: [contrato OpenAPI](contratos/openapi.yaml).
+- Eventos Socket.IO: [contrato de eventos WebSocket](contratos/eventos-websocket.md).
+- Autenticación: [claims JWT](contratos/jwt-claims.md).
+- Navegación y pantallas: [`diseno/`](diseno/), especialmente [mapa del sitio](diseno/mapa-del-sitio.md) e [inventario de vistas](diseno/inventario-de-vistas.md).
+- Estilo visual: [guía de estilos](diseno/guia-de-estilos.md) y [referencia Figma](diseno/figma.md).
 
 Al actualizar esta guía, OpenAPI todavía tenía `paths` vacío y los documentos de WebSocket y JWT estaban pendientes. El mapa del sitio, el inventario de vistas y la guía de estilos también estaban pendientes. Trátalos como fuentes incompletas: verifica el código de backend/realtime y coordina la actualización del contrato antes de integrar una función. No extrapoles los requisitos únicamente desde la landing.
 

@@ -2,7 +2,7 @@
 
 > **Estado:** Pendiente
 > **Responsable:** Alex Huaracha
-> **Relacionado:** [../informe/capitulo-1/1.8-arquitectura-de-contenido.md](../informe/capitulo-1/1.8-arquitectura-de-contenido.md), [figma.md](figma.md)
+> **Relacionado:** `informe/capitulo-1/1.8-arquitectura-de-contenido.md` (aún no existe), [figma.md](figma.md)
 
 ## Qué va aquí
 

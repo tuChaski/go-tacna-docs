@@ -13,9 +13,9 @@ Mantén la diferencia entre el Nginx global del host, este gateway de aplicació
 
 ## Relación con otros componentes
 
-- Las rutas API deben concordar con [`contratos/openapi.yaml`](../../contratos/openapi.yaml).
-- Las conexiones de tiempo real deben conservar el encaminamiento y soporte WebSocket definidos para Location Service; consulta [`contratos/eventos-websocket.md`](../../contratos/eventos-websocket.md).
-- En producción, el Nginx global enruta el dominio a un gateway ligado a loopback (puerto `8001` en el diseño documentado). La guía de host está en [INFRASTRUCTURE.md](../../INFRASTRUCTURE.md).
+- Las rutas API deben concordar con [`contratos/openapi.yaml`](contratos/openapi.yaml).
+- Las conexiones de tiempo real deben conservar el encaminamiento y soporte WebSocket definidos para Location Service; consulta [`contratos/eventos-websocket.md`](contratos/eventos-websocket.md).
+- En producción, el Nginx global enruta el dominio a un gateway ligado a loopback. Compose local usa `8001`; el manifiesto K3s de producción define NodePort `30081`. La guía está en [INFRASTRUCTURE.md](INFRASTRUCTURE.md) y el flujo general en [CI-CD.md](CI-CD.md).
 
 ## Antes de implementar
 
@@ -23,5 +23,7 @@ Mantén la diferencia entre el Nginx global del host, este gateway de aplicació
 2. Identifica si la solicitud es de proxy/ruteo o si pertenece a las reglas de negocio de Backend Core.
 3. Revisa pruebas y scripts disponibles en el componente antes de modificarlo; ejecuta los comandos declarados por su propio `composer.json`.
 4. Mantén secretos y `.env` fuera del repositorio.
+
+El repositorio `go-tacna-backend/gotacna-api-gateway/` contiene una aplicación Laravel, mientras que el servicio Compose llamado `api-gateway` y el gateway K3s son Nginx de infraestructura. Son componentes distintos pese a compartir el nombre. Confirma cuál se está modificando antes de cambiar el enrutamiento.
 
 La topología y el estado del gateway pueden cambiar. Si esta guía contradice el código o la configuración efectiva, verifica la implementación y actualiza la guía en el mismo cambio.

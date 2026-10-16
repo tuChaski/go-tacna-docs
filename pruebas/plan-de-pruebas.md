@@ -2,7 +2,7 @@
 
 > **Estado:** Pendiente
 > **Responsable:** Edison Catari
-> **Relacionado:** [matriz-de-trazabilidad.md](matriz-de-trazabilidad.md), [../plantillas/prueba.md](../plantillas/prueba.md), [informes/](informes/)
+> **Relacionado:** [matriz-de-trazabilidad.md](matriz-de-trazabilidad.md), `plantillas/prueba.md` (aún no existe), [informes/](informes/)
 
 ## Qué va aquí
 
@@ -14,7 +14,7 @@
 
 ## Notas
 
-Cada caso de prueba se escribe con la plantilla [../plantillas/prueba.md](../plantillas/prueba.md) y se identifica como PRB-000.
+Cada caso de prueba se identifica como PRB-000. La plantilla prevista `plantillas/prueba.md` aún no existe.
 
 ## Contenido
 
