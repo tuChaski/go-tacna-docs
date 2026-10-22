@@ -1,12 +1,13 @@
 # CONTRATO DE LA API - fuente de verdad prevista para backend, web y móvil
 # OpenAPI 3.1, prefijo /api/v1
 # Responsable: Royfrankly (revisado por David)
-# Estado: incompleto. `paths` aún está vacío; no usar este archivo como
-# especificación de endpoints hasta completar y validar cada operación.
-# Backend Core ya implementa las rutas v1 anotadas en INVENTARIO.md y
-# CONTEXTO_PROYECTO_GO_TACNA.md. La ruta implementada no implica que el
-# contrato OpenAPI ya la describa.
-# Usar los términos oficiales del glosario (micro, no bus).
+# Nombres de payloads: glosario oficial (micro, no bus)
+# Pendiente (T086): migrar el borrador de go-tacna-frontend/docs/openapi.yaml
+#   y agregar los endpoints que ya usa el codigo y no estan declarados:
+#   POST /auth/login, POST /auth/refresh,
+#   CRUD /empresas /rutas /micros /conductores,
+#   POST /tracking/position, POST /tracking/stop
+# Referencia: INVENTARIO.md seccion 4
 openapi: 3.1.0
 info:
   title: go-tacna API
@@ -15,7 +16,246 @@ info:
     Esqueleto del contrato compartido por web y móvil. Los paths están
     pendientes de completar a partir de las rutas implementadas y acordadas.
 servers:
-  - url: /api/v1
-paths: {}
+  - url: https://api.tuchaski.org/api/v1
+    description: Producción
+  - url: http://localhost:3001
+    description: Desarrollo local (sin prefijo /api/v1)
+paths:
+  /tracking/position:
+    post:
+      summary: "Recibir posición GPS del conductor"
+      description: |
+        Endpoint para que el conductor envíe su posición GPS cada 3-5 segundos.
+        Requiere autenticación JWT con claims: role=conductor, microId, rutaId.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrackingPositionRequest'
+      responses:
+        '202':
+          description: Posición aceptada y procesada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrackingPositionResponse'
+        '400':
+          description: Datos GPS inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Token JWT inválido o expirado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Token no tiene claims de conductor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Rate limit excedido (60 req/min por micro)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /tracking/stop:
+    post:
+      summary: "Finalizar recorrido del conductor"
+      description: |
+        Marca el micro como detenido y emite evento micro:stopped a la sala de la ruta.
+        Requiere autenticación JWT con claims: role=conductor, microId, rutaId.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties: {}
+      responses:
+        '200':
+          description: Recorrido finalizado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrackingStopResponse'
+        '401':
+          description: Token JWT inválido o expirado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Token no tiene claims de conductor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Rate limit excedido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
 components:
-  schemas: {}
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        JWT token del conductor. Debe contener claims:
+        - role: "conductor"
+        - microId: integer
+        - rutaId: integer
+        Ver [jwt-claims.md](jwt-claims.md)
+
+  schemas:
+    TrackingPositionRequest:
+      type: object
+      required: [lat, lng, speed]
+      additionalProperties: false
+      properties:
+        lat:
+          type: number
+          minimum: -90
+          maximum: 90
+          format: double
+          description: "Latitud WGS84"
+        lng:
+          type: number
+          minimum: -180
+          maximum: 180
+          format: double
+          description: "Longitud WGS84"
+        speed:
+          type: number
+          minimum: 0
+          format: double
+          description: "Velocidad en m/s"
+
+    TrackingPositionResponse:
+      type: object
+      required: [ok]
+      additionalProperties: false
+      properties:
+        ok:
+          type: boolean
+          const: true
+
+    TrackingStopResponse:
+      type: object
+      required: [ok]
+      additionalProperties: false
+      properties:
+        ok:
+          type: boolean
+          const: true
+
+    ErrorResponse:
+      type: object
+      required: [error]
+      additionalProperties: false
+      properties:
+        error:
+          type: string
+
+    Micro:
+      type: object
+      required: [microId, rutaId, lat, lng, speed, status, lastSeen]
+      additionalProperties: false
+      properties:
+        microId:
+          type: integer
+          minimum: 1
+        rutaId:
+          type: integer
+          minimum: 1
+        lat:
+          type: number
+          format: double
+          minimum: -90
+          maximum: 90
+        lng:
+          type: number
+          format: double
+          minimum: -180
+          maximum: 180
+        speed:
+          type: number
+          format: double
+          minimum: 0
+        status:
+          type: string
+          enum: [moviendo, detenido, desconectado]
+        lastSeen:
+          type: integer
+          format: int64
+          minimum: 0
+          description: "Timestamp Unix ms"
+
+    RouteJoinedResponse:
+      type: object
+      required: [rutaId, micros]
+      additionalProperties: false
+      properties:
+        rutaId:
+          type: integer
+          minimum: 1
+        micros:
+          type: array
+          items:
+            $ref: '#/components/schemas/Micro'
+
+    EtaRequest:
+      type: object
+      required: [microId, lat, lng]
+      additionalProperties: false
+      properties:
+        microId:
+          type: integer
+          minimum: 1
+        lat:
+          type: number
+          format: double
+          minimum: -90
+          maximum: 90
+        lng:
+          type: number
+          format: double
+          minimum: -180
+          maximum: 180
+
+    EtaResponse:
+      oneOf:
+        - type: object
+          required: [microId, etaSeconds, estimated]
+          additionalProperties: false
+          properties:
+            microId:
+              type: integer
+              minimum: 1
+            etaSeconds:
+              type: integer
+              minimum: 0
+            estimated:
+              type: boolean
+              const: true
+        - type: object
+          required: [error]
+          additionalProperties: false
+          properties:
+            error:
+              type: string
