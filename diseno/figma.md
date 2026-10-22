@@ -12,6 +12,13 @@ Este índice reúne los enlaces a los diseños de Go Tacna. El alcance, las veri
 - [Pantallas de login y registro](https://www.figma.com/design/Lw9Pbwc65lMKyjsW5IWZaD/go-tacna?node-id=73-1147).
 - [Guía de pruebas y permisos T050](https://www.figma.com/design/Lw9Pbwc65lMKyjsW5IWZaD/go-tacna?node-id=179-222).
 
+## T051 — Prototipo interactivo del pasajero
+
+- [Documentación del prototipo del pasajero](prototipo-pasajero.md).
+- [Pantallas del pasajero](https://www.figma.com/design/Lw9Pbwc65lMKyjsW5IWZaD/go-tacna?node-id=73-1148).
+- [Guía de pruebas T051](https://www.figma.com/design/Lw9Pbwc65lMKyjsW5IWZaD/go-tacna?node-id=208-848).
+- [Inicio del recorrido de invitado](https://www.figma.com/design/Lw9Pbwc65lMKyjsW5IWZaD/go-tacna?node-id=237-709).
+
 ## T053 — Panel administrativo
 
 - [Documentación del prototipo administrativo](prototipo-administrador.md).
