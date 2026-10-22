@@ -88,6 +88,18 @@ Los directorios de Laravel y el servicio Node.js están inicializados. La presen
 - **`go-tacna-movil`:** aplicación móvil React Native + Expo. El repositorio independiente está creado; la experiencia móvil completa, mapa y GPS en segundo plano siguen siendo trabajo de implementación.
 - **`go-tacna-infraestructura`:** destino para Compose, automatización y despliegue. El README registra que los manifiestos K3s/Kustomize/Traefik aún no están incorporados; la configuración Compose y Nginx existente está documentada como procedente del monorepo original.
 
+### Guías de contexto por componente
+
+Para trabajar en un componente sin volver a reconstruir todo el contexto del sistema, consulta su guía específica:
+
+- [API Gateway Laravel](guias/proyectos/gotacna-api-gateway.md)
+- [Backend Core Laravel](guias/proyectos/gotacna-backend-core.md)
+- [Location Service](guias/proyectos/go-tacna-location-service.md)
+- [Frontend web](guias/proyectos/go-tacna-frontend.md)
+- [Aplicación móvil](guias/proyectos/go-tacna-movil.md)
+
+No se crea una guía de componente para infraestructura. Las configuraciones de Compose, Nginx o Kubernetes se entienden y mantienen junto con sus archivos; el contexto del host compartido está en [INFRASTRUCTURE.md](INFRASTRUCTURE.md).
+
 ## 4. Diagrama de arquitectura (Mermaid, nivel de contenedores)
 
 Este diagrama usa Mermaid para que GitHub lo renderice directamente. Representa el flujo público por Nginx del host y el puerto local del gateway; el bloque de servicios muestra el objetivo de despliegue, no afirma que K3s ya esté instalado o que todos los componentes estén integrados.
