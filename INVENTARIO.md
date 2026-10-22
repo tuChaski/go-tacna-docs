@@ -133,6 +133,7 @@ No es el mapa de archivos (eso es este `INVENTARIO.md`): es la vista de arriba d
 | `mapa-del-sitio.md` | Árbol de pantallas por perfil | Pendiente |
 | `inventario-de-vistas.md` | Una fila por vista: ID, perfil, contenido y acciones | Pendiente |
 | `figma.md` | Enlaces a los prototipos | Pendiente |
+| `prototipo-administrador.md` | T053: perfiles administrativos, matriz CRUD, navegación, estados, evidencia y límites del prototipo | En revisión |
 
 ### `planificacion/` — Royfrankly
 
