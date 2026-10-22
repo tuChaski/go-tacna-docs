@@ -1,0 +1,78 @@
+%% Modelo Entidad-Relación Completo
+%% Estado: En revisión
+%% Responsable: David Montador
+%% Relacionado: T008
+
+erDiagram
+    USUARIO {
+        int id PK
+        string nombre
+        string apellido
+        string correo
+        string password_hash
+    }
+    PASAJERO {
+        int id PK
+        int usuario_id FK
+    }
+    CONDUCTOR {
+        int id PK
+        int usuario_id FK
+        int empresa_id FK
+        string estado
+    }
+    ADMINISTRADOR {
+        int id PK
+        int usuario_id FK
+    }
+    EMPRESA {
+        int id PK
+        string ruc
+        string razon_social
+    }
+    RUTA {
+        int id PK
+        int empresa_id FK
+        int administrador_id FK
+        string nombre_ruta
+        geometry trazado_ruta
+    }
+    MICRO {
+        int id PK
+        int ruta_id FK
+        int conductor_id FK
+        string placa
+        string estado
+    }
+    POSICION_GPS {
+        int id PK
+        int micro_id FK
+        float latitud
+        float longitud
+        datetime fecha_hora
+    }
+    PLAN {
+        int id PK
+        string nombre_plan
+        decimal costo
+    }
+    SUSCRIPCION {
+        int id PK
+        int pasajero_id FK
+        int plan_id FK
+        date fecha_inicio
+        date fecha_vencimiento
+        string estado
+    }
+
+    USUARIO ||--|| PASAJERO : "es"
+    USUARIO ||--|| CONDUCTOR : "es"
+    USUARIO ||--|| ADMINISTRADOR : "es"
+    EMPRESA ||--o{ RUTA : "opera"
+    ADMINISTRADOR ||--o{ RUTA : "gestiona"
+    RUTA ||--o{ MICRO : "tiene asignados"
+    EMPRESA ||--o{ CONDUCTOR : "emplea"
+    CONDUCTOR ||--|| MICRO : "conduce"
+    MICRO ||--o{ POSICION_GPS : "reporta"
+    PASAJERO ||--|| SUSCRIPCION : "tiene"
+    PLAN ||--o{ SUSCRIPCION : "incluye"

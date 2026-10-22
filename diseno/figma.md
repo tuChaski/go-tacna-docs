@@ -1,10 +1,10 @@
 # Figma
 
-> **Estado:** Pendiente
+> **Estado:** En revisión
 > **Responsable:** Alex Huaracha
-> **Relacionado:** [guia-de-estilos.md](guia-de-estilos.md)
+> **Relacionado:** [Guía de estilos](guia-de-estilos.md), [mapa del sitio](mapa-del-sitio.md), [casos de uso](../casos-de-uso/)
 
-## Qué va aquí
+Este índice reúne los enlaces a los diseños de Go Tacna. El alcance, las verificaciones y los límites de cada entrega se consultan en su documentación específica.
 
 ## T053 — Panel administrativo
 
@@ -15,8 +15,7 @@ El prototipo diferencia administrador general y administrador de empresa.
 Incluye 20 pantallas y 9 cuadros de diálogo.
 La documentación permanece En revisión hasta la aprobación del PR.
 
+## T092 — Kit de componentes UI
 
-
-## Contenido
-
-_Pendiente de completar._
+- [Documentación del kit de componentes](kit-componentes-ui.md).
+- [Abrir kit de componentes UI](https://www.figma.com/design/Lw9Pbwc65lMKyjsW5IWZaD/go-tacna?node-id=96-2).
