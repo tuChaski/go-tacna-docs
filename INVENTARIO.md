@@ -120,6 +120,7 @@ La carpeta `requisitos/` no existe actualmente. La numeración y las reglas menc
 | `mapa-del-sitio.md` | Árbol de pantallas por perfil | Pendiente |
 | `inventario-de-vistas.md` | Una fila por vista: ID, perfil, contenido y acciones | Pendiente |
 | `figma.md` | Enlaces a los prototipos | Pendiente |
+| `prototipo-administrador.md` | T053: perfiles administrativos, matriz CRUD, navegación, estados, evidencia y límites del prototipo | En revisión |
 
 ### `planificacion/` — Royfrankly
 
