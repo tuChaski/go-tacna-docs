@@ -1,18 +1,21 @@
-Figma
-Estado: Pendiente Responsable: Alex Huaracha Relacionado: guia-de-estilos.md
+# Figma
 
-Qué va aquí
+> **Estado:** En revisión
+> **Responsable:** Alex Huaracha
+> **Relacionado:** [Guía de estilos](guia-de-estilos.md), [mapa del sitio](mapa-del-sitio.md), [casos de uso](../casos-de-uso/)
 
+Este índice reúne los enlaces a los diseños de Go Tacna. El alcance, las verificaciones y los límites de cada entrega se consultan en su documentación específica.
 
+## T053 — Panel administrativo
 
-# T092 · Disenar el Kit de Componentes UI en Figma (botones,cards, pines de mapa vectoriales, modales) #47
+- [Documentación del prototipo administrativo](prototipo-administrador.md).
+- [Inicio de Flow 1 en Figma](https://www.figma.com/design/Lw9Pbwc65lMKyjsW5IWZaD/go-tacna?node-id=70-17228).
 
-**Enlace:** [Abrir kit de componentes UI](https://www.figma.com/design/Lw9Pbwc65lMKyjsW5IWZaD/go-tacna?node-id=96-2)
+El prototipo diferencia administrador general y administrador de empresa.
+Incluye 20 pantallas y 9 cuadros de diálogo.
+La documentación permanece En revisión hasta la aprobación del PR.
 
+## T092 — Kit de componentes UI
 
-
-
-
-
-
-Pendiente de completar.
+- [Documentación del kit de componentes](kit-componentes-ui.md).
+- [Abrir kit de componentes UI](https://www.figma.com/design/Lw9Pbwc65lMKyjsW5IWZaD/go-tacna?node-id=96-2).
