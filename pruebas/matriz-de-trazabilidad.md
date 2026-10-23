@@ -2,7 +2,7 @@
 
 > **Estado:** Pendiente
 > **Responsable:** Edison Catari
-> **Relacionado:** [plan-de-pruebas.md](plan-de-pruebas.md), [../requisitos/](../requisitos/), [../casos-de-uso/](../casos-de-uso/)
+> **Relacionado:** [plan-de-pruebas.md](plan-de-pruebas.md), [../casos-de-uso/](../casos-de-uso/). La carpeta `requisitos/` aún no existe.
 
 ## Qué va aquí
 

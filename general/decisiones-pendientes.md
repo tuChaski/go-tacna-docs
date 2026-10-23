@@ -60,7 +60,7 @@ Cuando se toma una decisión, se escribe el archivo en `arquitectura/decisiones/
 | **Opciones** | (a) Solo alta de rutas y micros en el MVP, (b) administración completa |
 | **Recomendación** | (a): sin datos cargados no hay mapa que mostrar. La carga masiva puede ser un `.sql` inicial |
 | **Decide** | Royfrankly y Alex |
-| **Desbloquea** | `requisitos/mvp.md` y la planificación |
+| **Desbloquea** | El alcance del MVP y la planificación; `requisitos/` aún no existe |
 
 ---
 
@@ -73,15 +73,15 @@ Cuando se toma una decisión, se escribe el archivo en `arquitectura/decisiones/
 | Organización de las fases de planificación | Seis fases resumidas en `planificacion/README.md`; tareas y dependencias detalladas en el archivo ProjectLibre `.pod` | [../planificacion/README.md](../planificacion/README.md) |
 | Flujo de Git | Gitflow simplificado, squash a `develop`, merge commit a `main`, sin ramas `release/` | [../guias/git.md](../guias/git.md) |
 | Sintaxis de los diagramas | Solo Mermaid (`.mmd`), con la fuente en `diagramas/fuente/` | [../CONTRIBUTING.md](../CONTRIBUTING.md) §6 |
-| Tiempo de llegada siempre estimado | El ETA se marca como estimado, nunca como hora exacta (RN-08) | [../glosario.md](../glosario.md), [../requisitos/reglas-de-negocio.md](../requisitos/reglas-de-negocio.md) |
+| Tiempo de llegada siempre estimado | El ETA se marca como estimado, nunca como hora exacta (RN-08) | [../glosario.md](../glosario.md); `requisitos/reglas-de-negocio.md` aún no existe |
 | Arquitectura de 5 repositorios | Cinco repos independientes, no un monorepo. El código se migra desde `frontend/` | [README.md](README.md), [repos.md](repos.md) |
-| Despliegue de aplicaciones | Docker Compose independiente por proyecto; Nginx global y certificados TLS compartidos en el host VPS Contabo. k3s queda fuera del despliegue actual | [../INFRASTRUCTURE.md](../INFRASTRUCTURE.md) |
+| Despliegue de aplicaciones | Compose local está configurado; hay manifiestos K3s con aplicación manual prevista, pero no se confirmó su despliegue en el VPS ni existe CD automatizado | [../CI-CD.md](../CI-CD.md), [../INFRASTRUCTURE.md](../INFRASTRUCTURE.md) |
 
 ---
 
 ## Cómo se cierra una decisión
 
-1. Se escribe el archivo con [../plantillas/decision.md](../plantillas/decision.md) en `arquitectura/decisiones/` si es de arquitectura, o se actualiza el documento que corresponda si es de contenido.
+1. Se escribe el archivo en `arquitectura/decisiones/` si es una decisión de arquitectura, o se actualiza el documento que corresponda si es de contenido. La plantilla `plantillas/decision.md` aún no existe.
 2. Se mueve la fila de **Abiertas** a **Cerradas** con un enlace al archivo.
 3. Se actualiza el documento afectado: glosario, contratos, planificacion o el que sea.
 4. Se avisa en el Pull Request a quien tenga pendiente trabajar con la decisión.

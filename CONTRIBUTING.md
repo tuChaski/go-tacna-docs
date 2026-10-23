@@ -2,7 +2,7 @@
 
 > **Estado:** Aprobado
 > **Responsable:** Todo el equipo
-> **Relacionado:** [glosario.md](glosario.md), [INVENTARIO.md](INVENTARIO.md), [plantillas/](plantillas/)
+> **Relacionado:** [glosario.md](glosario.md), [INVENTARIO.md](INVENTARIO.md)
 
 ## 1. Principios
 
@@ -15,7 +15,6 @@
 | Tema | Carpeta | Responsable |
 |---|---|---|
 | Vista general, configuración y pendientes | `general/` | Royfrankly |
-| Requisitos y reglas de negocio | `requisitos/` | Royfrankly |
 | Casos de uso | `casos-de-uso/` | Todo el equipo |
 | Arquitectura y decisiones | `arquitectura/` | David |
 | Contratos (API, WebSocket, JWT) | `contratos/` | Royfrankly y David |
@@ -26,15 +25,16 @@
 | Diagramas como código | `diagramas/` | David |
 | Imágenes y logos | `assets/` | Alex |
 | Informe del Trabajo Final | `informe/` | Todo el equipo |
-| Reglas de Git de los 5 repos | `guias/` | Royfrankly |
+
+Las ubicaciones indicadas deben contrastarse con [INVENTARIO.md](INVENTARIO.md): algunas áreas propuestas, como `requisitos/` e `informe/`, todavía no existen en este repositorio.
 
 Hay tres tipos de carpeta y se mezclan fácil:
 
-- **Fuentes** (`requisitos/`, `casos-de-uso/`, `arquitectura/`, `diseno/`, `planificacion/`, `pruebas/`, `manuales/`): aquí se trabaja el contenido completo.
-- **Salida** (`informe/`): resume y enlaza lo que está en las fuentes, sin repetirlo.
+- **Fuentes** (`casos-de-uso/`, `arquitectura/`, `diseno/`, `planificacion/`, `pruebas/`, `manuales/`): aquí se trabaja el contenido completo.
+- **Salida** (`informe/`, cuando se cree): resume y enlaza lo que está en las fuentes, sin repetirlo.
 - **Control** (`general/`, `guias/`): la vista de arriba del proyecto: repos, configuración, pendientes y reglas. No repite el detalle, lo enlaza.
 
-`general/` es la puerta de entrada cuando no se sabe dónde buscar. `informe/capitulo-1/` sigue la guía del Trabajo Final sección por sección (1.1 a 1.12), así se ve de un vistazo qué falta. `informe/final/` guarda el documento consolidado exportado (.docx y .pdf) y nunca se escribe a mano.
+`general/` es la puerta de entrada cuando no se sabe dónde buscar. Cuando se cree `informe/`, sus capítulos resumirán y enlazarán a las fuentes; el documento consolidado exportado (.docx y .pdf) no se escribe a mano.
 
 Si dudas de dónde va algo, la tabla de esta sección es la respuesta. Antes de crear un archivo nuevo, revisa [INVENTARIO.md](INVENTARIO.md) para no duplicar un documento que ya existe.
 
@@ -79,7 +79,7 @@ La fecha y el historial los registra Git; no se escriben a mano.
 
 ## 6. Diagramas, tablas y figuras
 
-- **Los diagramas son Mermaid, siempre.** El archivo editable va en `diagramas/fuente/` con extensión `.mmd` y su imagen exportada en `diagramas/export/`, con el mismo nombre. Se edita siempre la fuente, nunca la imagen.
+- **Diagramas nuevos:** usar Mermaid (`.mmd`) cuando se necesite renderizado directo en GitHub. Mantener editables las fuentes; no eliminar ni convertir los diagramas `.puml` existentes sin revisar su contenido y acordar la migración.
 - En los archivos se inserta la imagen con ruta relativa y una descripción.
 - **La numeración "Figura 1.x" y "Tabla 1.x" se asigna solo al armar el informe final**, para no renumerar cada vez que se agrega una.
 

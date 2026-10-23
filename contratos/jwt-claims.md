@@ -116,3 +116,15 @@
 - Los eventos de pasajero solo se aceptan si el usuario tiene una suscripción activa, cuando el producto lo exija. El servidor debe consultar el estado actual de `SUSCRIPCION`; el claim `suscripcionId` no reemplaza esa validación.
 - La ausencia de `role` o `conductorPerfilId` en un token de conductor produce `403`.
 - Si faltan `microId` o `rutaId`, el conductor puede usar los endpoints generales, pero no puede emitir tracking hasta tener una asignación vigente.
+
+## 6. Implementación actual y diferencias
+
+El contrato descrito arriba es el objetivo acordado. La implementación actual de Backend Core (`User::getJWTCustomClaims()`) todavía agrega `name`, `email`, `role` (`pasajero`, `conductor` o `admin`) y `activo`, y no incluye `empresaId`, `conductorPerfilId`, `administradorPerfilId`, `microId`, `rutaId` ni `suscripcionId`.
+
+Antes de considerar este contrato vigente en producción:
+
+- Migrar los roles a `pasajero`, `conductor`, `admin_general` y `admin_empresa`.
+- Agregar los claims de perfil y asignación definidos en este documento.
+- Definir si `microId` y `rutaId` se incluyen en el token o se consultan al Backend Core.
+- Alinear Location Service y las pruebas de autorización con los nuevos claims.
+- Gestionar `JWT_SECRET` como secreto por entorno; no documentarlo ni versionarlo.

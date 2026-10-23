@@ -248,21 +248,7 @@ Pasa con los contratos (API, eventos WebSocket, claims del JWT):
 | `.github/CODEOWNERS` | Revisores automáticos (sección 5) |
 | `.github/workflows/pr-title.yml` | Valida el formato del título del PR |
 
-Los tres archivos se crean con un solo comando, con `plantillas/setup-git-rules.sh` del repo `docs`:
-
-```bash
-bash setup-git-rules.sh "<nombre-repo>" "<alcances separados por coma>" "<@dueño1 @dueño2>"
-```
-
-```bash
-bash setup-git-rules.sh "go-tacna-backend" "api, realtime, auth, rutas, micros, gps, eta, db, deps, ci" "@royfrankly @DavidMontoyaHolgado"
-bash setup-git-rules.sh "go-tacna-frontend" "admin, public, login, map, ui, deps, ci" "@Alex-Huaracha-Bellido"
-bash setup-git-rules.sh "go-tacna-movil" "pasajero, conductor, mapa, gps, auth, ui, deps, ci" "@Alex-Huaracha-Bellido @DavidMontoyaHolgado"
-bash setup-git-rules.sh "go-tacna-infraestructura" "k3s, compose, ingress, db, scripts, ci" "@royfrankly"
-bash setup-git-rules.sh "go-tacna-docs" "requisitos, contratos, arquitectura, diagramas, diseno, planificacion, pruebas, informe" "@royfrankly @EdCatari"
-```
-
-El script también genera un `CONTRIBUTING.md` corto **si no existe**. En `docs` ese archivo ya está escrito, así que el script solo crea `.github/`.
+Los archivos `.github/` enumerados existen en este repositorio. El script reutilizable `plantillas/setup-git-rules.sh` no está presente actualmente, así que esos comandos no se pueden ejecutar desde `go-tacna-docs`. Para configurar otro repositorio, copiar los archivos necesarios y adaptar los equipos responsables, alcances y reglas del workflow; si se incorpora un script, actualizar este apartado y el inventario.
 
 Pasos finales de cada repo de código:
 

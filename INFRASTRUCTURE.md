@@ -2,7 +2,9 @@
 
 ## Propósito y estado
 
-go-tacna se aloja en un VPS de **Contabo**. El proyecto se organiza en cinco repositorios independientes:
+go-tacna se aloja en un VPS de **Contabo**. Los datos operativos reportados son `13.140.174.64`, `go-tacna.site` y `www.go-tacna.site`, con certificados Let's Encrypt y Nginx global del host activos. Confirma estos valores y el upstream actual directamente en el servidor antes de cambios de producción.
+
+El proyecto se organiza en cinco repositorios independientes:
 
 | Repositorio | Responsabilidad |
 |---|---|
@@ -12,7 +14,7 @@ go-tacna se aloja en un VPS de **Contabo**. El proyecto se organiza en cinco rep
 | `go-tacna-docs` | Arquitectura, contratos y documentación |
 | `go-tacna-movil` | Aplicación móvil Android |
 
-El diseño de esta página separa el proxy global del servidor de los servicios de cada proyecto. Contabo es el proveedor del VPS; los dominios definitivos, la IP pública y la configuración efectiva del servidor se deben completar al desplegar. Los dominios de los ejemplos son marcadores, no dominios contratados.
+El diseño de esta página separa el proxy global del servidor de los servicios de cada proyecto. Compose local publica el gateway en loopback `127.0.0.1:8001`; los manifiestos K3s del repositorio de infraestructura definen un NodePort `30081`. Son dos modalidades distintas. La instalación de K3s y el upstream efectivo de producción deben verificarse en el VPS; se ha reportado un `502 Bad Gateway`.
 
 El diagrama editable está en [arquitectura/Diagrama-de-infraestructura-multidominio-independiente.mmd](arquitectura/Diagrama-de-infraestructura-multidominio-independiente.mmd).
 
@@ -20,7 +22,7 @@ El diagrama editable está en [arquitectura/Diagrama-de-infraestructura-multidom
 
 1. El DNS de cada dominio apunta a la IP pública del VPS Contabo.
 2. El Nginx global instalado en el sistema operativo recibe el tráfico público en los puertos `80` y `443`. Maneja los certificados TLS del host y el enrutamiento por nombre de dominio.
-3. Para el dominio de go-tacna, el Nginx global reenvía la solicitud a `127.0.0.1:8001`, el puerto local publicado por el gateway de go-tacna.
+3. El Nginx global reenvía el dominio al upstream de la modalidad efectivamente desplegada: `127.0.0.1:8001` si se publica con Compose, o `127.0.0.1:30081` si se instala y publica el gateway K3s según sus manifiestos.
 4. El gateway del proyecto enruta las solicitudes web, API y WebSocket a los servicios internos correspondientes.
 5. La API, el servicio de tiempo real, la web y la base de datos no necesitan puertos públicos propios. Los servicios privados se comunican por la red Docker de go-tacna.
 
@@ -35,9 +37,9 @@ Internet
                       └─ API: /api/
 ```
 
-El puerto `8001` es un ejemplo reservado para go-tacna. Cada proyecto adicional debe usar otro puerto local libre (por ejemplo, `8002`) y su propio archivo `server` en el Nginx global.
+El puerto Compose `8001` y el NodePort K3s `30081` están definidos en los archivos de infraestructura actuales. Cada proyecto adicional debe usar otro puerto local libre y su propio `server` en el Nginx global.
 
-## 1. Publicación del gateway en Docker Compose
+## 1. Publicación local del gateway en Docker Compose
 
 En `go-tacna-infraestructura`, el gateway se enlaza solo a la interfaz local del VPS. No debe publicar directamente `80` ni `443`:
 
@@ -59,22 +61,22 @@ El puerto `80` del contenedor queda disponible en el puerto `8001` de loopback d
 
 ## 2. Nginx global del host
 
-Ejemplo de configuración para `/etc/nginx/sites-available/go-tacna.midominio.com` en el VPS. Sustituir el dominio de ejemplo por el dominio configurado en DNS y para el certificado:
+Ejemplo para `/etc/nginx/sites-available/go-tacna.site` en el VPS. Este bloque usa el upstream de Compose (`8001`); si K3s ya está activo, usar `30081` en su lugar:
 
 ```nginx
 server {
     listen 80;
-    server_name go-tacna.midominio.com;
+    server_name go-tacna.site www.go-tacna.site;
 
     return 301 https://$host$request_uri;
 }
 
 server {
     listen 443 ssl;
-    server_name go-tacna.midominio.com;
+    server_name go-tacna.site www.go-tacna.site;
 
-    ssl_certificate /etc/letsencrypt/live/go-tacna.midominio.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/go-tacna.midominio.com/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/go-tacna.site/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/go-tacna.site/privkey.pem;
 
     location / {
         proxy_pass http://127.0.0.1:8001;
@@ -92,6 +94,8 @@ server {
 
 El bloque HTTP redirige a HTTPS. Nginx debe tener habilitados los módulos/directivas SSL correspondientes y el certificado debe existir antes de activar la configuración TLS. Validar la configuración con `nginx -t` y recargar Nginx después de cada cambio. Gestionar la emisión y renovación de los certificados desde el host, no desde el contenedor de go-tacna.
 
+Para usar el gateway K3s definido como NodePort en `k8s/gateway.yaml`, cambia únicamente el upstream al `http://127.0.0.1:30081` una vez que el clúster y el servicio estén activos. No asumas que el manifiesto K3s está desplegado por existir en el repositorio.
+
 El gateway de go-tacna sigue siendo responsable del enrutamiento interno de rutas. Debe reenviar `/`, `/api/` y `/socket.io/` a los servicios apropiados y habilitar WebSocket para el servicio de tiempo real. El proxy de `/socket.io/` debe permitir conexiones de larga duración, incluido un `proxy_read_timeout` adecuado.
 
 ## 3. Aislamiento entre proyectos
@@ -108,7 +112,7 @@ La instalación y administración del Nginx global, sus certificados y la asigna
 ## Consideraciones operativas
 
 - Abrir en el firewall del VPS solo los puertos requeridos públicamente, normalmente SSH y `80`/`443`.
-- Confirmar que cada registro DNS resuelve a la IP pública del VPS y que los dominios están incluidos en sus certificados TLS.
+- Confirmar que `go-tacna.site` y `www.go-tacna.site` resuelven a la IP pública del VPS y que ambos nombres están incluidos en el certificado TLS.
 - Mantener secretos y credenciales fuera de Git; usar el almacén de secretos de despliegue y archivos `.env` no versionados.
 - No reutilizar puertos locales asignados a otros proyectos.
-- Los ejemplos de esta página describen la arquitectura acordada; no afirman que el dominio, el certificado ni todas las aplicaciones ya estén desplegados.
+- Los datos de VPS, dominio, certificado y firewall son reportados por el equipo; verifica el estado efectivo antes de operar el host.

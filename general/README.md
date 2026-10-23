@@ -21,7 +21,7 @@ No es un monorepo: son 5 repositorios independientes, cada uno con su propio REA
 
 | Repositorio | Qué es | Dueño principal |
 |---|---|---|
-| `go-tacna-docs` | Este. Informe, requisitos, contratos, cronograma | Royfrankly y Edison |
+| `go-tacna-docs` | Este. Contexto, guías de componentes, contratos, arquitectura y planificación | Royfrankly y Edison |
 | `go-tacna-backend` | API Laravel y servidor de tiempo real (Node.js) | Royfrankly y David |
 | `go-tacna-frontend` | Web pública y panel de administración | Alex |
 | `go-tacna-movil` | App Android: Pasajero y Modo Conductor | Alex y David |
@@ -47,12 +47,13 @@ Si un contrato cambia, el PR va primero en `docs/`. Ver [../CONTRIBUTING.md](../
 | Saber qué hace cada repositorio | [repos.md](repos.md) |
 | Saber qué hay que configurar: ramas, puertos, secretos, contratos | [configuracion.md](configuracion.md) |
 | Consultar el VPS Contabo, el proxy global y el despliegue multidominio | [../INFRASTRUCTURE.md](../INFRASTRUCTURE.md) |
+| Entender Docker local, CI actual y el flujo manual previsto para producción | [../CI-CD.md](../CI-CD.md) |
 | Saber qué falta | [checklist.md](checklist.md) |
 | Desbloquear una decisión que está frenando el trabajo | [decisiones-pendientes.md](decisiones-pendientes.md) |
 | Cambiar las reglas de Git | [../guias/git.md](../guias/git.md) |
-| Escribir o corregir un requerimiento | [../requisitos/](../requisitos/) y `plantillas/requerimiento.md` |
+| Escribir o corregir un requerimiento | La carpeta `requisitos/` y `plantillas/requerimiento.md` aún no existen; revisar el [inventario](../INVENTARIO.md) antes de crear documentos |
 | Cambiar la API, los eventos o el token | [../contratos/](../contratos/) |
-| Armar el informe | [../informe/capitulo-1/](../informe/capitulo-1/) |
+| Armar el informe | La carpeta `informe/` aún no existe; acordar su estructura antes de crearla |
 | Saber qué archivo falta o sobra | [../INVENTARIO.md](../INVENTARIO.md) |
 
 ---

@@ -1,0 +1,77 @@
+erDiagram
+    USUARIO {
+        int id PK
+        string dni "Obligatorio para control local"
+        string nombre
+        string apellido
+        string correo
+        string telefono "Obligatorio para contacto"
+        string password_hash
+        string rol "pasajero, conductor, admin_general, admin_empresa"
+    }
+    EMPRESA {
+        int id PK
+        string ruc
+        string razon_social
+        string telefono
+        string direccion
+    }
+    ADMINISTRADOR_EMPRESA_PERFIL {
+        int id PK
+        int usuario_id FK
+        int empresa_id FK
+        string cargo "Ej: Gerente, Supervisor"
+    }
+    CONDUCTOR_PERFIL {
+        int id PK
+        int usuario_id FK
+        int empresa_id FK
+        string licencia_conducir
+        string estado_operativo "disponible, en_recorrido, sin_conexion"
+    }
+    RUTA {
+        int id PK
+        int empresa_id FK
+        string nombre_ruta
+        geometry trazado_ruta
+    }
+    MICRO {
+        int id PK
+        int empresa_id FK
+        int ruta_id FK
+        int conductor_actual_id FK "Conductor en turno"
+        string placa
+        int capacidad_pasajeros "Para control de aforo"
+        string estado
+    }
+    POSICION_GPS {
+        int id PK
+        int micro_id FK
+        float latitud
+        float longitud
+        float velocidad "Clave para cálculo de ETA"
+        datetime fecha_hora
+    }
+    PLAN {
+        int id PK
+        string nombre_plan
+        decimal costo
+    }
+    SUSCRIPCION {
+        int id PK
+        int usuario_id FK "Apunta al pasajero"
+        int plan_id FK
+        date fecha_inicio
+        date fecha_vencimiento
+        string estado "activa, vencida, cancelada"
+    }
+
+    EMPRESA ||--o{ RUTA : "opera"
+    EMPRESA ||--o{ CONDUCTOR_PERFIL : "emplea"
+    EMPRESA ||--o{ ADMINISTRADOR_EMPRESA_PERFIL : "administra"
+    EMPRESA ||--o{ MICRO : "posee"
+    RUTA ||--o{ MICRO : "asigna"
+    CONDUCTOR_PERFIL ||--o{ MICRO : "opera_actualmente"
+    MICRO ||--o{ POSICION_GPS : "emite"
+    USUARIO ||--o{ SUSCRIPCION : "contrata"
+    PLAN ||--o{ SUSCRIPCION : "incluye"
