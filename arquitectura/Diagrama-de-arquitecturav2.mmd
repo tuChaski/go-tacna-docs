@@ -1,0 +1,37 @@
+graph RL
+    %% Subgrafos de Clientes Móviles
+    subgraph Dispositivo_Movil["Dispositivo Móvil (Smartphone)"]
+        AppConductor["App Modo Conductor<br/>(Transmisión GPS)"]
+        AppPasajero["App Modo Pasajero<br/>(Mapa / Consulta ETA)"]
+    end
+
+    %% Servidor Backend API
+    subgraph Backend_Server["Servidor Backend & Tiempo Real"]
+        API["<b>API REST (Laravel)</b><br/>• Autenticación y RBAC (JWT)<br/>• Gestión de Flota y Rutas<br/>• Cálculo de ETA"]
+        Realtime["<b>Servicio Realtime GPS (Node.js)</b><br/>• Recepción y Broadcast de Coordenadas<br/>• Gestión de Sockets (WSS)"]
+    end
+
+    %% Persistencia de Datos y Caché
+    subgraph Persistencia["Capa de Datos y Estado"]
+        BD[("Base de Datos Geoespacial<br/><b>PostgreSQL + PostGIS</b>")]
+        Redis[("Caché en Memoria<br/><b>Redis</b><br/>(Posiciones GPS en Vivo)")]
+    end
+
+    %% Plataforma Web
+    subgraph Plataforma_Web["Plataforma Web Multirrol"]
+        WebFront["<b>Cliente Web (Frontend)</b><br/>• Dashboard Administrador<br/>• Monitoreo Global de Rutas"]
+    end
+
+    %% Relaciones y Flujos de Información
+    AppConductor -->|Envío de Coordenadas GPS<br/>WebSockets / HTTP| Realtime
+    Realtime -->|Broadcast de Posiciones en Vivo| AppPasajero
+    Realtime -->|Broadcast de Posiciones| WebFront
+    
+    API -->|Consumo de Rutas, Micros y ETA| AppPasajero
+    API -->|Consultas relacionales / Estructura| BD
+    BD -->|Lectura de Datos Geográficos y Usuarios| API
+
+    Realtime -.->|Lectura / Escritura Rápida| Redis
+    API -->|Consulta de Posiciones Actuales| Redis
+
+    WebFront <-->|Consumo de Endpoints REST / Sockets| API
