@@ -1,77 +1,101 @@
 erDiagram
     USUARIO {
-        int id PK
-        string dni "Obligatorio para control local"
+        bigint id PK
+        string dni "Único"
         string nombre
         string apellido
-        string correo
-        string telefono "Obligatorio para contacto"
+        string correo "Único; login"
+        string telefono
         string password_hash
         string rol "pasajero, conductor, admin_general, admin_empresa"
+        boolean activo
+        datetime created_at
+        datetime updated_at
     }
     EMPRESA {
-        int id PK
-        string ruc
+        bigint id PK
+        string ruc "Único"
         string razon_social
         string telefono
         string direccion
+        boolean activo
+        datetime created_at
+        datetime updated_at
     }
     ADMINISTRADOR_EMPRESA_PERFIL {
-        int id PK
-        int usuario_id FK
-        int empresa_id FK
+        bigint id PK
+        bigint usuario_id FK
+        bigint empresa_id FK
         string cargo "Ej: Gerente, Supervisor"
+        datetime created_at
+        datetime updated_at
     }
     CONDUCTOR_PERFIL {
-        int id PK
-        int usuario_id FK
-        int empresa_id FK
+        bigint id PK
+        bigint usuario_id FK "Único"
+        bigint empresa_id FK
         string licencia_conducir
         string estado_operativo "disponible, en_recorrido, sin_conexion"
+        datetime created_at
+        datetime updated_at
     }
     RUTA {
-        int id PK
-        int empresa_id FK
+        bigint id PK
+        bigint empresa_id FK
         string nombre_ruta
-        geometry trazado_ruta
+        geometry trazado_ruta "LineString 4326; JSON en SQLite"
+        boolean activo
+        datetime created_at
+        datetime updated_at
     }
     MICRO {
-        int id PK
-        int empresa_id FK
-        int ruta_id FK
-        int conductor_actual_id FK "Conductor en turno"
-        string placa
-        int capacidad_pasajeros "Para control de aforo"
-        string estado
+        bigint id PK
+        bigint empresa_id FK
+        bigint ruta_id FK "Nullable"
+        bigint conductor_actual_id FK "Nullable y único"
+        string placa "Única"
+        int capacidad_pasajeros
+        string estado "disponible, en_recorrido, mantenimiento, inactivo"
+        datetime created_at
+        datetime updated_at
     }
     POSICION_GPS {
-        int id PK
-        int micro_id FK
-        float latitud
-        float longitud
+        bigint id PK
+        bigint micro_id FK
+        decimal latitud
+        decimal longitud
         float velocidad "Clave para cálculo de ETA"
         datetime fecha_hora
+        datetime created_at
+        datetime updated_at
     }
     PLAN {
-        int id PK
-        string nombre_plan
+        bigint id PK
+        string nombre_plan "Único"
         decimal costo
+        boolean activo
+        datetime created_at
+        datetime updated_at
     }
     SUSCRIPCION {
-        int id PK
-        int usuario_id FK "Apunta al pasajero"
-        int plan_id FK
+        bigint id PK
+        bigint usuario_id FK "Pasajero"
+        bigint plan_id FK
         date fecha_inicio
         date fecha_vencimiento
         string estado "activa, vencida, cancelada"
+        datetime created_at
+        datetime updated_at
     }
 
-    EMPRESA ||--o{ RUTA : "opera"
-    EMPRESA ||--o{ CONDUCTOR_PERFIL : "emplea"
-    EMPRESA ||--o{ ADMINISTRADOR_EMPRESA_PERFIL : "administra"
-    EMPRESA ||--o{ MICRO : "posee"
-    RUTA ||--o{ MICRO : "asigna"
-    CONDUCTOR_PERFIL ||--o{ MICRO : "opera_actualmente"
-    MICRO ||--o{ POSICION_GPS : "emite"
+    USUARIO ||--o| CONDUCTOR_PERFIL : "tiene"
+    USUARIO ||--o{ ADMINISTRADOR_EMPRESA_PERFIL : "administra"
     USUARIO ||--o{ SUSCRIPCION : "contrata"
+    EMPRESA ||--o{ RUTA : "opera"
+    EMPRESA ||--o{ MICRO : "posee"
+    EMPRESA ||--o{ CONDUCTOR_PERFIL : "emplea"
+    EMPRESA ||--o{ ADMINISTRADOR_EMPRESA_PERFIL : "tiene"
+    RUTA ||--o{ MICRO : "asigna"
+    CONDUCTOR_PERFIL ||--o| MICRO : "opera_actualmente"
+    MICRO ||--o{ POSICION_GPS : "emite"
     PLAN ||--o{ SUSCRIPCION : "incluye"
