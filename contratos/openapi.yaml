@@ -1,32 +1,1314 @@
-# CONTRATO DE LA API - fuente de verdad prevista para backend, web y móvil
+# CONTRATO DE LA API - fuente de verdad para backend, web y movil
 # OpenAPI 3.1, prefijo /api/v1
 # Responsable: Royfrankly (revisado por David)
 # Nombres de payloads: glosario oficial (micro, no bus)
-# Pendiente (T086): migrar el borrador de go-tacna-frontend/docs/openapi.yaml
-#   y agregar los endpoints que ya usa el codigo y no estan declarados:
-#   POST /auth/login, POST /auth/refresh,
-#   CRUD /empresas /rutas /micros /conductores,
-#   POST /tracking/position, POST /tracking/stop
-# Referencia: INVENTARIO.md seccion 4
+# Actualizado al modelo entidad-relacion multiempresa.
+# Pendiente: alinear eventos-websocket.md y payload-gps.md con los nuevos roles.
 openapi: 3.1.0
 info:
   title: go-tacna API
-  version: 0.1.0
-  description: >
-    Esqueleto del contrato compartido por web y móvil. Los paths están
-    pendientes de completar a partir de las rutas implementadas y acordadas.
+  version: 0.2.0
+  description: |
+    Contrato de la API REST compartida por web y movil.
+
+    El modelo es multiempresa: cada empresa administra sus rutas, micros y
+    conductores. Los usuarios tienen uno de los roles `pasajero`, `conductor`,
+    `admin_general` o `admin_empresa`.
+
+    Los eventos WebSocket y los esquemas GPS complementarios se documentan en
+    `eventos-websocket.md` y `payload-gps.md`.
 servers:
   - url: https://api.tuchaski.org/api/v1
     description: Producción
   - url: http://localhost:3001
     description: Desarrollo local (sin prefijo /api/v1)
+tags:
+  - name: Auth
+    description: Autenticación y sesión
+  - name: Usuarios
+    description: Usuarios de la plataforma
+  - name: Empresas
+    description: Empresas operadoras
+  - name: Rutas
+    description: Rutas operadas por una empresa
+  - name: Micros
+    description: Vehículos y su asignación operativa
+  - name: Conductores
+    description: Perfiles de conductor
+  - name: Administradores de empresa
+    description: Perfiles de administrador de empresa
+  - name: Planes
+    description: Catálogo de planes
+  - name: Suscripciones
+    description: Suscripciones de los pasajeros
+  - name: Tracking
+    description: Recepción de posiciones GPS del conductor
 paths:
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Iniciar sesión
+      description: |
+        Autentica por DNI o correo. Devuelve un token JWT válido para la API y
+        para el servidor de tiempo real.
+      operationId: login
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Token emitido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+
+  /auth/refresh:
+    post:
+      tags: [Auth]
+      summary: Renovar token de acceso
+      description: |
+        Solicita un nuevo token de acceso a partir de un refresh token vigente.
+        La persistencia y rotación del refresh token queda pendiente de definición
+        porque el ERD no incluye una tabla para él.
+      operationId: refreshToken
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshRequest'
+      responses:
+        '200':
+          description: Token renovado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/logout:
+    post:
+      tags: [Auth]
+      summary: Cerrar sesión
+      description: |
+        Invalida la sesión del cliente. El JWT es stateless; si se implementa una
+        lista de revocación, el servidor puede rechazar tokens con `jti` revocado.
+      operationId: logout
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Sesión cerrada
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/me:
+    get:
+      tags: [Auth]
+      summary: Obtener usuario autenticado
+      operationId: getCurrentUser
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Usuario autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /usuarios:
+    get:
+      tags: [Usuarios]
+      summary: Listar usuarios
+      description: |
+        `admin_general` ve todos los usuarios. `admin_empresa` solo ve usuarios
+        vinculados a perfiles de su propia empresa.
+      operationId: listUsuarios
+      x-required-roles: [admin_general, admin_empresa]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RolQuery'
+        - $ref: '#/components/parameters/EmpresaIdQuery'
+      responses:
+        '200':
+          description: Lista de usuarios
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Usuario'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    post:
+      tags: [Usuarios]
+      summary: Crear usuario
+      description: |
+        `admin_general` puede crear cualquier rol. `admin_empresa` solo puede
+        crear usuarios con rol `conductor`.
+      operationId: createUsuario
+      x-required-roles: [admin_general, admin_empresa]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsuarioCreate'
+      responses:
+        '201':
+          description: Usuario creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+
+  /usuarios/{id}:
+    parameters:
+      - $ref: '#/components/parameters/IdPath'
+    get:
+      tags: [Usuarios]
+      summary: Obtener usuario
+      operationId: getUsuario
+      x-required-roles: [admin_general, admin_empresa]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Usuario encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags: [Usuarios]
+      summary: Actualizar usuario
+      description: |
+        `admin_empresa` solo puede actualizar usuarios vinculados a perfiles de
+        su empresa y no puede cambiar el rol del usuario.
+      operationId: updateUsuario
+      x-required-roles: [admin_general, admin_empresa]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsuarioUpdate'
+      responses:
+        '200':
+          description: Usuario actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+    delete:
+      tags: [Usuarios]
+      summary: Eliminar usuario
+      operationId: deleteUsuario
+      x-required-roles: [admin_general]
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Usuario eliminado
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /empresas:
+    get:
+      tags: [Empresas]
+      summary: Listar empresas
+      operationId: listEmpresas
+      x-required-roles: [admin_general]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de empresas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Empresa'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    post:
+      tags: [Empresas]
+      summary: Crear empresa
+      operationId: createEmpresa
+      x-required-roles: [admin_general]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmpresaCreate'
+      responses:
+        '201':
+          description: Empresa creada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empresa'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+
+  /empresas/{id}:
+    parameters:
+      - $ref: '#/components/parameters/IdPath'
+    get:
+      tags: [Empresas]
+      summary: Obtener empresa
+      description: "`admin_empresa` solo puede consultar su propia empresa."
+      operationId: getEmpresa
+      x-required-roles: [admin_general, admin_empresa]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Empresa encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empresa'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags: [Empresas]
+      summary: Actualizar empresa
+      description: "`admin_empresa` solo puede actualizar su propia empresa."
+      operationId: updateEmpresa
+      x-required-roles: [admin_general, admin_empresa]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmpresaUpdate'
+      responses:
+        '200':
+          description: Empresa actualizada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empresa'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+    delete:
+      tags: [Empresas]
+      summary: Eliminar empresa
+      operationId: deleteEmpresa
+      x-required-roles: [admin_general]
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Empresa eliminada
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /rutas:
+    get:
+      tags: [Rutas]
+      summary: Listar rutas
+      description: |
+        `admin_general` ve todas. `admin_empresa` y `conductor` ven las rutas de
+        su empresa. `pasajero` puede consultar las rutas disponibles.
+      operationId: listRutas
+      x-required-roles: [pasajero, conductor, admin_general, admin_empresa]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/EmpresaIdQuery'
+      responses:
+        '200':
+          description: Lista de rutas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Ruta'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    post:
+      tags: [Rutas]
+      summary: Crear ruta
+      description: |
+        `admin_empresa` solo puede crear rutas en su propia empresa.
+      operationId: createRuta
+      x-required-roles: [admin_general, admin_empresa]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RutaCreate'
+      responses:
+        '201':
+          description: Ruta creada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ruta'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+
+  /rutas/{id}:
+    parameters:
+      - $ref: '#/components/parameters/IdPath'
+    get:
+      tags: [Rutas]
+      summary: Obtener ruta
+      operationId: getRuta
+      x-required-roles: [pasajero, conductor, admin_general, admin_empresa]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Ruta encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ruta'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags: [Rutas]
+      summary: Actualizar ruta
+      operationId: updateRuta
+      x-required-roles: [admin_general, admin_empresa]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RutaUpdate'
+      responses:
+        '200':
+          description: Ruta actualizada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ruta'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+    delete:
+      tags: [Rutas]
+      summary: Eliminar ruta
+      operationId: deleteRuta
+      x-required-roles: [admin_general, admin_empresa]
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Ruta eliminada
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /rutas/{id}/micros:
+    parameters:
+      - $ref: '#/components/parameters/IdPath'
+    get:
+      tags: [Rutas]
+      summary: Listar micros en vivo de una ruta
+      description: Devuelve el estado actual de los micros asignados a la ruta.
+      operationId: listMicrosByRuta
+      x-required-roles: [pasajero, conductor, admin_general, admin_empresa]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Micros de la ruta
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MicroEnVivo'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /micros:
+    get:
+      tags: [Micros]
+      summary: Listar micros
+      description: |
+        `admin_general` ve todos. `admin_empresa` y `conductor` solo los de su
+        empresa.
+      operationId: listMicros
+      x-required-roles: [admin_general, admin_empresa, conductor]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/EmpresaIdQuery'
+        - $ref: '#/components/parameters/RutaIdQuery'
+      responses:
+        '200':
+          description: Lista de micros
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Micro'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    post:
+      tags: [Micros]
+      summary: Crear micro
+      description: |
+        El micro y la ruta deben pertenecer a la misma empresa. `admin_empresa`
+        solo puede crear micros en su propia empresa.
+      operationId: createMicro
+      x-required-roles: [admin_general, admin_empresa]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MicroCreate'
+      responses:
+        '201':
+          description: Micro creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Micro'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+
+  /micros/{id}:
+    parameters:
+      - $ref: '#/components/parameters/IdPath'
+    get:
+      tags: [Micros]
+      summary: Obtener micro
+      operationId: getMicro
+      x-required-roles: [admin_general, admin_empresa, conductor]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Micro encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Micro'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags: [Micros]
+      summary: Actualizar micro
+      description: |
+        La ruta asignada debe pertenecer a la misma empresa que el micro.
+        `admin_empresa` solo puede actualizar micros de su propia empresa.
+      operationId: updateMicro
+      x-required-roles: [admin_general, admin_empresa]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MicroUpdate'
+      responses:
+        '200':
+          description: Micro actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Micro'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+    delete:
+      tags: [Micros]
+      summary: Eliminar micro
+      operationId: deleteMicro
+      x-required-roles: [admin_general, admin_empresa]
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Micro eliminado
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /micros/{id}/conductor:
+    parameters:
+      - $ref: '#/components/parameters/IdPath'
+    patch:
+      tags: [Micros]
+      summary: Asignar conductor al micro
+      description: |
+        Asigna un `CONDUCTOR_PERFIL` como conductor actual del micro. Enviar
+        `conductorActualId: null` libera la asignación. El conductor y el micro
+        deben pertenecer a la misma empresa. Un conductor no debe tener más de
+        un micro asignado; el servidor debe liberar la asignación anterior.
+      operationId: assignConductorToMicro
+      x-required-roles: [admin_general, admin_empresa]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MicroAsignacionRequest'
+      responses:
+        '200':
+          description: Conductor asignado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Micro'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+
+  /micros/{id}/posiciones:
+    parameters:
+      - $ref: '#/components/parameters/IdPath'
+    get:
+      tags: [Micros]
+      summary: Consultar historial de posiciones GPS
+      description: |
+        `admin_general` puede consultar cualquier micro. `admin_empresa` solo
+        micros de su empresa. `conductor` solo el micro que tiene asignado.
+      operationId: listPosicionesByMicro
+      x-required-roles: [admin_general, admin_empresa, conductor]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/DesdeQuery'
+        - $ref: '#/components/parameters/HastaQuery'
+        - $ref: '#/components/parameters/LimitQuery'
+      responses:
+        '200':
+          description: Historial de posiciones
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PosicionGps'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /conductores:
+    get:
+      tags: [Conductores]
+      summary: Listar perfiles de conductor
+      description: |
+        `admin_general` ve todos. `admin_empresa` solo los de su empresa.
+      operationId: listConductores
+      x-required-roles: [admin_general, admin_empresa]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/EmpresaIdQuery'
+        - $ref: '#/components/parameters/EstadoOperativoQuery'
+      responses:
+        '200':
+          description: Lista de conductores
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ConductorPerfil'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    post:
+      tags: [Conductores]
+      summary: Crear perfil de conductor
+      description: |
+        Vincula un usuario existente con una empresa. El usuario debe tener rol
+        `conductor`.
+      operationId: createConductor
+      x-required-roles: [admin_general, admin_empresa]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConductorPerfilCreate'
+      responses:
+        '201':
+          description: Perfil de conductor creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConductorPerfil'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+
+  /conductores/{id}:
+    parameters:
+      - $ref: '#/components/parameters/IdPath'
+    get:
+      tags: [Conductores]
+      summary: Obtener perfil de conductor
+      operationId: getConductor
+      x-required-roles: [admin_general, admin_empresa]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Conductor encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConductorPerfil'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags: [Conductores]
+      summary: Actualizar perfil de conductor
+      operationId: updateConductor
+      x-required-roles: [admin_general, admin_empresa]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConductorPerfilUpdate'
+      responses:
+        '200':
+          description: Conductor actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConductorPerfil'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+    delete:
+      tags: [Conductores]
+      summary: Eliminar perfil de conductor
+      operationId: deleteConductor
+      x-required-roles: [admin_general, admin_empresa]
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Conductor eliminado
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /administradores-empresa:
+    get:
+      tags: [Administradores de empresa]
+      summary: Listar administradores de empresa
+      description: |
+        `admin_general` ve todos. `admin_empresa` solo los de su propia empresa.
+      operationId: listAdministradoresEmpresa
+      x-required-roles: [admin_general, admin_empresa]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/EmpresaIdQuery'
+      responses:
+        '200':
+          description: Lista de administradores
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AdministradorEmpresaPerfil'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    post:
+      tags: [Administradores de empresa]
+      summary: Crear perfil de administrador de empresa
+      description: |
+        Vincula un usuario existente con rol `admin_empresa` a una empresa.
+      operationId: createAdministradorEmpresa
+      x-required-roles: [admin_general, admin_empresa]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdministradorEmpresaPerfilCreate'
+      responses:
+        '201':
+          description: Administrador creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdministradorEmpresaPerfil'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+
+  /administradores-empresa/{id}:
+    parameters:
+      - $ref: '#/components/parameters/IdPath'
+    get:
+      tags: [Administradores de empresa]
+      summary: Obtener administrador de empresa
+      operationId: getAdministradorEmpresa
+      x-required-roles: [admin_general, admin_empresa]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Administrador encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdministradorEmpresaPerfil'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags: [Administradores de empresa]
+      summary: Actualizar administrador de empresa
+      operationId: updateAdministradorEmpresa
+      x-required-roles: [admin_general, admin_empresa]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdministradorEmpresaPerfilUpdate'
+      responses:
+        '200':
+          description: Administrador actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdministradorEmpresaPerfil'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+    delete:
+      tags: [Administradores de empresa]
+      summary: Eliminar administrador de empresa
+      operationId: deleteAdministradorEmpresa
+      x-required-roles: [admin_general, admin_empresa]
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Administrador eliminado
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /planes:
+    get:
+      tags: [Planes]
+      summary: Listar planes
+      operationId: listPlanes
+      x-required-roles: [pasajero, conductor, admin_general, admin_empresa]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de planes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Plan'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      tags: [Planes]
+      summary: Crear plan
+      operationId: createPlan
+      x-required-roles: [admin_general]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlanCreate'
+      responses:
+        '201':
+          description: Plan creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Plan'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+
+  /planes/{id}:
+    parameters:
+      - $ref: '#/components/parameters/IdPath'
+    get:
+      tags: [Planes]
+      summary: Obtener plan
+      operationId: getPlan
+      x-required-roles: [pasajero, conductor, admin_general, admin_empresa]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Plan encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Plan'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags: [Planes]
+      summary: Actualizar plan
+      operationId: updatePlan
+      x-required-roles: [admin_general]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlanUpdate'
+      responses:
+        '200':
+          description: Plan actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Plan'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+    delete:
+      tags: [Planes]
+      summary: Eliminar plan
+      operationId: deletePlan
+      x-required-roles: [admin_general]
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Plan eliminado
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /suscripciones:
+    get:
+      tags: [Suscripciones]
+      summary: Listar suscripciones
+      description: Solo `admin_general` puede listar todas las suscripciones.
+      operationId: listSuscripciones
+      x-required-roles: [admin_general]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UsuarioIdQuery'
+        - $ref: '#/components/parameters/EstadoSuscripcionQuery'
+      responses:
+        '200':
+          description: Lista de suscripciones
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Suscripcion'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    post:
+      tags: [Suscripciones]
+      summary: Crear suscripción
+      description: |
+        El pasajero crea su propia suscripción. `admin_general` debe indicar
+        `usuarioId` para crear la suscripción de un pasajero.
+      operationId: createSuscripcion
+      x-required-roles: [pasajero, admin_general]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SuscripcionCreate'
+      responses:
+        '201':
+          description: Suscripción creada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Suscripcion'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+
+  /suscripciones/me:
+    get:
+      tags: [Suscripciones]
+      summary: Obtener suscripción activa del pasajero
+      operationId: getMiSuscripcion
+      x-required-roles: [pasajero]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Suscripción del pasajero
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Suscripcion'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /suscripciones/{id}:
+    parameters:
+      - $ref: '#/components/parameters/IdPath'
+    get:
+      tags: [Suscripciones]
+      summary: Obtener suscripción
+      description: El pasajero solo puede consultar sus propias suscripciones.
+      operationId: getSuscripcion
+      x-required-roles: [pasajero, admin_general]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Suscripción encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Suscripcion'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags: [Suscripciones]
+      summary: Actualizar o cancelar suscripción
+      description: |
+        El pasajero solo puede cambiar el estado a `cancelada` en su propia
+        suscripción. `admin_general` puede modificar el estado y la fecha de
+        vencimiento.
+      operationId: updateSuscripcion
+      x-required-roles: [pasajero, admin_general]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SuscripcionUpdate'
+      responses:
+        '200':
+          description: Suscripción actualizada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Suscripcion'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+    delete:
+      tags: [Suscripciones]
+      summary: Eliminar suscripción
+      operationId: deleteSuscripcion
+      x-required-roles: [admin_general]
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Suscripción eliminada
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
   /tracking/position:
     post:
-      summary: "Recibir posición GPS del conductor"
+      tags: [Tracking]
+      summary: Recibir posición GPS del conductor
       description: |
         Endpoint para que el conductor envíe su posición GPS cada 3-5 segundos.
-        Requiere autenticación JWT con claims: role=conductor, microId, rutaId.
+
+        Requiere JWT con `role=conductor`, `conductorPerfilId`, `empresaId`,
+        `microId` y `rutaId`. El servidor valida que el conductor siga asignado
+        a `MICRO.conductor_actual_id` y que el micro pertenezca a la ruta.
+
+        El servidor genera `fechaHora` al persistir la posición en
+        `POSICION_GPS`; el cliente no envía timestamp.
+      operationId: sendTrackingPosition
+      x-required-roles: [conductor]
       security:
         - bearerAuth: []
       requestBody:
@@ -43,36 +1325,26 @@ paths:
               schema:
                 $ref: '#/components/schemas/TrackingPositionResponse'
         '400':
-          description: Datos GPS inválidos
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
+          $ref: '#/components/responses/BadRequest'
         '401':
-          description: Token JWT inválido o expirado
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
+          $ref: '#/components/responses/Unauthorized'
         '403':
-          description: Token no tiene claims de conductor
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
+          $ref: '#/components/responses/Forbidden'
         '429':
-          description: Rate limit excedido (60 req/min por micro)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
+          $ref: '#/components/responses/TooManyRequests'
 
   /tracking/stop:
     post:
-      summary: "Finalizar recorrido del conductor"
+      tags: [Tracking]
+      summary: Finalizar recorrido del conductor
       description: |
-        Marca el micro como detenido y emite evento micro:stopped a la sala de la ruta.
-        Requiere autenticación JWT con claims: role=conductor, microId, rutaId.
+        Marca el micro como detenido, actualiza el estado operativo del conductor
+        y emite el evento de detención a la sala de la ruta.
+
+        Requiere JWT con `role=conductor`, `conductorPerfilId`, `empresaId`,
+        `microId` y `rutaId`.
+      operationId: stopTracking
+      x-required-roles: [conductor]
       security:
         - bearerAuth: []
       requestBody:
@@ -91,23 +1363,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/TrackingStopResponse'
         '401':
-          description: Token JWT inválido o expirado
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
+          $ref: '#/components/responses/Unauthorized'
         '403':
-          description: Token no tiene claims de conductor
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
+          $ref: '#/components/responses/Forbidden'
         '429':
-          description: Rate limit excedido
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
+          $ref: '#/components/responses/TooManyRequests'
 
 components:
   securitySchemes:
@@ -116,13 +1376,717 @@ components:
       scheme: bearer
       bearerFormat: JWT
       description: |
-        JWT token del conductor. Debe contener claims:
-        - role: "conductor"
-        - microId: integer
-        - rutaId: integer
-        Ver [jwt-claims.md](jwt-claims.md)
+        JWT emitido por `POST /auth/login`.
+
+        Claims principales:
+        - `sub`: id de USUARIO
+        - `role`: pasajero | conductor | admin_general | admin_empresa
+        - `empresaId`: empresa del usuario (null para admin_general y pasajero)
+        - `conductorPerfilId`: id de CONDUCTOR_PERFIL (solo conductor)
+        - `administradorPerfilId`: id de ADMINISTRADOR_EMPRESA_PERFIL
+        - `microId` y `rutaId`: asignación vigente del conductor
+        - `suscripcionId`: suscripción del pasajero, si aplica
+
+        Ver [jwt-claims.md](jwt-claims.md).
+
+  parameters:
+    IdPath:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+        minimum: 1
+    EmpresaIdQuery:
+      name: empresaId
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+    RutaIdQuery:
+      name: rutaId
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+    UsuarioIdQuery:
+      name: usuarioId
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+    RolQuery:
+      name: rol
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/Rol'
+    EstadoOperativoQuery:
+      name: estadoOperativo
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/EstadoOperativoConductor'
+    EstadoSuscripcionQuery:
+      name: estado
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/EstadoSuscripcion'
+    DesdeQuery:
+      name: desde
+      in: query
+      required: false
+      schema:
+        type: string
+        format: date-time
+    HastaQuery:
+      name: hasta
+      in: query
+      required: false
+      schema:
+        type: string
+        format: date-time
+    LimitQuery:
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 500
+        default: 100
+
+  responses:
+    BadRequest:
+      description: Datos de entrada inválidos
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Unauthorized:
+      description: Token JWT inválido o expirado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Forbidden:
+      description: El usuario no tiene permisos o no pertenece a la empresa
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Recurso no encontrado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Conflict:
+      description: Conflicto con el estado actual del recurso
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    UnprocessableEntity:
+      description: Datos válidos pero no procesables
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    TooManyRequests:
+      description: Rate limit excedido
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
 
   schemas:
+    Rol:
+      type: string
+      enum: [pasajero, conductor, admin_general, admin_empresa]
+
+    EstadoOperativoConductor:
+      type: string
+      enum: [disponible, en_recorrido, sin_conexion]
+
+    EstadoMicro:
+      type: string
+      enum: [disponible, en_recorrido, detenido, mantenimiento]
+
+    EstadoSuscripcion:
+      type: string
+      enum: [activa, vencida, cancelada]
+
+    Usuario:
+      type: object
+      required: [id, dni, nombre, apellido, correo, telefono, rol]
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+          minimum: 1
+        dni:
+          type: string
+          minLength: 1
+          maxLength: 20
+          description: Documento de identidad para control local
+        nombre:
+          type: string
+        apellido:
+          type: string
+        correo:
+          type: string
+          format: email
+        telefono:
+          type: string
+          description: Teléfono obligatorio para contacto
+        rol:
+          $ref: '#/components/schemas/Rol'
+
+    UsuarioCreate:
+      type: object
+      required: [dni, nombre, apellido, correo, telefono, password, rol]
+      additionalProperties: false
+      properties:
+        dni:
+          type: string
+          minLength: 1
+          maxLength: 20
+        nombre:
+          type: string
+        apellido:
+          type: string
+        correo:
+          type: string
+          format: email
+        telefono:
+          type: string
+        password:
+          type: string
+          format: password
+          minLength: 8
+        rol:
+          $ref: '#/components/schemas/Rol'
+
+    UsuarioUpdate:
+      type: object
+      additionalProperties: false
+      properties:
+        dni:
+          type: string
+          minLength: 1
+          maxLength: 20
+        nombre:
+          type: string
+        apellido:
+          type: string
+        correo:
+          type: string
+          format: email
+        telefono:
+          type: string
+        password:
+          type: string
+          format: password
+          minLength: 8
+        rol:
+          $ref: '#/components/schemas/Rol'
+
+    LoginRequest:
+      type: object
+      required: [identificador, password]
+      additionalProperties: false
+      properties:
+        identificador:
+          type: string
+          description: DNI o correo del usuario
+        password:
+          type: string
+          format: password
+
+    RefreshRequest:
+      type: object
+      required: [refreshToken]
+      additionalProperties: false
+      properties:
+        refreshToken:
+          type: string
+
+    AuthResponse:
+      type: object
+      required: [accessToken, tokenType, expiresIn, usuario]
+      additionalProperties: false
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        tokenType:
+          type: string
+          const: Bearer
+        expiresIn:
+          type: integer
+          minimum: 1
+          description: Vigencia del access token en segundos
+        usuario:
+          $ref: '#/components/schemas/Usuario'
+
+    Empresa:
+      type: object
+      required: [id, ruc, razonSocial, telefono, direccion]
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+          minimum: 1
+        ruc:
+          type: string
+          pattern: '^[0-9]{11}$'
+        razonSocial:
+          type: string
+        telefono:
+          type: string
+        direccion:
+          type: string
+
+    EmpresaCreate:
+      type: object
+      required: [ruc, razonSocial, telefono, direccion]
+      additionalProperties: false
+      properties:
+        ruc:
+          type: string
+          pattern: '^[0-9]{11}$'
+        razonSocial:
+          type: string
+        telefono:
+          type: string
+        direccion:
+          type: string
+
+    EmpresaUpdate:
+      type: object
+      additionalProperties: false
+      properties:
+        ruc:
+          type: string
+          pattern: '^[0-9]{11}$'
+        razonSocial:
+          type: string
+        telefono:
+          type: string
+        direccion:
+          type: string
+
+    AdministradorEmpresaPerfil:
+      type: object
+      required: [id, usuarioId, empresaId, cargo]
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+          minimum: 1
+        usuarioId:
+          type: integer
+          minimum: 1
+        empresaId:
+          type: integer
+          minimum: 1
+        cargo:
+          type: string
+          description: 'Ej: Gerente, Supervisor'
+
+    AdministradorEmpresaPerfilCreate:
+      type: object
+      required: [usuarioId, empresaId, cargo]
+      additionalProperties: false
+      properties:
+        usuarioId:
+          type: integer
+          minimum: 1
+        empresaId:
+          type: integer
+          minimum: 1
+        cargo:
+          type: string
+
+    AdministradorEmpresaPerfilUpdate:
+      type: object
+      additionalProperties: false
+      properties:
+        cargo:
+          type: string
+
+    ConductorPerfil:
+      type: object
+      required: [id, usuarioId, empresaId, licenciaConducir, estadoOperativo]
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+          minimum: 1
+        usuarioId:
+          type: integer
+          minimum: 1
+        empresaId:
+          type: integer
+          minimum: 1
+        licenciaConducir:
+          type: string
+        estadoOperativo:
+          $ref: '#/components/schemas/EstadoOperativoConductor'
+
+    ConductorPerfilCreate:
+      type: object
+      required: [usuarioId, empresaId, licenciaConducir]
+      additionalProperties: false
+      properties:
+        usuarioId:
+          type: integer
+          minimum: 1
+        empresaId:
+          type: integer
+          minimum: 1
+        licenciaConducir:
+          type: string
+        estadoOperativo:
+          allOf:
+            - $ref: '#/components/schemas/EstadoOperativoConductor'
+          default: disponible
+
+    ConductorPerfilUpdate:
+      type: object
+      additionalProperties: false
+      properties:
+        licenciaConducir:
+          type: string
+        estadoOperativo:
+          $ref: '#/components/schemas/EstadoOperativoConductor'
+
+    GeoJsonLineString:
+      type: object
+      required: [type, coordinates]
+      additionalProperties: false
+      description: |
+        Geometría GeoJSON WGS84. Cada posición se expresa como
+        [longitud, latitud].
+      properties:
+        type:
+          type: string
+          const: LineString
+        coordinates:
+          type: array
+          minItems: 2
+          items:
+            type: array
+            minItems: 2
+            maxItems: 3
+            items:
+              type: number
+
+    Ruta:
+      type: object
+      required: [id, empresaId, nombreRuta, trazadoRuta]
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+          minimum: 1
+        empresaId:
+          type: integer
+          minimum: 1
+        nombreRuta:
+          type: string
+        trazadoRuta:
+          $ref: '#/components/schemas/GeoJsonLineString'
+
+    RutaCreate:
+      type: object
+      required: [empresaId, nombreRuta, trazadoRuta]
+      additionalProperties: false
+      properties:
+        empresaId:
+          type: integer
+          minimum: 1
+        nombreRuta:
+          type: string
+        trazadoRuta:
+          $ref: '#/components/schemas/GeoJsonLineString'
+
+    RutaUpdate:
+      type: object
+      additionalProperties: false
+      properties:
+        nombreRuta:
+          type: string
+        trazadoRuta:
+          $ref: '#/components/schemas/GeoJsonLineString'
+
+    Micro:
+      type: object
+      required: [id, empresaId, rutaId, conductorActualId, placa, capacidadPasajeros, estado]
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+          minimum: 1
+        empresaId:
+          type: integer
+          minimum: 1
+        rutaId:
+          type: integer
+          minimum: 1
+        conductorActualId:
+          type:
+            - integer
+            - 'null'
+          minimum: 1
+          description: ID de CONDUCTOR_PERFIL en turno; null si no tiene conductor
+        placa:
+          type: string
+        capacidadPasajeros:
+          type: integer
+          minimum: 1
+          description: Capacidad para control de aforo
+        estado:
+          $ref: '#/components/schemas/EstadoMicro'
+
+    MicroCreate:
+      type: object
+      required: [empresaId, rutaId, placa, capacidadPasajeros]
+      additionalProperties: false
+      properties:
+        empresaId:
+          type: integer
+          minimum: 1
+        rutaId:
+          type: integer
+          minimum: 1
+        conductorActualId:
+          type:
+            - integer
+            - 'null'
+          minimum: 1
+        placa:
+          type: string
+        capacidadPasajeros:
+          type: integer
+          minimum: 1
+        estado:
+          allOf:
+            - $ref: '#/components/schemas/EstadoMicro'
+          default: disponible
+
+    MicroUpdate:
+      type: object
+      additionalProperties: false
+      properties:
+        rutaId:
+          type: integer
+          minimum: 1
+        conductorActualId:
+          type:
+            - integer
+            - 'null'
+          minimum: 1
+        placa:
+          type: string
+        capacidadPasajeros:
+          type: integer
+          minimum: 1
+        estado:
+          $ref: '#/components/schemas/EstadoMicro'
+
+    MicroAsignacionRequest:
+      type: object
+      required: [conductorActualId]
+      additionalProperties: false
+      properties:
+        conductorActualId:
+          type:
+            - integer
+            - 'null'
+          minimum: 1
+          description: ID de CONDUCTOR_PERFIL; null para liberar la asignación
+
+    MicroEnVivo:
+      type: object
+      required: [microId, empresaId, rutaId, conductorPerfilId, placa, capacidadPasajeros, lat, lng, speed, status, lastSeen]
+      additionalProperties: false
+      properties:
+        microId:
+          type: integer
+          minimum: 1
+        empresaId:
+          type: integer
+          minimum: 1
+        rutaId:
+          type: integer
+          minimum: 1
+        conductorPerfilId:
+          type:
+            - integer
+            - 'null'
+          minimum: 1
+        placa:
+          type: string
+        capacidadPasajeros:
+          type: integer
+          minimum: 1
+        lat:
+          type: number
+          format: double
+          minimum: -90
+          maximum: 90
+        lng:
+          type: number
+          format: double
+          minimum: -180
+          maximum: 180
+        speed:
+          type: number
+          format: double
+          minimum: 0
+          description: Velocidad en m/s
+        status:
+          type: string
+          enum: [moviendo, detenido, desconectado]
+          description: |
+            Estado en vivo del micro. Se deriva de `MICRO.estado` y de
+            `CONDUCTOR_PERFIL.estado_operativo`:
+            moviendo = en_recorrido, detenido = disponible, desconectado = sin_conexion.
+        lastSeen:
+          type: integer
+          format: int64
+          minimum: 0
+          description: Timestamp Unix ms del último GPS
+
+    PosicionGps:
+      type: object
+      required: [id, microId, lat, lng, speed, fechaHora]
+      additionalProperties: false
+      description: |
+        Posición persistida en POSICION_GPS. `lat`, `lng` y `speed` equivalen a
+        `latitud`, `longitud` y `velocidad` en la base de datos.
+      properties:
+        id:
+          type: integer
+          minimum: 1
+        microId:
+          type: integer
+          minimum: 1
+        lat:
+          type: number
+          format: double
+          minimum: -90
+          maximum: 90
+        lng:
+          type: number
+          format: double
+          minimum: -180
+          maximum: 180
+        speed:
+          type: number
+          format: double
+          minimum: 0
+        fechaHora:
+          type: string
+          format: date-time
+
+    Plan:
+      type: object
+      required: [id, nombrePlan, costo]
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+          minimum: 1
+        nombrePlan:
+          type: string
+        costo:
+          type: number
+          format: double
+          minimum: 0
+
+    PlanCreate:
+      type: object
+      required: [nombrePlan, costo]
+      additionalProperties: false
+      properties:
+        nombrePlan:
+          type: string
+        costo:
+          type: number
+          format: double
+          minimum: 0
+
+    PlanUpdate:
+      type: object
+      additionalProperties: false
+      properties:
+        nombrePlan:
+          type: string
+        costo:
+          type: number
+          format: double
+          minimum: 0
+
+    Suscripcion:
+      type: object
+      required: [id, usuarioId, planId, fechaInicio, fechaVencimiento, estado]
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+          minimum: 1
+        usuarioId:
+          type: integer
+          minimum: 1
+          description: ID del pasajero
+        planId:
+          type: integer
+          minimum: 1
+        fechaInicio:
+          type: string
+          format: date
+        fechaVencimiento:
+          type: string
+          format: date
+        estado:
+          $ref: '#/components/schemas/EstadoSuscripcion'
+
+    SuscripcionCreate:
+      type: object
+      required: [planId]
+      additionalProperties: false
+      properties:
+        usuarioId:
+          type: integer
+          minimum: 1
+          description: Solo admin_general; el pasajero usa su propio usuario
+        planId:
+          type: integer
+          minimum: 1
+        fechaInicio:
+          type: string
+          format: date
+          description: Si se omite, el servidor usa la fecha actual
+
+    SuscripcionUpdate:
+      type: object
+      minProperties: 1
+      additionalProperties: false
+      properties:
+        estado:
+          $ref: '#/components/schemas/EstadoSuscripcion'
+        fechaVencimiento:
+          type: string
+          format: date
+
     TrackingPositionRequest:
       type: object
       required: [lat, lng, speed]
@@ -130,21 +2094,21 @@ components:
       properties:
         lat:
           type: number
+          format: double
           minimum: -90
           maximum: 90
-          format: double
-          description: "Latitud WGS84"
+          description: Latitud WGS84
         lng:
           type: number
+          format: double
           minimum: -180
           maximum: 180
-          format: double
-          description: "Longitud WGS84"
+          description: Longitud WGS84
         speed:
           type: number
-          minimum: 0
           format: double
-          description: "Velocidad en m/s"
+          minimum: 0
+          description: Velocidad en m/s
 
     TrackingPositionResponse:
       type: object
@@ -172,40 +2136,6 @@ components:
         error:
           type: string
 
-    Micro:
-      type: object
-      required: [microId, rutaId, lat, lng, speed, status, lastSeen]
-      additionalProperties: false
-      properties:
-        microId:
-          type: integer
-          minimum: 1
-        rutaId:
-          type: integer
-          minimum: 1
-        lat:
-          type: number
-          format: double
-          minimum: -90
-          maximum: 90
-        lng:
-          type: number
-          format: double
-          minimum: -180
-          maximum: 180
-        speed:
-          type: number
-          format: double
-          minimum: 0
-        status:
-          type: string
-          enum: [moviendo, detenido, desconectado]
-        lastSeen:
-          type: integer
-          format: int64
-          minimum: 0
-          description: "Timestamp Unix ms"
-
     RouteJoinedResponse:
       type: object
       required: [rutaId, micros]
@@ -217,7 +2147,7 @@ components:
         micros:
           type: array
           items:
-            $ref: '#/components/schemas/Micro'
+            $ref: '#/components/schemas/MicroEnVivo'
 
     EtaRequest:
       type: object
