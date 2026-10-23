@@ -1,8 +1,8 @@
 # Checklist de puesta en marcha
 
-> **Estado:** Pendiente
+> **Estado:** En revisión
 > **Responsable:** Royfrankly Navarro
-> **Relacionado:** [README.md](README.md), [configuracion.md](configuracion.md), [repos.md](repos.md), [decisiones-pendientes.md](decisiones-pendientes.md), [../guias/git.md](../guias/git.md)
+> **Relacionado:** [README.md](README.md), [configuracion.md](configuracion.md), [repos.md](repos.md), [decisiones-pendientes.md](decisiones-pendientes.md), [../guias/git.md](../guias/git.md), [../arquitectura/despliegue-produccion.md](../arquitectura/despliegue-produccion.md)
 
 Qué falta para que el proyecto quede configurado y se pueda trabajar sin bloqueos. Cada casilla se marca cuando está hecha, no cuando se dice que está hecha.
 
@@ -44,8 +44,8 @@ Detalle: sección 10 de [../guias/git.md](../guias/git.md).
 - [ ] `DB_PASSWORD` definida
 - [ ] Secretos de despliegue: `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_SSH_KEY`, `DEPLOY_PATH`
 - [ ] `.env.example` al día en cada repo, con los mismos nombres de variable
-- [ ] Dominio real apuntando al VPS Contabo y certificado TLS emitido/renovado desde el host
-- [ ] Nginx global del host enruta el dominio al gateway de go-tacna publicado solo en `127.0.0.1:8001`
+- [x] Dominio real apuntando al VPS Contabo y certificado TLS emitido/renovado desde el host
+- [x] Nginx global del host enruta el dominio al Nginx de Compose publicado solo en `127.0.0.1:8001`
 
 Detalle: [configuracion.md](configuracion.md) §5 y §6.
 
@@ -64,14 +64,15 @@ Detalle: [configuracion.md](configuracion.md) §5 y §6.
 
 ## 4. Migración del código a los repos correctos
 
-Hoy el código vive dentro de `go-tacna-frontend`.
+El backend, el gateway, el websocket, el frontend y la infraestructura ya se ejecutan desde repositorios independientes en el VPS. La app móvil sigue en desarrollo.
 
-- [ ] `backend/` (Laravel) → `go-tacna-backend/api/`
-- [ ] `realtime/` (Node.js, ya funcional) → `go-tacna-backend/realtime/`
-- [ ] `web/` (panel) → `go-tacna-frontend/`
-- [ ] `mobile/` (Expo) → `go-tacna-movil/`
-- [ ] `docker/` y `deploy/` → `go-tacna-infraestructura/`
-- [ ] `docs/` → `go-tacna-docs/` (ver bloque 5)
+- [x] Backend, gateway y websocket en `go-tacna-backend`
+- [x] Web y panel en `go-tacna-frontend`
+- [x] Compose, Nginx y manifiestos en `go-tacna-infraestructura`
+- [x] Documentación en `go-tacna-docs`
+- [ ] Completar la migración y las funciones pendientes de `go-tacna-movil`
+
+Ver el estado desplegado en [../arquitectura/despliegue-produccion.md](../arquitectura/despliegue-produccion.md).
 
 ---
 
@@ -88,19 +89,25 @@ Hoy el código vive dentro de `go-tacna-frontend`.
 
 ---
 
-## 6. Código que no compila todavía
+## 6. Estado de compilación y despliegue
 
-Detectado en los README de los repos. Cada punto bloquea a alguien.
+El backend, el gateway, el websocket y el frontend construyen y se ejecutan con Docker Compose en el VPS. Los pendientes de compilación que tenía esta lista se resolvieron para el despliegue web.
 
-- [ ] `api/` de Laravel sin `routes/api.php`, sin controladores y sin los paquetes de JWT, Magellan y Swagger
-- [ ] Falta el `Dockerfile` de `api/`, así que el servicio `backend` no se puede construir
-- [ ] `api/.env.example` sigue con SQLite: cambiar a `pgsql` para usar PostGIS
-- [ ] Falta el `Dockerfile` de la web
-- [ ] `docker-compose.yml` apunta a `../web-admin`, carpeta que no existe (la real es `web`)
-- [ ] La CI busca `web-admin/package-lock.json` y por eso ese job nunca corre
-- [ ] La app móvil no tiene `expo-location`, `expo-task-manager`, `expo-secure-store`, MapLibre ni `socket.io-client`
-- [ ] `app.json` sin permisos de ubicación ni foreground service
-- [ ] Sin `eas.json`: no hay perfiles de build ni firma
+- [x] Backend Laravel con Dockerfile y conexión PostgreSQL/PostGIS
+- [x] Gateway con Dockerfile y proxy al Backend Core
+- [x] Websocket Node.js con healthcheck
+- [x] Frontend con Dockerfile, build de Vite y Nginx interno
+- [x] `docker-compose.yml` con rutas de repositorios hermanos y variables de entorno
+- [ ] App móvil: completar dependencias, permisos de ubicación, build y pruebas en dispositivo
+- [ ] Integrar el cliente Socket.IO en la web para posiciones en vivo
+
+Para revisar el estado real de los contenedores:
+
+```bash
+cd /home/reverb/go-tacna/go-tacna-infraestructura
+docker compose ps
+docker compose logs --tail=100
+```
 
 ---
 
@@ -113,7 +120,7 @@ Las que faltan están en [decisiones-pendientes.md](decisiones-pendientes.md). C
 - [ ] Roles del token: `admin` o `administrador`
 - [ ] Si el estado del tiempo real sigue en memoria o se persiste
 - [x] Docker Compose independiente por proyecto y Nginx global compartido en el host (decisión documentada en [INFRASTRUCTURE.md](../INFRASTRUCTURE.md))
-- [ ] Dominio real y emisión del certificado
+- [x] Dominio real y emisión del certificado
 
 ---
 
@@ -123,3 +130,25 @@ Las que faltan están en [decisiones-pendientes.md](decisiones-pendientes.md). C
 - [ ] Revisión de la matriz de trazabilidad: cada RF con su prueba
 - [ ] README de cada repo con los comandos para ejecutarlo sin clonar los demás
 - [ ] Release `v1.0.0` con etiqueta en los repos
+
+---
+
+## 9. Despliegue web en producción (23 de octubre de 2026)
+
+- [x] Docker Engine y Docker Compose instalados y habilitados al arranque
+- [x] Repositorios de frontend, backend e infraestructura clonados en `/home/reverb/go-tacna`
+- [x] `.env` de producción con dominio, CORS, WebSocket y base de datos, fuera de Git
+- [x] `docker-compose.override.yml` con `APP_ENV=production` y `APP_DEBUG=false`
+- [x] Stack levantado con `docker compose up -d --build --wait`
+- [x] Migraciones y seed ejecutados; volumen `postgres_data` conservado
+- [x] Los seis servicios (`postgres`, `backend`, `gateway`, `websocket`, `frontend`, `nginx`) están `healthy`
+- [x] Nginx del host con TLS y proxy a `127.0.0.1:8001`
+- [x] Redirección `https://go-tacna.site/` → `https://www.go-tacna.site/`
+- [x] Landing, mapa, login, panel admin, API y handshake WebSocket verificados
+- [ ] Integrar el cliente Socket.IO en el frontend; hoy el mapa usa unidades simuladas
+- [ ] Cambiar `SEED_DEMO_DATA=false` y definir limpieza de datos demo para producción real
+- [ ] Configurar respaldo automático de PostgreSQL
+- [ ] Configurar un pipeline de CD o un procedimiento de despliegue automatizado
+- [ ] Definir el procedimiento de rollback de base de datos y probarlo
+
+Detalle: [../arquitectura/despliegue-produccion.md](../arquitectura/despliegue-produccion.md).

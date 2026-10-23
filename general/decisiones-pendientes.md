@@ -1,6 +1,6 @@
 # Decisiones pendientes
 
-> **Estado:** Pendiente
+> **Estado:** En revisión
 > **Responsable:** Royfrankly Navarro
 > **Relacionado:** [README.md](README.md), [checklist.md](checklist.md), [../CONTRIBUTING.md](../CONTRIBUTING.md), [../glosario.md](../glosario.md), [../arquitectura/decisiones/](../arquitectura/decisiones/)
 
@@ -42,17 +42,7 @@ Cuando se toma una decisión, se escribe el archivo en `arquitectura/decisiones/
 | **Decide** | David |
 | **Desbloquea** | `arquitectura/decisiones/`, requisito no funcional sobre disponibilidad |
 
-### 4. ¿Qué dominio y certificado se usan?
-
-| | |
-|---|---|
-| **Qué está suponiendo** | El VPS de Contabo y el patrón de Nginx global → gateway local están definidos; falta elegir el dominio real de go-tacna y emitir su certificado TLS |
-| **Opciones** | (a) Dominio propio, (b) Subdominio de prueba, (c) IP con certificado autofirmado |
-| **Recomendación** | Hace falta HTTPS real: sin eso el Modo Conductor no funciona en un celular físico |
-| **Decide** | Royfrankly |
-| **Desbloquea** | Configuración del DNS, del `server_name` en el Nginx global del host y las pruebas de campo con el conductor y la app. Ver [INFRASTRUCTURE.md](../INFRASTRUCTURE.md) |
-
-### 5. ¿El MVP incluye el panel de administración completo?
+### 4. ¿El MVP incluye el panel de administración completo?
 
 | | |
 |---|---|
@@ -75,7 +65,9 @@ Cuando se toma una decisión, se escribe el archivo en `arquitectura/decisiones/
 | Sintaxis de los diagramas | Solo Mermaid (`.mmd`), con la fuente en `diagramas/fuente/` | [../CONTRIBUTING.md](../CONTRIBUTING.md) §6 |
 | Tiempo de llegada siempre estimado | El ETA se marca como estimado, nunca como hora exacta (RN-08) | [../glosario.md](../glosario.md); `requisitos/reglas-de-negocio.md` aún no existe |
 | Arquitectura de 5 repositorios | Cinco repos independientes, no un monorepo. El código se migra desde `frontend/` | [README.md](README.md), [repos.md](repos.md) |
-| Despliegue de aplicaciones | Compose local está configurado; hay manifiestos K3s con aplicación manual prevista, pero no se confirmó su despliegue en el VPS ni existe CD automatizado | [../CI-CD.md](../CI-CD.md), [../INFRASTRUCTURE.md](../INFRASTRUCTURE.md) |
+| Dominio y certificado | `https://www.go-tacna.site/` con TLS Let's Encrypt para `go-tacna.site` y `www.go-tacna.site`; raíz redirige a `www` | [../INFRASTRUCTURE.md](../INFRASTRUCTURE.md), [../arquitectura/despliegue-produccion.md](../arquitectura/despliegue-produccion.md) |
+| Modalidad de producción | **Docker Compose** en el VPS, upstream `127.0.0.1:8001`; K3s está instalado pero no se aplicaron sus manifiestos | [../INFRASTRUCTURE.md](../INFRASTRUCTURE.md), [../CI-CD.md](../CI-CD.md) |
+| Despliegue de aplicaciones | Compose de producción desplegado y verificado; el despliegue es manual y no existe CD automatizado | [../CI-CD.md](../CI-CD.md), [../INFRASTRUCTURE.md](../INFRASTRUCTURE.md) |
 
 ---
 

@@ -1,0 +1,38 @@
+sequenceDiagram
+    autonumber
+    participant U as Navegador
+    participant DNS as DNS
+    participant NH as Nginx del host
+    participant NI as nginx de Compose
+    participant FE as frontend
+    participant GW as gateway
+    participant BE as backend
+    participant DB as PostgreSQL
+    participant WS as websocket
+
+    U->>DNS: Resolver www.go-tacna.site
+    DNS-->>U: 13.140.174.64
+    U->>NH: HTTPS :443
+    NH->>NH: Validar TLS y server_name
+    NH->>NI: proxy_pass 127.0.0.1:8001
+
+    alt Carga de la SPA
+        NI->>FE: GET /
+        FE-->>NI: index.html + assets
+        NI-->>NH: 200
+        NH-->>U: Web pública
+    else Llamada a la API
+        NI->>GW: /api/v1/...
+        GW->>BE: http://backend:8000
+        BE->>DB: Consulta SQL
+        DB-->>BE: Datos
+        BE-->>GW: JSON
+        GW-->>NI: JSON
+        NI-->>NH: JSON
+        NH-->>U: Respuesta API
+    else Conexión en tiempo real
+        NI->>WS: /socket.io/ + Upgrade
+        WS-->>NI: 101 Switching Protocols
+        NI-->>NH: 101
+        NH-->>U: Canal WebSocket
+    end

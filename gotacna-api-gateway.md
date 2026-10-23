@@ -28,7 +28,7 @@ gotacna-backend-core (Laravel, :8000)
 PostgreSQL 16 + PostGIS
 ```
 
-En Compose, el servicio se llama `gateway` y el Nginx público se llama `nginx`. En K3s, `gateway.yaml` define el Deployment/Service Laravel y `nginx.yaml` define la entrada pública NodePort `30081`. El Nginx del host en producción es otra capa, fuera de este repositorio.
+En producción actual, el servicio se llama `gateway` y el Nginx de Compose se llama `nginx`; el Nginx del host termina TLS y proxya a `127.0.0.1:8001`. Los manifiestos K3s (`gateway.yaml` y `nginx.yaml`) existen como alternativa, pero no están aplicados a la aplicación: el NodePort `30081` no es el upstream vigente.
 
 ## Comportamiento del proxy
 

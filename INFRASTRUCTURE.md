@@ -2,117 +2,198 @@
 
 ## Propósito y estado
 
-go-tacna se aloja en un VPS de **Contabo**. Los datos operativos reportados son `13.140.174.64`, `go-tacna.site` y `www.go-tacna.site`, con certificados Let's Encrypt y Nginx global del host activos. Confirma estos valores y el upstream actual directamente en el servidor antes de cambios de producción.
+Go-Tacna se aloja en un VPS de **Contabo** con IP pública `13.140.174.64`. La aplicación está desplegada y verificada desde el **23 de octubre de 2026** en:
+
+- `https://www.go-tacna.site/` — URL canónica.
+- `https://go-tacna.site/` — redirige con `301` a `www`.
+
+El despliegue vigente usa **Docker Compose** desde `go-tacna-infraestructura`, con el Nginx del host como terminador TLS y proxy hacia `127.0.0.1:8001`. K3s está instalado y activo en el VPS, pero **no participa** en esta aplicación.
 
 El proyecto se organiza en cinco repositorios independientes:
 
 | Repositorio | Responsabilidad |
 |---|---|
-| `go-tacna-backend` | API REST y servicios de tiempo real |
+| `go-tacna-backend` | API REST, gateway y servicio de tiempo real |
 | `go-tacna-frontend` | Web pública y panel de administración |
-| `go-tacna-infraestructura` | Docker Compose, gateway, automatización y despliegue |
+| `go-tacna-infraestructura` | Docker Compose, Nginx interno y automatización |
 | `go-tacna-docs` | Arquitectura, contratos y documentación |
 | `go-tacna-movil` | Aplicación móvil Android |
 
-El diseño de esta página separa el proxy global del servidor de los servicios de cada proyecto. Compose local publica el gateway en loopback `127.0.0.1:8001`; los manifiestos K3s del repositorio de infraestructura definen un NodePort `30081`. Son dos modalidades distintas. La instalación de K3s y el upstream efectivo de producción deben verificarse en el VPS; se ha reportado un `502 Bad Gateway`.
-
-El diagrama editable está en [arquitectura/Diagrama-de-infraestructura-multidominio-independiente.mmd](arquitectura/Diagrama-de-infraestructura-multidominio-independiente.mmd).
+La topología, los requisitos y el procedimiento completo están en [arquitectura/despliegue-produccion.md](arquitectura/despliegue-produccion.md).
 
 ## Flujo de tráfico
 
-1. El DNS de cada dominio apunta a la IP pública del VPS Contabo.
-2. El Nginx global instalado en el sistema operativo recibe el tráfico público en los puertos `80` y `443`. Maneja los certificados TLS del host y el enrutamiento por nombre de dominio.
-3. El Nginx global reenvía el dominio al upstream de la modalidad efectivamente desplegada: `127.0.0.1:8001` si se publica con Compose, o `127.0.0.1:30081` si se instala y publica el gateway K3s según sus manifiestos.
-4. El gateway del proyecto enruta las solicitudes web, API y WebSocket a los servicios internos correspondientes.
-5. La API, el servicio de tiempo real, la web y la base de datos no necesitan puertos públicos propios. Los servicios privados se comunican por la red Docker de go-tacna.
+1. El DNS de `go-tacna.site` apunta a la IP pública del VPS y `www.go-tacna.site` resuelve al mismo destino.
+2. El Nginx del host recibe el tráfico público en `80` y `443`, termina TLS y selecciona el dominio por `server_name`.
+3. El Nginx del host reenvía el dominio al upstream de Compose en `127.0.0.1:8001`.
+4. El Nginx interno de Compose enruta:
+   - `/` al contenedor `frontend:80`.
+   - `/api/` al contenedor `gateway:8000`.
+   - `/socket.io/` al contenedor `websocket:3001`.
+5. El gateway reenvía la API al backend en `http://backend:8000`.
+6. PostgreSQL, el backend, el gateway y el websocket permanecen en la red Docker privada. No tienen puertos públicos.
 
 ```text
 Internet
   └─ HTTPS :443 / HTTP :80
-       └─ Nginx global del VPS Contabo
+       └─ Nginx del host Contabo
             └─ 127.0.0.1:8001
-                 └─ gateway del proyecto go-tacna
-                      ├─ web: /
-                      ├─ tiempo real: /socket.io/
-                      └─ API: /api/
+                 └─ nginx de Compose
+                      ├─ /            → frontend:80
+                      ├─ /api/        → gateway:8000 → backend:8000
+                      └─ /socket.io/  → websocket:3001
 ```
 
-El puerto Compose `8001` y el NodePort K3s `30081` están definidos en los archivos de infraestructura actuales. Cada proyecto adicional debe usar otro puerto local libre y su propio `server` en el Nginx global.
+El puerto `8001` y el `5432` están publicados únicamente en `127.0.0.1`. Solo `80` y `443` quedan expuestos a Internet.
 
-## 1. Publicación local del gateway en Docker Compose
+## Servicios y puertos
 
-En `go-tacna-infraestructura`, el gateway se enlaza solo a la interfaz local del VPS. No debe publicar directamente `80` ni `443`:
+| Servicio | Contenedor | Puerto interno | Publicación en el host | Función |
+|---|---|---:|---|---|
+| `nginx` | `gotacna-local-nginx-1` | `80` | `127.0.0.1:8001` | Entrada de la aplicación y enrutamiento interno |
+| `frontend` | `gotacna-local-frontend-1` | `80` | No publica | SPA React/Vite y panel |
+| `gateway` | `gotacna-local-gateway-1` | `8000` | No publica | API Gateway Laravel |
+| `backend` | `gotacna-local-backend-1` | `8000` | No publica | API REST Laravel |
+| `websocket` | `gotacna-local-websocket-1` | `3001` | No publica | Node.js + Socket.IO |
+| `postgres` | `gotacna-local-postgres-1` | `5432` | `127.0.0.1:5432` | PostgreSQL 16 + PostGIS |
+
+Los seis servicios tienen healthcheck y `restart: unless-stopped`. Docker está habilitado al arranque del sistema.
+
+## Publicación con Docker Compose
+
+El Compose de producción es el mismo `go-tacna-infraestructura/docker-compose.yml`, con un `docker-compose.override.yml` local en el servidor que aplica `APP_ENV=production` y `APP_DEBUG=false`.
+
+La publicación del gateway se define así:
 
 ```yaml
 services:
-  api-gateway:
-    image: nginx:alpine
+  nginx:
     ports:
       - "127.0.0.1:8001:80"
     networks:
-      - go-tacna-net
+      - gotacna-net
 
 networks:
-  go-tacna-net:
+  gotacna-net:
     driver: bridge
 ```
 
-El puerto `80` del contenedor queda disponible en el puerto `8001` de loopback del host. La API, el servicio de tiempo real, PostgreSQL y los demás servicios de la aplicación deben quedar en la red Docker privada y no publicar sus puertos a Internet. Si hace falta acceder a un servicio para mantenimiento, hacerlo mediante un túnel SSH o una regla de acceso restringida, no con una publicación pública permanente.
+PostgreSQL se publica solo para mantenimiento:
 
-## 2. Nginx global del host
+```yaml
+ports:
+  - "127.0.0.1:5432:5432"
+```
 
-Ejemplo para `/etc/nginx/sites-available/go-tacna.site` en el VPS. Este bloque usa el upstream de Compose (`8001`); si K3s ya está activo, usar `30081` en su lugar:
+No se deben cambiar estos bindings a `0.0.0.0`. La API, el websocket y PostgreSQL no necesitan exposición pública.
+
+### Volúmenes
+
+| Volumen | Uso |
+|---|---|
+| `postgres_data` | Datos persistentes de PostgreSQL |
+| `backend_vendor` | Dependencias PHP del backend |
+| `gateway_vendor` | Dependencias PHP del gateway |
+| `location_node_modules` | Dependencias Node del websocket |
+
+No ejecutar `docker compose down -v` ni eliminar `postgres_data` si se quieren conservar los datos.
+
+## Nginx del host
+
+La configuración del dominio está en `/etc/nginx/sites-available/www.go-tacna.site` y el sitio habilitado en `/etc/nginx/sites-enabled/`. El upstream vigente es:
 
 ```nginx
-server {
-    listen 80;
-    server_name go-tacna.site www.go-tacna.site;
+location / {
+    proxy_pass http://127.0.0.1:8001;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
 
-    return 301 https://$host$request_uri;
-}
-
-server {
-    listen 443 ssl;
-    server_name go-tacna.site www.go-tacna.site;
-
-    ssl_certificate /etc/letsencrypt/live/go-tacna.site/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/go-tacna.site/privkey.pem;
-
-    location / {
-        proxy_pass http://127.0.0.1:8001;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "Upgrade";
-    }
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "Upgrade";
 }
 ```
 
-El bloque HTTP redirige a HTTPS. Nginx debe tener habilitados los módulos/directivas SSL correspondientes y el certificado debe existir antes de activar la configuración TLS. Validar la configuración con `nginx -t` y recargar Nginx después de cada cambio. Gestionar la emisión y renovación de los certificados desde el host, no desde el contenedor de go-tacna.
+El certificado está en `/etc/letsencrypt/live/www.go-tacna.site/` y su SAN incluye `go-tacna.site` y `www.go-tacna.site`. La emisión y renovación se gestionan en el host con Certbot, no dentro del Compose.
 
-Para usar el gateway K3s definido como NodePort en `k8s/gateway.yaml`, cambia únicamente el upstream al `http://127.0.0.1:30081` una vez que el clúster y el servicio estén activos. No asumas que el manifiesto K3s está desplegado por existir en el repositorio.
+### Redirección del dominio raíz
 
-El gateway de go-tacna sigue siendo responsable del enrutamiento interno de rutas. Debe reenviar `/`, `/api/` y `/socket.io/` a los servicios apropiados y habilitar WebSocket para el servicio de tiempo real. El proxy de `/socket.io/` debe permitir conexiones de larga duración, incluido un `proxy_read_timeout` adecuado.
+El bloque `server_name go-tacna.site` de `/etc/nginx/sites-available/default` responde con:
 
-## 3. Aislamiento entre proyectos
+```nginx
+location / {
+    return 301 https://www.go-tacna.site$request_uri;
+}
+```
 
-Cada proyecto mantiene su propio repositorio de infraestructura, Compose, red Docker, servicios y ciclo de despliegue. El Nginx global y los puertos públicos `80`/`443` se comparten en el host, pero no las redes ni los contenedores de las aplicaciones.
+Antes de modificar la configuración se creó el respaldo `/etc/nginx/sites-available/default.bak.20261023130649`. Después de cualquier cambio:
 
-- **Aislamiento:** detener o recrear los contenedores de otro proyecto no debe detener go-tacna.
-- **Despliegue independiente:** los comandos de Compose de un proyecto deben operar solo sobre sus servicios y su red. No ejecutar `down` sobre recursos compartidos ni administrar el Nginx global como si perteneciera a un proyecto.
-- **Menor exposición:** solo el Nginx global recibe tráfico público. Los gateways de proyectos se enlazan a `127.0.0.1`; los servicios de aplicación y datos permanecen en redes privadas.
+```bash
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+## K3s: estado y relación con Compose
+
+K3s está instalado y activo en el VPS, pero no se aplicaron los manifiestos de Go-Tacna para esta aplicación. Los manifiestos K3s/Kustomize del repositorio de infraestructura siguen siendo una **alternativa no desplegada**; definen un NodePort `30081`.
+
+| Modalidad | Upstream | Estado |
+|---|---|---|
+| Docker Compose | `127.0.0.1:8001` | **Activo y verificado** |
+| K3s | `127.0.0.1:30081` | Manifiestos presentes; no aplicado a la app |
+
+No cambiar el `proxy_pass` del Nginx del host a `30081` sin desplegar, validar y comprobar el gateway K3s. Un `502 Bad Gateway` ya no describe el estado actual de producción.
+
+## Operación
+
+```bash
+cd /home/reverb/go-tacna/go-tacna-infraestructura
+
+docker compose ps
+docker compose logs -f --tail=100
+docker compose logs -f backend
+docker compose exec backend php artisan migrate:status
+docker compose exec backend php artisan route:list --path=api/v1
+```
+
+Para aplicar una actualización:
+
+```bash
+cd /home/reverb/go-tacna
+git -C go-tacna-frontend pull --ff-only
+git -C go-tacna-backend pull --ff-only
+git -C go-tacna-infraestructura pull --ff-only
+cd go-tacna-infraestructura
+docker compose up -d --build --wait
+```
+
+No se configuró un pipeline de CD. El despliegue es manual y debe verificarse con `docker compose ps` y los endpoints públicos antes de darlo por terminado.
+
+## Aislamiento entre proyectos
+
+Cada proyecto mantiene su propio repositorio de infraestructura, Compose, red Docker, servicios y ciclo de despliegue. El Nginx del host y los puertos públicos `80`/`443` se comparten, pero no las redes ni los contenedores de las aplicaciones.
+
+- **Aislamiento:** detener o recrear los contenedores de otro proyecto no debe detener Go-Tacna.
+- **Despliegue independiente:** los comandos de Compose de un proyecto deben operar solo sobre sus servicios y su red.
+- **Menor exposición:** solo el Nginx del host recibe tráfico público; los gateways de proyectos se enlazan a `127.0.0.1`.
 - **Enrutamiento multidominio:** cada dominio tiene su propio `server_name` y apunta a un puerto local asignado a un gateway distinto.
-
-La instalación y administración del Nginx global, sus certificados y la asignación de puertos son responsabilidades del host. Los cambios a Compose y a los servicios propios de go-tacna pertenecen a `go-tacna-infraestructura`.
 
 ## Consideraciones operativas
 
-- Abrir en el firewall del VPS solo los puertos requeridos públicamente, normalmente SSH y `80`/`443`.
-- Confirmar que `go-tacna.site` y `www.go-tacna.site` resuelven a la IP pública del VPS y que ambos nombres están incluidos en el certificado TLS.
-- Mantener secretos y credenciales fuera de Git; usar el almacén de secretos de despliegue y archivos `.env` no versionados.
-- No reutilizar puertos locales asignados a otros proyectos.
-- Los datos de VPS, dominio, certificado y firewall son reportados por el equipo; verifica el estado efectivo antes de operar el host.
+- Abrir en el firewall del VPS solo los puertos requeridos públicamente: SSH, `80` y `443`.
+- Mantener `go-tacna.site` y `www.go-tacna.site` en el certificado TLS y en el DNS.
+- Mantener secretos y credenciales fuera de Git; usar archivos `.env` no versionados con permisos restringidos.
+- No reutilizar los puertos locales asignados a otros proyectos.
+- Verificar el estado real del host antes de cambiar DNS, Nginx, certificados o puertos.
+- El servicio websocket está desplegado, pero el frontend actual no consume Socket.IO; el mapa sigue usando unidades simuladas.
+
+## Referencias
+
+- [Despliegue de producción](arquitectura/despliegue-produccion.md)
+- [Diagrama general de despliegue](arquitectura/despliegue-produccion.mmd)
+- [Red Docker de producción](arquitectura/red-docker-produccion.mmd)
+- [Flujo de una petición](arquitectura/flujo-peticion-produccion.mmd)
+- [Requisitos para la web operativa](arquitectura/requisitos-web-operativa.mmd)
+- [CI/CD y flujos de trabajo](CI-CD.md)

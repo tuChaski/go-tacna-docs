@@ -1,0 +1,65 @@
+flowchart TD
+    subgraph base["Infraestructura base"]
+        vps["VPS con IP pública<br/>y acceso SSH"]
+        dns["DNS<br/>go-tacna.site + www"]
+        ports["Puertos públicos<br/>80 y 443"]
+    end
+
+    subgraph runtime["Runtime del servidor"]
+        docker["Docker Engine<br/>habilitado al arranque"]
+        compose["Docker Compose"]
+        repos["Repos clonados<br/>frontend, backend e infraestructura"]
+    end
+
+    subgraph config["Configuración"]
+        env[".env del servidor<br/>sin versionar"]
+        secrets["Secretos fuera de Git<br/>APP_KEY, JWT_SECRET, DB_PASSWORD"]
+        override["docker-compose.override.yml<br/>APP_ENV=production<br/>APP_DEBUG=false"]
+    end
+
+    subgraph app["Aplicación"]
+        db["PostgreSQL + PostGIS<br/>volumen, migraciones y seed"]
+        services["backend + gateway<br/>+ websocket + frontend"]
+        internal["nginx interno<br/>/ · /api/ · /socket.io/"]
+    end
+
+    subgraph edge["Borde público"]
+        tls["Nginx del host<br/>TLS Let's Encrypt"]
+        redirect["go-tacna.site<br/>301 → www"]
+    end
+
+    subgraph validation["Validación"]
+        health["Healthchecks<br/>contenedores healthy"]
+        endpoints["Frontend, API, login<br/>y handshake WebSocket"]
+    end
+
+    vps --> docker
+    dns --> tls
+    ports --> tls
+    docker --> compose
+    compose --> services
+    repos --> services
+    env --> services
+    secrets --> env
+    override --> env
+    services --> db
+    services --> internal
+    tls --> internal
+    redirect --> tls
+    internal --> health
+    health --> endpoints
+    endpoints --> operative["Web operativa<br/>https://www.go-tacna.site"]
+
+    classDef baseNode fill:#dcfce7,stroke:#16a34a,color:#14532d
+    classDef runtimeNode fill:#e0f2fe,stroke:#0284c7,color:#0c4a6e
+    classDef configNode fill:#fef9c3,stroke:#ca8a04,color:#713f12
+    classDef appNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95
+    classDef edgeNode fill:#ffedd5,stroke:#ea580c,color:#7c2d12
+    classDef finalNode fill:#1d4ed8,stroke:#1e3a8a,color:#ffffff
+
+    class vps,dns,ports baseNode
+    class docker,compose,repos runtimeNode
+    class env,secrets,override configNode
+    class db,services,internal appNode
+    class tls,redirect,health,endpoints edgeNode
+    class operative finalNode

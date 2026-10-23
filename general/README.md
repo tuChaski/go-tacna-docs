@@ -1,6 +1,6 @@
 # Carpeta general
 
-> **Estado:** Pendiente
+> **Estado:** En revisión
 > **Responsable:** Royfrankly Navarro
 > **Relacionado:** [../README.md](../README.md), [../INVENTARIO.md](../INVENTARIO.md), [../guias/git.md](../guias/git.md), [../CONTRIBUTING.md](../CONTRIBUTING.md)
 
@@ -47,7 +47,8 @@ Si un contrato cambia, el PR va primero en `docs/`. Ver [../CONTRIBUTING.md](../
 | Saber qué hace cada repositorio | [repos.md](repos.md) |
 | Saber qué hay que configurar: ramas, puertos, secretos, contratos | [configuracion.md](configuracion.md) |
 | Consultar el VPS Contabo, el proxy global y el despliegue multidominio | [../INFRASTRUCTURE.md](../INFRASTRUCTURE.md) |
-| Entender Docker local, CI actual y el flujo manual previsto para producción | [../CI-CD.md](../CI-CD.md) |
+| Ver la topología, requisitos y operación del despliegue actual | [../arquitectura/despliegue-produccion.md](../arquitectura/despliegue-produccion.md) |
+| Entender Docker local, CI actual y el flujo manual de producción | [../CI-CD.md](../CI-CD.md) |
 | Saber qué falta | [checklist.md](checklist.md) |
 | Desbloquear una decisión que está frenando el trabajo | [decisiones-pendientes.md](decisiones-pendientes.md) |
 | Cambiar las reglas de Git | [../guias/git.md](../guias/git.md) |

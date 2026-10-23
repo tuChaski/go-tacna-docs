@@ -1,6 +1,6 @@
 # Ficha de los 5 repositorios
 
-> **Estado:** Pendiente
+> **Estado:** En revisión
 > **Responsable:** Royfrankly Navarro
 > **Relacionado:** [README.md](README.md), [configuracion.md](configuracion.md), [checklist.md](checklist.md), [../INVENTARIO.md](../INVENTARIO.md)
 
@@ -74,11 +74,11 @@ Compose, gateway de la aplicación y scripts de despliegue. El Nginx global y lo
 
 | Pieza | Qué hace |
 |---|---|
-| `docker/docker-compose.yml` | Base de todos los servicios en local |
-| `docker/docker-compose.prod.yml` | Se sobrepone al base para producción |
-| `deploy/nginx/default.conf` | Gateway interno: enruta `/api`, `/socket.io` y `/` dentro de la aplicación |
-| `deploy/scripts/` | Automatización del despliegue; los certificados del Nginx global se gestionan en el host |
-| `.github/workflows/deploy.yml` | Despliegue automático al hacer push a `main` |
+| `docker-compose.yml` | Define PostgreSQL/PostGIS, backend, gateway, websocket, frontend y Nginx de Compose |
+| `docker/nginx/default.conf` | Nginx interno: enruta `/`, `/api/` y `/socket.io/` dentro de la aplicación |
+| `docker/php`, `docker/node`, `docker/frontend` | Imágenes de backend/gateway, websocket y frontend |
+| `k8s/` | Manifiestos K3s/Kustomize alternativos; no están aplicados a la app en producción |
+| `.env.example` | Variables de desarrollo; los valores reales viven en el `.env` del servidor |
 
 Consume: nada de `docs/`. **Los demás dependen de él** para publicarse.
 
@@ -89,12 +89,12 @@ Consume: nada de `docs/`. **Los demás dependen de él** para publicarse.
 | Repo | Estado | Lo que falta |
 |---|---|---|
 | `docs` | Esqueleto completo | Contenido: requerimientos, contratos e informe |
-| `backend` | Repo vacío; el código vive en `frontend/` | Migrar `api/` y `realtime/` |
-| `frontend` | Repo vacío; el código vive acá dentro | Migrar `web/` y sacar el resto de carpetas |
-| `movil` | Repo vacío; la app vive en `frontend/mobile/` | Migrar la app de Expo |
-| `infraestructura` | Repo vacío; la infraestructura vive en `frontend/` | Migrar `docker/` y `deploy/` |
+| `backend` | API, gateway y websocket migrados a su repositorio | Completar pruebas e integración de Location Service |
+| `frontend` | Web y panel en su repositorio; desplegados en producción | Integrar el cliente Socket.IO y completar vistas pendientes |
+| `movil` | Repo creado; la app móvil sigue en desarrollo | Completar la migración y las funciones de GPS |
+| `infraestructura` | Docker Compose desplegado en el VPS; K3s no aplicado | Configurar CD, respaldo y procedimiento de rollback |
 
-> Resumen: **el código todavía no está donde debería.** La migración de cada repo a su destino está en [checklist.md](checklist.md).
+> El despliegue actual usa Docker Compose. La presencia de manifiestos K3s no significa que estén aplicados. Ver [arquitectura/despliegue-produccion.md](../arquitectura/despliegue-produccion.md).
 
 ---
 

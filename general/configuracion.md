@@ -1,8 +1,8 @@
 # Configuración general del proyecto
 
-> **Estado:** Pendiente
+> **Estado:** En revisión
 > **Responsable:** Royfrankly Navarro
-> **Relacionado:** [README.md](README.md), [repos.md](repos.md), [checklist.md](checklist.md), [../guias/git.md](../guias/git.md), [../contratos/](../contratos/)
+> **Relacionado:** [README.md](README.md), [repos.md](repos.md), [checklist.md](checklist.md), [../guias/git.md](../guias/git.md), [../contratos/](../contratos/), [../arquitectura/despliegue-produccion.md](../arquitectura/despliegue-produccion.md)
 
 Toda la configuración del proyecto en una sola vista. El detalle de cada variable está en el README del repositorio que la usa.
 
@@ -84,13 +84,14 @@ Orden de un cambio de contrato:
 | Servicio | Puerto interno | Ruta pública | Quién lo publica |
 |---|---|---|---|
 | API Laravel | 8000 | `/api/` | Gateway de go-tacna, solo red Docker |
-| Servidor de tiempo real | 3001 | `/socket.io/` | Gateway de go-tacna, solo red Docker |
-| Panel web | 4173 | `/` | Gateway de go-tacna, solo red Docker |
-| PostgreSQL + PostGIS | 5432 | — | No se publica: solo red Docker |
-| Gateway de go-tacna | 80 en el contenedor | — | Publicado solo en `127.0.0.1:8001` del VPS |
+| Gateway Laravel | 8000 | `/api/` | Nginx interno de Compose, solo red Docker |
+| Servidor de tiempo real | 3001 | `/socket.io/` | Nginx interno de Compose, solo red Docker |
+| Panel web | 80 | `/` | Nginx interno de Compose, solo red Docker |
+| PostgreSQL + PostGIS | 5432 | — | Solo `127.0.0.1:5432` para mantenimiento |
+| Nginx de Compose | 80 en el contenedor | — | Publicado solo en `127.0.0.1:8001` del VPS |
 | Nginx global del host Contabo | — | 80 y 443 | Único punto de entrada público; TLS y selección por dominio |
 
-El Nginx global del host reenvía el dominio de go-tacna al gateway local en `127.0.0.1:8001`. El gateway enruta `/api/`, `/socket.io/` y `/` a los servicios internos. `/socket.io/` necesita cabeceras de `Upgrade` y un `proxy_read_timeout` adecuado para conexiones de larga duración. Ver [INFRASTRUCTURE.md](../INFRASTRUCTURE.md).
+El Nginx global del host reenvía el dominio de go-tacna al Nginx de Compose en `127.0.0.1:8001`. Ese Nginx enruta `/api/` al gateway, `/socket.io/` al servicio de tiempo real y `/` al frontend. `/socket.io/` necesita cabeceras de `Upgrade` y un `proxy_read_timeout` adecuado para conexiones de larga duración. K3s está instalado en el VPS, pero su NodePort `30081` no es la modalidad activa. Ver [INFRASTRUCTURE.md](../INFRASTRUCTURE.md) y [despliegue-produccion.md](../arquitectura/despliegue-produccion.md).
 
 ---
 
@@ -103,7 +104,7 @@ Nunca se suben. Solo se versiona `.env.example`.
 | `JWT_SECRET` | Secretos de GitHub y `.env` del servidor | **Idéntico en la API y en el servidor de tiempo real.** Si difieren, el conductor no puede enviar GPS |
 | `APP_KEY` | `.env` de Laravel | Obligatoria: el arranque falla sin ella |
 | `DB_PASSWORD` | `.env` y secretos de CI | Obligatoria |
-| `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_SSH_KEY`, `DEPLOY_PATH` | Secretos del repositorio | Los usa el workflow de despliegue |
+| `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_SSH_KEY`, `DEPLOY_PATH` | Secretos del repositorio | Previstos para un futuro workflow de despliegue; hoy no hay CD automatizado |
 | `DOMAIN`, `CERTBOT_EMAIL` | Configuración de despliegue | Dominio y correo para TLS; la emisión/renovación se gestiona en el host Contabo |
 
 > Si un secreto se sube por error, **se rota primero**. Borrar el commit no alcanza (ver la sección 9 de `guias/git.md`).
@@ -114,10 +115,12 @@ Nunca se suben. Solo se versiona `.env.example`.
 
 | Repo | Variables | Nota |
 |---|---|---|
-| `backend` | `APP_KEY`, `DB_*`, `JWT_SECRET`, `PORT`, `CORS_ORIGIN`, `OFFLINE_AFTER_MS` | `OFFLINE_AFTER_MS` marca el micro sin conexión tras ese tiempo sin señal |
-| `frontend` | `VITE_API_URL`, `VITE_REALTIME_URL` | Se compilan dentro del bundle |
+| `backend` | `APP_ENV`, `APP_DEBUG`, `APP_KEY`, `APP_URL`, `DB_*`, `JWT_SECRET`, `PORT`, `CORS_ALLOWED_ORIGINS`, `SEED_DEMO_DATA` | `APP_ENV=production` y `APP_DEBUG=false` en el VPS; `SEED_DEMO_DATA=true` solo para la demo |
+| `gateway` | `APP_ENV`, `APP_DEBUG`, `APP_KEY`, `CORE_API_URL`, `CORS_ALLOWED_ORIGINS` | `CORE_API_URL=http://backend:8000` dentro de la red Docker |
+| `websocket` | `PORT`, `CORS_ORIGIN` | `CORS_ORIGIN` restringido al dominio público |
+| `frontend` | `VITE_API_BASE_URL`, `VITE_WS_URL` | Se compilan dentro del bundle; la web actual no consume Socket.IO |
 | `movil` | `EXPO_PUBLIC_API_URL`, `EXPO_PUBLIC_REALTIME_URL` | El prefijo `EXPO_PUBLIC_` las expone al bundle: nunca un secreto ahí |
-| `infraestructura` | `APP_*`, `DB_*`, `JWT_SECRET` | El gateway publica `127.0.0.1:8001:80`; `DOMAIN` y `CERTBOT_EMAIL` se configuran para el Nginx global del host, no en Compose |
+| `infraestructura` | `APP_*`, `DB_*`, `JWT_SECRET`, `CORS_*`, `VITE_*`, `SEED_DEMO_DATA` | El Nginx de Compose publica `127.0.0.1:8001:80`; `DOMAIN` y `CERTBOT_EMAIL` se configuran en el host, no en Compose |
 
 Detalle y valores por defecto: el README de cada repositorio.
 
@@ -134,7 +137,9 @@ Detalle y valores por defecto: el README de cada repositorio.
 | 3 | Emitir el certificado TLS en el host para el dominio y habilitar el bloque HTTPS |
 | 4 | Verificar con `nginx -t` y programar/confirmar la renovación automática del certificado |
 
-El gateway del proyecto se publica solo en una interfaz local (por ejemplo, `127.0.0.1:8001`). No ejecutar Certbot ni publicar 80/443 desde el Compose de go-tacna cuando esos puertos pertenecen al Nginx global. Para el ejemplo completo, consultar [INFRASTRUCTURE.md](../INFRASTRUCTURE.md).
+El Nginx de Compose se publica solo en una interfaz local (`127.0.0.1:8001`). No ejecutar Certbot ni publicar 80/443 desde el Compose de go-tacna cuando esos puertos pertenecen al Nginx global. Para el ejemplo completo, consultar [INFRASTRUCTURE.md](../INFRASTRUCTURE.md).
+
+Estado actual (23 de octubre de 2026): `https://www.go-tacna.site/` está desplegado con TLS de Let's Encrypt; el certificado cubre `go-tacna.site` y `www.go-tacna.site`; el dominio raíz redirige a `www`. El upstream del Nginx del host es `127.0.0.1:8001`.
 
 En el celular físico, `localhost` es el propio teléfono: hay que usar la IP de la computadora en la red local.
 
@@ -162,8 +167,9 @@ En el celular físico, `localhost` es el propio teléfono: hay que usar la IP de
 | Protección de ramas en GitHub | **Pendiente** (sección 2) |
 | Secretos en GitHub | **Pendiente** (sección 5) |
 | Contratos escritos | **Pendiente**: los 3 archivos de `docs/contratos/` están vacíos |
-| Contenido de la documentación | **Pendiente**: todo el esqueleto |
+| Contenido de la documentación | **En progreso**: arquitectura y despliegue actualizados; quedan contratos, pruebas e informe |
 | Migración del código a los repos correctos | **Pendiente**: ver [repos.md](repos.md) |
-| Dominio y certificado | **Pendiente** (sección 7) |
+| Dominio y certificado | **Desplegado** (sección 7) |
+| Despliegue web en producción | **Desplegado** con Docker Compose en el VPS; sin CD automático |
 
 El detalle accionable está en [checklist.md](checklist.md).
