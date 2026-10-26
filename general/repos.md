@@ -8,13 +8,13 @@ Cada repositorio es independiente: se clona solo, se ejecuta solo y tiene su pro
 
 | Repo | Rama de trabajo | Raíz en GitHub | Clonar |
 |---|---|---|---|
-| `go-tacna-docs` | `main` | [go-tacna/go-tacna-docs](https://github.com/go-tacna/go-tacna-docs) | `git clone https://github.com/go-tacna/go-tacna-docs.git` |
-| `go-tacna-backend` | `develop` | [go-tacna/go-tacna-backend](https://github.com/go-tacna/go-tacna-backend) | `git clone https://github.com/go-tacna/go-tacna-backend.git` |
-| `go-tacna-frontend` | `develop` | [go-tacna/go-tacna-frontend](https://github.com/go-tacna/go-tacna-frontend) | `git clone https://github.com/go-tacna/go-tacna-frontend.git` |
-| `go-tacna-movil` | `develop` | [go-tacna/go-tacna-movil](https://github.com/go-tacna/go-tacna-movil) | `git clone https://github.com/go-tacna/go-tacna-movil.git` |
-| `go-tacna-infraestructura` | `develop` | [go-tacna/go-tacna-infraestructura](https://github.com/go-tacna/go-tacna-infraestructura) | `git clone https://github.com/go-tacna/go-tacna-infraestructura.git` |
+| `go-tacna-docs` | `main` | [tuChaski/go-tacna-docs](https://github.com/tuChaski/go-tacna-docs) | `git clone https://github.com/tuChaski/go-tacna-docs.git` |
+| `go-tacna-backend` | `develop` | [tuChaski/go-tacna-backend](https://github.com/tuChaski/go-tacna-backend) | `git clone https://github.com/tuChaski/go-tacna-backend.git` |
+| `go-tacna-frontend` | `develop` | [tuChaski/go-tacna-frontend](https://github.com/tuChaski/go-tacna-frontend) | `git clone https://github.com/tuChaski/go-tacna-frontend.git` |
+| `go-tacna-movil` | `develop` | [tuChaski/go-tacna-movil](https://github.com/tuChaski/go-tacna-movil) | `git clone https://github.com/tuChaski/go-tacna-movil.git` |
+| `go-tacna-infraestructura` | `develop` | [tuChaski/go-tacna-infraestructura](https://github.com/tuChaski/go-tacna-infraestructura) | `git clone https://github.com/tuChaski/go-tacna-infraestructura.git` |
 
-Tablero de tareas: [Planificación go-tacna](https://github.com/orgs/go-tacna/projects/1)
+Tablero de tareas: [Proyectos de tuChaski](https://github.com/orgs/tuChaski/projects)
 
 ---
 
@@ -26,15 +26,15 @@ Documentación e informe. Es la fuente de verdad de los contratos.
 
 | Carpeta | Qué guarda |
 |---|---|
-| `requisitos/` | Carpeta no creada; decidir si se incorpora documentación de requisitos o se evita duplicar fuentes actuales |
+| `requisitos/` | Diccionario de datos y documentos de requisitos que se vayan aprobando |
 | `contratos/` | `openapi.yaml`, eventos WebSocket y claims del JWT. **Los otros repos los consumen** |
-| `arquitectura/` | Modelo del sistema, modelo de datos y decisiones |
+| `arquitectura/` | Modelo del sistema, despliegue de producción, modelo de datos y decisiones |
 | `casos-de-uso/`, `diseno/`, `planificacion/`, `pruebas/`, `manuales/` | El resto del contenido del proyecto |
 | `diagramas/` | Mermaid en `fuente/`, imágenes en `export/` |
 | `informe/` | Carpeta no creada; se organizará cuando inicie la preparación del informe |
 | `guias/` | Reglas transversales, hoy solo `git.md` |
 
-Ramas: solo `main`. No hay `develop` porque no hay staging.
+Ramas: `main` como base y `develop` para integración y trabajo documental. El repositorio de documentación no tiene despliegue.
 
 ### `backend` — Royfrankly y David
 
@@ -42,8 +42,9 @@ API REST y servidor de tiempo real. El detalle del stack está en su README.
 
 | Componente | Qué hace |
 |---|---|
-| `api/` (Laravel + PostgreSQL/PostGIS) | Cuentas, empresas, rutas, micros, conductores y posiciones |
-| `realtime/` (Node.js + Socket.IO) | Recibe el GPS del conductor, guarda las posiciones en memoria y empuja las actualizaciones a los pasajeros |
+| `gotacna-backend-core` (Laravel + PostgreSQL/PostGIS) | Cuentas, empresas, rutas, micros, conductores y posiciones |
+| `gotacna-api-gateway` (Laravel) | Recibe `/api/` y reenvía al Backend Core |
+| `go-tacna-location-service` (Node.js + Socket.IO) | Recibe el GPS del conductor, guarda las posiciones en memoria y empuja las actualizaciones a los pasajeros |
 
 Stack principal: PHP 8.3, Laravel, PostgreSQL 16 con PostGIS, Node.js 24, Express, Socket.IO, jsonwebtoken.
 
@@ -55,8 +56,9 @@ Web pública y panel de administración.
 
 | Componente | Qué hace |
 |---|---|
-| `web/` | Panel de administración (React + Vite) y web pública |
-| `backend/`, `realtime/`, `mobile/`, `docker/`, `deploy/` | Hoy vive el código de los otros repos acá; hay que migrarlo |
+| `src/` | Web pública y panel de administración (React + Vite + Tailwind CSS) |
+| `public/` | Recursos estáticos |
+| `pruebas/` | Pruebas del frontend |
 
 Consume: los mismos contratos que `backend`, más los datos geográficos de la ruta.
 
@@ -70,7 +72,7 @@ Consume: los contratos de `docs/` y los certificados HTTPS de `infraestructura`.
 
 ### `infraestructura` — Royfrankly
 
-Compose, gateway de la aplicación y scripts de despliegue. El Nginx global y los certificados TLS son compartidos y se administran en el host VPS Contabo, no desde el Compose de go-tacna. Ver [infraestructura de go-tacna](../INFRASTRUCTURE.md).
+Compose, Nginx interno y manifiestos K3s. El Nginx global y los certificados TLS son compartidos y se administran en el host VPS Contabo, no desde el Compose de go-tacna. Ver [infraestructura de go-tacna](../INFRASTRUCTURE.md).
 
 | Pieza | Qué hace |
 |---|---|
@@ -88,7 +90,7 @@ Consume: nada de `docs/`. **Los demás dependen de él** para publicarse.
 
 | Repo | Estado | Lo que falta |
 |---|---|---|
-| `docs` | Esqueleto completo | Contenido: requerimientos, contratos e informe |
+| `docs` | Contenido en progreso | Completar requerimientos, contratos e informe |
 | `backend` | API, gateway y websocket migrados a su repositorio | Completar pruebas e integración de Location Service |
 | `frontend` | Web y panel en su repositorio; desplegados en producción | Integrar el cliente Socket.IO y completar vistas pendientes |
 | `movil` | Repo creado; la app móvil sigue en desarrollo | Completar la migración y las funciones de GPS |
