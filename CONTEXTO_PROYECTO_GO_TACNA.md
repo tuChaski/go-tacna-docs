@@ -84,8 +84,9 @@ Repositorio transversal para las especificaciones, la gobernanza y los entregabl
 | `manuales/` | Guías de usuario y administración |
 | `planificacion/` | Fases y planificación del proyecto |
 | `pruebas/` | Plan de pruebas y matriz de trazabilidad |
+| `requisitos/` | Diccionario de datos y documentos de requisitos aprobados |
 
-Esta tabla refleja las carpetas presentes en el repositorio. `requisitos/`, `informe/`, `plantillas/` y `assets/` no están creadas actualmente; no se deben tratar como documentación disponible hasta que se incorporen.
+Esta tabla refleja las carpetas presentes en el repositorio. `requisitos/` existe y por ahora solo contiene `diccionario-datos.md`; `informe/`, `plantillas/` y `assets/` no están creadas actualmente y no deben tratarse como documentación disponible hasta que se incorporen.
 
 ### `go-tacna-backend`
 
@@ -99,7 +100,7 @@ Backend Core ya cuenta con migraciones, modelos, autenticación y endpoints desc
 
 ### Los otros tres repositorios
 
-- **`go-tacna-frontend`:** plataforma web React + Vite. El README del repositorio indica que todavía hay componentes del sistema dentro del monorepo original, por lo que la migración debe considerarse en curso hasta comprobar el contenido actual.
+- **`go-tacna-frontend`:** plataforma web React + Vite. El código de la web y del panel está en este repositorio y se despliega con el Compose de infraestructura. La integración del cliente Socket.IO para posiciones en vivo sigue pendiente.
 - **`go-tacna-movil`:** aplicación móvil React Native + Expo. El repositorio independiente está creado; la experiencia móvil completa, mapa y GPS en segundo plano siguen siendo trabajo de implementación.
 - **`go-tacna-infraestructura`:** contiene Compose, configuración Nginx y manifiestos K3s/Kustomize. La aplicación está desplegada en el VPS con **Docker Compose**; K3s está instalado pero no se aplicaron los manifiestos de la app. El despliegue es manual y no tiene CD automatizado.
 

@@ -2,7 +2,7 @@
 
 > Estado: En revisión
 > Responsable: Alex Huaracha
-> Relacionado: [Figma](figma.md), [guía de estilos](guia-de-estilos.md), [alcance del MVP](../requisitos/mvp.md), [requerimientos funcionales](../requisitos/requerimientos-funcionales.md), [cronograma](../planificacion/README.md).
+> Relacionado: [Figma](figma.md), [guía de estilos](guia-de-estilos.md), alcance del MVP y requerimientos funcionales (pendientes en `requisitos/`), [cronograma](../planificacion/README.md).
 
 ## 1. Identificación y objetivo
 
@@ -251,7 +251,7 @@ T059 depende formalmente de T055, T029, T030, T031 y T053. La integración con d
 - `informacion-proyecto.pdf`: alcance administrativo, páginas 42–43; diagrama administrativo, página 56; T053, página 77; T054, página 78; dependencias de T059, página 85. La numeración corresponde a páginas del archivo PDF.
 - `informe.web.pdf`: requerimientos y casos de uso del módulo administrativo.
 - `GUIA TF.pdf`: Unidad I, diseño de interfaces, login y matriz CRUD; Unidad II, diseño navegacional, interfaces y trazabilidad.
-- [Alcance del MVP](../requisitos/mvp.md) y [requerimientos funcionales](../requisitos/requerimientos-funcionales.md).
+- Alcance del MVP y requerimientos funcionales (pendientes en `requisitos/`).
 - [Diagrama administrativo del repositorio](../casos-de-uso/diagrama_casos_uso_modulo_administrador.puml).
 - [Modelo de datos en revisión, PR #2](https://github.com/tuChaski/go-tacna-docs/pull/2).
 - [Página 06 - Admin Web](https://www.figma.com/design/Lw9Pbwc65lMKyjsW5IWZaD/go-tacna?node-id=73-1150).

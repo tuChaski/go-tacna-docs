@@ -26,7 +26,7 @@
 | Imágenes y logos | `assets/` | Alex |
 | Informe del Trabajo Final | `informe/` | Todo el equipo |
 
-Las ubicaciones indicadas deben contrastarse con [INVENTARIO.md](INVENTARIO.md): algunas áreas propuestas, como `requisitos/` e `informe/`, todavía no existen en este repositorio.
+Las ubicaciones indicadas deben contrastarse con [INVENTARIO.md](INVENTARIO.md): `requisitos/` existe pero solo contiene `diccionario-datos.md`, mientras que `informe/`, `plantillas/` y `assets/` todavía no existen en este repositorio.
 
 Hay tres tipos de carpeta y se mezclan fácil:
 

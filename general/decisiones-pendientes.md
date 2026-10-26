@@ -50,7 +50,7 @@ Cuando se toma una decisión, se escribe el archivo en `arquitectura/decisiones/
 | **Opciones** | (a) Solo alta de rutas y micros en el MVP, (b) administración completa |
 | **Recomendación** | (a): sin datos cargados no hay mapa que mostrar. La carga masiva puede ser un `.sql` inicial |
 | **Decide** | Royfrankly y Alex |
-| **Desbloquea** | El alcance del MVP y la planificación; `requisitos/` aún no existe |
+| **Desbloquea** | El alcance del MVP y la planificación; `requisitos/` existe con el diccionario de datos, pero todavía no contiene el documento de alcance del MVP |
 
 ---
 
@@ -64,7 +64,7 @@ Cuando se toma una decisión, se escribe el archivo en `arquitectura/decisiones/
 | Flujo de Git | Gitflow simplificado, squash a `develop`, merge commit a `main`, sin ramas `release/` | [../guias/git.md](../guias/git.md) |
 | Sintaxis de los diagramas | Solo Mermaid (`.mmd`), con la fuente en `diagramas/fuente/` | [../CONTRIBUTING.md](../CONTRIBUTING.md) §6 |
 | Tiempo de llegada siempre estimado | El ETA se marca como estimado, nunca como hora exacta (RN-08) | [../glosario.md](../glosario.md); `requisitos/reglas-de-negocio.md` aún no existe |
-| Arquitectura de 5 repositorios | Cinco repos independientes, no un monorepo. El código se migra desde `frontend/` | [README.md](README.md), [repos.md](repos.md) |
+| Arquitectura de 5 repositorios | Cinco repos independientes, no un monorepo. El backend, gateway, websocket, frontend e infraestructura ya tienen repositorio propio; la app móvil sigue en migración | [README.md](README.md), [repos.md](repos.md) |
 | Dominio y certificado | `https://www.go-tacna.site/` con TLS Let's Encrypt para `go-tacna.site` y `www.go-tacna.site`; raíz redirige a `www` | [../INFRASTRUCTURE.md](../INFRASTRUCTURE.md), [../arquitectura/despliegue-produccion.md](../arquitectura/despliegue-produccion.md) |
 | Modalidad de producción | **Docker Compose** en el VPS, upstream `127.0.0.1:8001`; K3s está instalado pero no se aplicaron sus manifiestos | [../INFRASTRUCTURE.md](../INFRASTRUCTURE.md), [../CI-CD.md](../CI-CD.md) |
 | Despliegue de aplicaciones | Compose de producción desplegado y verificado; el despliegue es manual y no existe CD automatizado | [../CI-CD.md](../CI-CD.md), [../INFRASTRUCTURE.md](../INFRASTRUCTURE.md) |

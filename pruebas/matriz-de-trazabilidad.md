@@ -2,7 +2,7 @@
 
 > **Estado:** Pendiente
 > **Responsable:** Edison Catari
-> **Relacionado:** [plan-de-pruebas.md](plan-de-pruebas.md), [../casos-de-uso/](../casos-de-uso/). La carpeta `requisitos/` aún no existe.
+> **Relacionado:** [plan-de-pruebas.md](plan-de-pruebas.md), [../casos-de-uso/](../casos-de-uso/). `requisitos/` existe, pero por ahora solo contiene `diccionario-datos.md`.
 
 ## Qué va aquí
 

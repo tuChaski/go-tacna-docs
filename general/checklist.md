@@ -12,7 +12,7 @@ Los bloques están en orden: **primero lo que desbloquea a todos, después lo qu
 
 ## 1. GitHub (bloquea a todo el equipo)
 
-- [ ] Publicar la rama `develop` en los 4 repos de código
+- [x] Publicar la rama `develop` en los 4 repos de código
 - [ ] Hacer el primer commit de `.github/` y `CONTRIBUTING.md` en cada repo con el mensaje `ci: agrega plantilla de PR y validación de título`
 - [ ] Abrir un PR de prueba en cada repo para que corra el workflow `pr-title`
 - [ ] Configurar la protección de `main` y `develop`: PR obligatorio, 1 aprobación, checks en verde, sin force push
@@ -79,7 +79,7 @@ Ver el estado desplegado en [../arquitectura/despliegue-produccion.md](../arquit
 ## 5. Documentación
 
 - [ ] Migrar `architecture.md`, `openapi.yaml` y `diagrams/architecture.mmd` desde el monorepo y borrarlos de ahí
-- [ ] Decidir si se creará `requisitos/` o si se mantendrán las reglas y necesidades cubiertas por los casos de uso y el contexto existentes; no revisar borradores que aún no están en el repositorio.
+- [ ] Completar los documentos de requisitos: hoy `requisitos/` solo contiene `diccionario-datos.md`. Definir alcance del MVP, RF, RNF y reglas de negocio, y enlazarlos desde las guías.
 - [ ] Definir umbrales pendientes de GPS, tiempo de respuesta, disponibilidad, ubicación desactualizada, aforo y Premium antes de cerrar los requisitos.
 - [ ] Escribir los casos de uso: `CU-01-iniciar-sesion.md` ya existe como formato
 - [ ] Revisar que el cronograma de ProjectLibre en `planificacion/Planificacion_ProjectLibre_go-tacna.xml.pod` refleje las tareas y dependencias vigentes.

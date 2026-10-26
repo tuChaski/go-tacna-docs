@@ -163,12 +163,12 @@ En el celular físico, `localhost` es el propio teléfono: hay que usar la IP de
 | Área | Estado |
 |---|---|
 | `.github/` en los 5 repos | Listo |
-| Ramas `develop` locales | Creadas, **falta publicarlas en GitHub** |
+| Ramas `develop` | Publicadas en GitHub en los repos de código; `main` sigue como base de producción |
 | Protección de ramas en GitHub | **Pendiente** (sección 2) |
 | Secretos en GitHub | **Pendiente** (sección 5) |
 | Contratos escritos | **Pendiente**: los 3 archivos de `docs/contratos/` están vacíos |
 | Contenido de la documentación | **En progreso**: arquitectura y despliegue actualizados; quedan contratos, pruebas e informe |
-| Migración del código a los repos correctos | **Pendiente**: ver [repos.md](repos.md) |
+| Migración del código a los repos correctos | **Casi completa**: backend, frontend e infraestructura en sus repos; móvil en desarrollo |
 | Dominio y certificado | **Desplegado** (sección 7) |
 | Despliegue web en producción | **Desplegado** con Docker Compose en el VPS; sin CD automático |
 

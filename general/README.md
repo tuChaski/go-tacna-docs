@@ -52,7 +52,7 @@ Si un contrato cambia, el PR va primero en `docs/`. Ver [../CONTRIBUTING.md](../
 | Saber qué falta | [checklist.md](checklist.md) |
 | Desbloquear una decisión que está frenando el trabajo | [decisiones-pendientes.md](decisiones-pendientes.md) |
 | Cambiar las reglas de Git | [../guias/git.md](../guias/git.md) |
-| Escribir o corregir un requerimiento | La carpeta `requisitos/` y `plantillas/requerimiento.md` aún no existen; revisar el [inventario](../INVENTARIO.md) antes de crear documentos |
+| Escribir o corregir un requerimiento | `requisitos/` existe, pero solo contiene `diccionario-datos.md`; `plantillas/requerimiento.md` todavía no existe. Revisar el [inventario](../INVENTARIO.md) antes de crear documentos |
 | Cambiar la API, los eventos o el token | [../contratos/](../contratos/) |
 | Armar el informe | La carpeta `informe/` aún no existe; acordar su estructura antes de crearla |
 | Saber qué archivo falta o sobra | [../INVENTARIO.md](../INVENTARIO.md) |
