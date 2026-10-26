@@ -111,5 +111,5 @@ Las pruebas `ProxyTest` cubren el reenvío, la conservación de host/esquema, el
 - Contrato REST: [`contratos/openapi.yaml`](contratos/openapi.yaml).
 - Claims JWT: [`contratos/jwt-claims.md`](contratos/jwt-claims.md).
 - Backend core: [`gotacna-backend-core.md`](gotacna-backend-core.md).
-- Infraestructura: [`INFRASTRUCTURE.md`](INFRASTRUCTURE.md) y [`k8s/README.md`](k8s/README.md).
+- Infraestructura: [`INFRASTRUCTURE.md`](INFRASTRUCTURE.md) y el directorio `k8s/` del repositorio `go-tacna-infraestructura` (manifiestos K3s alternativos, no aplicados en producción).
 - Tiempo real: [`contratos/eventos-websocket.md`](contratos/eventos-websocket.md).
