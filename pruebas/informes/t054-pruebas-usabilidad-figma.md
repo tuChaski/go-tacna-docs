@@ -83,6 +83,18 @@ Los cuatro intentos del recorrido principal completaron los tres toques. Se cuen
 
 Leer la consigna sin señalar controles. Para el pasajero, decir «Estás por salir a trabajar y quieres saber dónde está el Micro 01 de la Línea 10 y cuánto falta para que llegue a Plaza de Armas». Desde el mapa, contar todos los toques, incluidos los desvíos. Al terminar, preguntar qué haría si se queda sin internet o si decide esperar en Av. Pinto. Para los demás perfiles usar las consignas de iniciar y finalizar un recorrido, registrar una empresa, o asignar una conductora a un micro.
 
+### Ensayo de la consigna del pasajero
+
+Se ensayó la consigna con el caso ficticio de una persona de Ciudad Nueva que va a trabajar y quiere consultar desde el celular sin crear una cuenta. Se usaron los resultados de PRB-003, PRB-006 y PRB-010 para preparar las preguntas de la sesión.
+
+| Momento | Resultado del recorrido en Figma | Qué preguntar durante la sesión |
+| --- | --- | --- |
+| Buscar el Micro 01 antes de salir | Desde el mapa, Línea 10 → Micro 01 → Ver ubicación. Son tres toques y aparece «3 min aprox.» para Plaza de Armas. | «¿Cuál es tu ubicación y cuál es la del micro?» y «¿A qué lugar corresponden esos tres minutos?». El primer toque permite ver si el botón azul de Línea 10 parece una opción que se puede pulsar o una selección ya hecha. |
+| Decidir esperar en Av. Pinto | Al cambiar el punto de espera, se mantiene el Micro 01 y el ejemplo pasa a «4 min aprox.». | «¿Cambiaste de micro o solo cambiaste el lugar donde lo vas a esperar?». |
+| Perder internet mientras espera | El aviso dice que la ubicación y la llegada dejan de actualizarse. «Reintentar» abre la pantalla de carga. | «Con este aviso, ¿seguirías usando el tiempo que viste antes para decidir cuándo salir?». |
+
+El conteo de tres toques corresponde al recorrido comprobado en Figma. El tiempo, los desvíos y la ayuda se anotarán al observar a una persona. La ficha queda vacía hasta esa sesión.
+
 | Participante (código) | Caso | ¿Terminó? | Toques | Tiempo | ¿Pidió ayuda? | Qué pasó |
 | --- | --- | --- | --- | --- | --- | --- |
 | | | | | | | |
