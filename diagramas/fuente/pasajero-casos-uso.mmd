@@ -1,0 +1,33 @@
+%% Diagrama de Casos de Uso - Pasajero
+%% Estado: En revisión
+%% Responsable: David Montador
+%% Relacionado: T079
+
+flowchart LR
+    Pasajero(["👤 Pasajero"])
+
+    subgraph SIS["Sistema de Monitoreo de Buses - Pasajero"]
+        direction LR
+        CU1([Registrarse])
+        CU2([Iniciar sesión])
+        CU3([Cerrar sesión])
+        CU4([Seleccionar ruta de bus])
+        CU5([Ver bus en tiempo real en mapa])
+        CU6([Filtrar buses por ruta])
+        CU7([Seleccionar punto de origen])
+        CU8([Seleccionar punto de destino])
+        CU9([Ver planes])
+        CU10([Suscribirse a un plan])
+    end
+
+    Pasajero --- CU1
+    Pasajero --- CU2
+    Pasajero --- CU3
+    Pasajero --- CU4
+    Pasajero --- CU5
+    Pasajero --- CU9
+    Pasajero --- CU10
+
+    CU6 -.->|"«extend»"| CU5
+    CU7 -.->|"«extend»"| CU5
+    CU8 -.->|"«extend»"| CU5

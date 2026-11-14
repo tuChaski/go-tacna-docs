@@ -1466,7 +1466,7 @@ paths:
     post:
       tags: [Posiciones GPS]
       summary: Registrar posición
-      description: Requiere administrador con acceso a la empresa del micro.
+      description: Requiere rol `admin_general`.
       requestBody:
         required: true
         content:
@@ -1491,6 +1491,7 @@ paths:
     get:
       tags: [Posiciones GPS]
       summary: Ver posición
+      description: Requiere `admin_general` o `admin_empresa` con acceso a la empresa del micro.
       parameters:
         - $ref: '#/components/parameters/PosicionPath'
       responses:
@@ -1509,6 +1510,7 @@ paths:
     put:
       tags: [Posiciones GPS]
       summary: Actualizar posición
+      description: Requiere rol `admin_general`.
       parameters:
         - $ref: '#/components/parameters/PosicionPath'
       requestBody:
@@ -1535,6 +1537,7 @@ paths:
     patch:
       tags: [Posiciones GPS]
       summary: Actualizar posición parcialmente
+      description: Requiere rol `admin_general`.
       parameters:
         - $ref: '#/components/parameters/PosicionPath'
       requestBody:
@@ -1561,6 +1564,7 @@ paths:
     delete:
       tags: [Posiciones GPS]
       summary: Eliminar posición
+      description: Requiere rol `admin_general`.
       parameters:
         - $ref: '#/components/parameters/PosicionPath'
       responses:
