@@ -2,7 +2,7 @@
 
 > **Estado:** En revisión
 > **Responsable:** Alex Huaracha
-> **Relacionado:** [Figma](figma.md), [Inventario de vistas](inventario-de-vistas.md), [Requerimientos no funcionales](../requisitos/requerimientos-no-funcionales.md), T051
+> **Relacionado:** [Figma](figma.md), [Inventario de vistas](inventario-de-vistas.md), requerimientos no funcionales (pendientes en `requisitos/`), T051
 
 ## Objetivo
 

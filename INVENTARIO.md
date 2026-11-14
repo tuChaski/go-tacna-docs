@@ -40,7 +40,8 @@ Los estados posibles son `Pendiente` (existe el archivo, vacío), `Borrador` (ti
 |---|---|---|---|---|
 | `general/` | Control | Vista de arriba del proyecto: repos, configuración, checklist y decisiones abiertas | Royfrankly Navarro | Esqueleto |
 | `casos-de-uso/` | Fuente | Diagramas de casos de uso | Todo el equipo | Borrador |
-| `arquitectura/` | Fuente | Modelo del sistema, modelo de datos y decisiones | David Montoya | Esqueleto |
+| `arquitectura/` | Fuente | Modelo del sistema, despliegue de producción, modelo de datos y decisiones | David Montoya | Borrador |
+| `requisitos/` | Fuente | Diccionario de datos y documentos de requisitos aprobados | Royfrankly | Borrador |
 | `contratos/` | Fuente | API, WebSocket y JWT. **Los otros repos implementan lo de aquí** | Royfrankly y David | Esqueleto |
 | `diseno/` | Fuente | Estilos, mapa del sitio, inventario de vistas y Figma | Alex Huaracha | Esqueleto |
 | `planificacion/` | Fuente | Resumen de seis fases y cronograma detallado en ProjectLibre | Royfrankly | Borrador |
@@ -50,7 +51,7 @@ Los estados posibles son `Pendiente` (existe el archivo, vacío), `Borrador` (ti
 | `guias/` | Guía | Guías transversales del equipo | Royfrankly Navarro | Activa |
 | `.github/` | Automatización | CODEOWNERS, plantilla de PR y workflow de título | Royfrankly Navarro | Activa |
 
-> `requisitos/`, `informe/`, `plantillas/` y `assets/` no están creadas en el repositorio. No deben aparecer como contenido existente hasta que se agreguen.
+> `informe/`, `plantillas/` y `assets/` no están creadas en el repositorio. `requisitos/` existe y por ahora contiene únicamente `diccionario-datos.md`; no debe tratarse como una carpeta completa de requisitos.
 
 ---
 
@@ -78,7 +79,11 @@ La carpeta `informe/` aún no existe. Sus capítulos y entregables no se incluye
 
 ### Requisitos
 
-La carpeta `requisitos/` no existe actualmente. La numeración y las reglas mencionadas en las guías son contexto previo; decidir si se crearán documentos de requisitos o si su contenido se mantendrá en las fuentes existentes antes de generar archivos duplicados.
+La carpeta `requisitos/` existe, pero solo contiene el diccionario de datos. Los documentos de alcance, requerimientos funcionales, no funcionales y reglas de negocio todavía no están incorporados; no se deben enlazar como si existieran.
+
+| Archivo | Contenido | Estado |
+|---|---|---|
+| `diccionario-datos.md` | Entidades, campos y relaciones del modelo de datos | Borrador |
 
 ### `casos-de-uso/` — Todo el equipo
 
@@ -94,7 +99,12 @@ La carpeta `requisitos/` no existe actualmente. La numeración y las reglas menc
 
 | Archivo | Contenido | Estado |
 |---|---|---|
-| `arquitectura.md` | Plantilla para componentes, flujo de posición y red/puertos; aún sin completar | Borrador |
+| `arquitectura.md` | Resumen de componentes, flujo de tráfico, estado del despliegue y enlaces a los diagramas | En revisión |
+| `despliegue-produccion.md` | Topología real, red Docker, requisitos operativos, despliegue, verificación y limitaciones | En revisión |
+| `despliegue-produccion.mmd` | Diagrama Mermaid general del VPS, Nginx, Compose y servicios | Borrador |
+| `red-docker-produccion.mmd` | Diagrama Mermaid de la red Compose, puertos publicados y volúmenes | Borrador |
+| `flujo-peticion-produccion.mmd` | Secuencia Mermaid de carga de SPA, API y WebSocket | Borrador |
+| `requisitos-web-operativa.mmd` | Diagrama Mermaid de requisitos para que la web esté operativa | Borrador |
 | `Diagrama-de-Arquitectura.mmd` | Diagrama de arquitectura del sistema | Borrador |
 | `Diagrama-de-Contexto.mmd` | Diagrama de contexto | Borrador |
 | `Diagrama-de-contenedores.puml` | Diagrama de contenedores | Borrador |
@@ -180,7 +190,7 @@ Esta tabla enumera los archivos presentes en este repositorio. Los workflows y r
 
 | Tema / ubicación conocida | Destino en este repo | Estado / acción pendiente |
 |---|---|---|---|
-| Arquitectura técnica | `arquitectura/arquitectura.md` | El archivo existe, pero sigue siendo una plantilla; completar con el flujo vigente sin duplicar el contexto general. |
+| Arquitectura técnica | `arquitectura/arquitectura.md` | El archivo ya resume componentes, flujo y estado del despliegue; mantenerlo sincronizado con [arquitectura/despliegue-produccion.md](arquitectura/despliegue-produccion.md). |
 | Contrato de API | `contratos/openapi.yaml` | El archivo existe, pero `paths` está vacío; declarar las rutas implementadas y separar las planificadas. |
 | Diagramas del sistema | `diagramas/fuente/` | Mantener los diagramas fuente aquí y enlazarlos desde las guías, evitando copias por repositorio. |
 | Tablero de GitHub Projects y cronograma | `planificacion/` | Revisar que el cronograma ProjectLibre refleje las tareas y fases vigentes. |

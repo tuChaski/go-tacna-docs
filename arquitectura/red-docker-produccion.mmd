@@ -1,0 +1,42 @@
+flowchart LR
+    host["Host VPS<br/>Nginx :80 / :443"]
+
+    subgraph red["Red Docker gotacna-net · driver bridge"]
+        ingress["nginx<br/>contenedor :80"]
+        frontend["frontend<br/>contenedor :80"]
+        gateway["gateway<br/>contenedor :8000"]
+        backend["backend<br/>contenedor :8000"]
+        websocket["websocket<br/>contenedor :3001"]
+        postgres[("postgres<br/>contenedor :5432")]
+    end
+
+    pgVolume[("postgres_data<br/>/var/lib/postgresql/data")]
+    vendorVolumes["backend_vendor<br/>gateway_vendor"]
+    nodeVolume["location_node_modules"]
+    dbPublished["127.0.0.1:5432 → 5432<br/>solo mantenimiento"]
+    gatewayPublished["127.0.0.1:8001 → 80<br/>único puerto de aplicación"]
+
+    host -->|"proxy_pass"| gatewayPublished
+    gatewayPublished --> ingress
+    ingress -->|"/"| frontend
+    ingress -->|"/api/"| gateway
+    ingress -->|"/socket.io/"| websocket
+    gateway -->|"http://backend:8000"| backend
+    backend -->|"pgsql"| postgres
+    postgres --- pgVolume
+    backend --- vendorVolumes
+    gateway --- vendorVolumes
+    websocket --- nodeVolume
+    dbPublished -.->|"publicado solo en loopback"| postgres
+
+    classDef hostNode fill:#dcfce7,stroke:#16a34a,color:#14532d
+    classDef service fill:#e0f2fe,stroke:#0284c7,color:#0c4a6e
+    classDef database fill:#ede9fe,stroke:#7c3aed,color:#4c1d95
+    classDef volume fill:#fef9c3,stroke:#ca8a04,color:#713f12
+    classDef published fill:#ffedd5,stroke:#ea580c,color:#7c2d12
+
+    class host hostNode
+    class ingress,frontend,gateway,backend,websocket service
+    class postgres database
+    class pgVolume,vendorVolumes,nodeVolume volume
+    class dbPublished,gatewayPublished published

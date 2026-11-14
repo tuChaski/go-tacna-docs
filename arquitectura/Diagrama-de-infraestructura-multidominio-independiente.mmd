@@ -1,45 +1,46 @@
 graph TD
     %% CLIENTES Y DOMINIOS
     subgraph Internet [Clientes en Internet]
-        D1[Dominio go-tacna<br/>go-tacna.midominio.com]
+        D1[Dominio Go-Tacna<br/>www.go-tacna.site]
+        D1R[Dominio raíz<br/>go-tacna.site]
         D2[Dominio de otro proyecto<br/>proyecto-b.midominio.com]
     end
 
     %% VPS CONTABO
-    subgraph VPS [VPS de Contabo - IP pública]
-        NginxHost[Nginx global del host<br/>Puertos públicos 80 y 443<br/>TLS y enrutamiento por dominio]
+    subgraph VPS [VPS de Contabo - 13.140.174.64]
+        NginxHost[Nginx global del host<br/>Puertos públicos 80 y 443<br/>TLS Let's Encrypt y enrutamiento por dominio]
 
         %% PROYECTO GO-TACNA
-        subgraph GoTacna [Proyecto go-tacna - repos de aplicación e infraestructura]
-            GatewayGoTacna[Gateway Docker de go-tacna<br/>127.0.0.1:8001:80]
-            Web[Web pública y panel]
-            Realtime[Servicio de tiempo real<br/>WebSocket]
-            Backend[API REST Laravel]
-            DB[(PostgreSQL + PostGIS)]
-            Cache[Redis / servicios internos]
+        subgraph GoTacna [Proyecto go-tacna - Docker Compose]
+            NginxCompose[Nginx de Compose<br/>127.0.0.1:8001:80]
+            Web[Frontend<br/>web pública y panel]
+            Gateway[Gateway Laravel<br/>:8000]
+            Backend[Backend Core Laravel<br/>:8000]
+            Realtime[Location Service<br/>WebSocket :3001]
+            DB[(PostgreSQL 16 + PostGIS)]
         end
 
         %% OTRO PROYECTO INDEPENDIENTE
         subgraph ProyectoB [Proyecto B - Compose y red independientes]
-            GatewayB[Gateway del proyecto B<br/>127.0.0.1:8002:80]
+            GatewayB[Nginx del proyecto B<br/>127.0.0.1:8002:80]
             ServiciosB[Servicios privados del proyecto B]
         end
     end
 
     D1 -->|HTTPS 443| NginxHost
+    D1R -->|301 a www| NginxHost
     D2 -->|HTTPS 443| NginxHost
-    NginxHost -->|go-tacna.midominio.com| GatewayGoTacna
+    NginxHost -->|www.go-tacna.site<br/>proxy_pass 127.0.0.1:8001| NginxCompose
     NginxHost -->|proyecto-b.midominio.com| GatewayB
 
-    GatewayGoTacna -->|/| Web
-    GatewayGoTacna -->|/socket.io/| Realtime
-    GatewayGoTacna -->|/api/| Backend
+    NginxCompose -->|/| Web
+    NginxCompose -->|/api/| Gateway
+    NginxCompose -->|/socket.io/| Realtime
+    Gateway -->|HTTP interno| Backend
     Backend --> DB
-    Backend --> Cache
-    Realtime --> Cache
     GatewayB --> ServiciosB
 
     style NginxHost fill:#009639,stroke:#fff,stroke-width:2px,color:#fff
-    style GatewayGoTacna fill:#2196F3,stroke:#fff,stroke-width:1.5px,color:#fff
+    style NginxCompose fill:#2196F3,stroke:#fff,stroke-width:1.5px,color:#fff
     style GoTacna fill:#1f2937,stroke:#2196F3,stroke-width:1.5px,color:#fff
     style ProyectoB fill:#1f2937,stroke:#9ca3af,stroke-width:1px,color:#fff

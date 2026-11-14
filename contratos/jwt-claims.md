@@ -1,130 +1,189 @@
 # Claims del JWT
 
-> **Estado:** Aprobado
-> **Responsable:** Royfrankly y David Montoya
-> **Relacionado:** [eventos-websocket.md](eventos-websocket.md), [openapi.yaml](openapi.yaml)
+> **Estado:** contrato vigente del backend core y del API Gateway Laravel.
+> **Implementación:** `tymon/jwt-auth` con guard `api`.
+> **Emisor:** `POST /api/v1/auth/login` (a través del gateway público).
+> **Uso:** `Authorization: Bearer <token>`.
 
-## 1. Emisión y firma
+## Vigencia
 
-- `POST /auth/login` entrega un token que sirve tanto para la API REST como para el servidor de tiempo real.
-- El token se firma con **HS256** usando `JWT_SECRET`.
-- La API y el servidor de tiempo real deben usar el mismo `JWT_SECRET`.
-- El token se envía en el header `Authorization: Bearer <token>`.
-- Los claims usan `camelCase` para coincidir con los payloads de la API (`microId`, `rutaId`, etc.).
+| Parámetro | Valor por defecto | Variable |
+|---|---|---|
+| Algoritmo | HS256 | `JWT_ALGO` |
+| Vida del access token | 60 minutos | `JWT_TTL` |
+| Ventana de refresh | 20 160 minutos (14 días) | `JWT_REFRESH_TTL` |
+| Renovación | `POST /api/v1/auth/refresh` con el token actual | — |
+| Cierre de sesión | `POST /api/v1/auth/logout` invalida el token actual | — |
 
-## 2. Claims
+El token se firma y valida con `JWT_SECRET`. El core y cualquier servicio que
+valide tokens deben compartir el mismo secreto. No publiques ese valor.
 
-| Claim | Tipo | Requerido | Descripción |
-|-------|------|-----------|-------------|
-| `sub` | integer | Sí | ID de `USUARIO` |
-| `role` | string | Sí | `pasajero`, `conductor`, `admin_general` o `admin_empresa` |
-| `empresaId` | integer \| null | Según rol | Empresa del conductor o del administrador de empresa |
-| `conductorPerfilId` | integer \| null | Solo conductor | ID de `CONDUCTOR_PERFIL` |
-| `administradorPerfilId` | integer \| null | Solo admin_empresa | ID de `ADMINISTRADOR_EMPRESA_PERFIL` |
-| `microId` | integer \| null | Solo conductor en turno | Micro asignado actualmente |
-| `rutaId` | integer \| null | Solo conductor en turno | Ruta del micro asignado |
-| `suscripcionId` | integer \| null | Opcional pasajero | Suscripción vigente del pasajero |
-| `iat` | integer | Sí | Fecha de emisión (Unix segundos) |
-| `exp` | integer | Sí | Fecha de expiración (Unix segundos) |
-| `jti` | string | Sí | Identificador único del token |
+## Claims estándar
 
-## 3. Claims por rol
+| Claim | Tipo | Descripción |
+|---|---|---|
+| `iss` | string | URL de la petición de login. Detrás del gateway refleja el host y esquema públicos, por ejemplo `https://go-tacna.site/api/v1/auth/login`. |
+| `iat` | integer | Fecha de emisión en formato Unix. |
+| `nbf` | integer | Inicio de validez en formato Unix. |
+| `exp` | integer | Fin de validez en formato Unix. |
+| `jti` | string | Identificador único del token. |
+| `sub` | string | ID del usuario en `usuarios.id`. Se serializa como texto, no como número. |
+| `prv` | string | Hash del proveedor de autenticación de `tymon/jwt-auth`. Es interno; no lo uses para autorizar. |
 
-### Pasajero
+## Claims de dominio
 
-```json
-{
-  "sub": 21,
-  "role": "pasajero",
-  "empresaId": null,
-  "suscripcionId": 7,
-  "iat": 1700000000,
-  "exp": 1700003600,
-  "jti": "f3b1c9a2-7d4e-4a91-9c1e-2b6a8d5f0c33"
-}
-```
+| Claim | Tipo | Presente en | Descripción |
+|---|---|---|---|
+| `nombre` | string | Todos | Nombre del usuario. |
+| `apellido` | string | Todos | Apellido del usuario. |
+| `correo` | string | Todos | Correo canónico del usuario. |
+| `rol` | string | Todos | `pasajero`, `conductor`, `admin_general` o `admin_empresa`. |
+| `micro_id` | integer \| null | Todos | Micro asignado actualmente al conductor. `null` para pasajeros y administradores, o para un conductor sin micro. |
+| `ruta_id` | integer \| null | Todos | Ruta del micro asignado al conductor. `null` si no hay micro o para otros roles. |
+| `empresa_ids` | integer[] | Todos | Empresas vinculadas al usuario. Un `admin_empresa` recibe los IDs de sus perfiles; `admin_general` recibe `[]` porque su alcance es global; pasajeros y conductores reciben `[]`. |
 
-- `suscripcionId` es opcional y solo debe incluirse si el pasajero tiene una suscripción activa.
-- Si el producto exige suscripción para acceder al tracking, el servidor responde `403` cuando no existe una suscripción `activa`.
-
-### Conductor
-
-```json
-{
-  "sub": 15,
-  "role": "conductor",
-  "empresaId": 3,
-  "conductorPerfilId": 8,
-  "microId": 12,
-  "rutaId": 4,
-  "iat": 1700000000,
-  "exp": 1700003600,
-  "jti": "8a7f2e41-5c3d-4b6a-9e10-6f2d7c8b1a55"
-}
-```
-
-- `microId` y `rutaId` representan la asignación vigente al momento de emitir el token.
-- El servidor no debe confiar solo en el token: en cada `POST /tracking/position` y `POST /tracking/stop` debe validar que:
-  - `conductorPerfilId` corresponde a un `CONDUCTOR_PERFIL` de `empresaId`.
-  - `microId` existe, pertenece a `empresaId` y tiene `conductor_actual_id = conductorPerfilId`.
-  - `rutaId` coincide con `MICRO.ruta_id`.
-- Si la asignación cambió o ya no es válida, responde `403`.
-
-### Administrador de empresa
-
-```json
-{
-  "sub": 9,
-  "role": "admin_empresa",
-  "empresaId": 3,
-  "administradorPerfilId": 2,
-  "iat": 1700000000,
-  "exp": 1700003600,
-  "jti": "c1d2e3f4-a5b6-4c7d-8e9f-0a1b2c3d4e5f"
-}
-```
-
-- Todas las consultas y mutaciones quedan limitadas a `empresaId`.
-- El servidor no debe aceptar un `empresaId` distinto en el body o query string.
+## Ejemplos
 
 ### Administrador general
 
 ```json
 {
-  "sub": 1,
-  "role": "admin_general",
-  "empresaId": null,
-  "iat": 1700000000,
-  "exp": 1700003600,
-  "jti": "0f1e2d3c-4b5a-4968-8776-5a4b3c2d1e0f"
+  "iss": "https://go-tacna.site/api/v1/auth/login",
+  "iat": 1792722709,
+  "exp": 1792726309,
+  "nbf": 1792722709,
+  "jti": "yr2JMXdd54nKSk8e",
+  "sub": "1",
+  "prv": "5870863d4a62d791443faf936fc368031d110c4f",
+  "nombre": "Administrador",
+  "apellido": "General",
+  "correo": "admin@gotacna.pe",
+  "rol": "admin_general",
+  "micro_id": null,
+  "ruta_id": null,
+  "empresa_ids": []
 }
 ```
 
-- No está asociado a una empresa y puede operar sobre todas.
+### Administrador de empresa
 
-## 4. Vigencia y renovación
+```json
+{
+  "sub": "2",
+  "nombre": "Administrador",
+  "apellido": "Empresa",
+  "correo": "admin.empresa@gotacna.pe",
+  "rol": "admin_empresa",
+  "micro_id": null,
+  "ruta_id": null,
+  "empresa_ids": [1]
+}
+```
 
-- `exp` es obligatorio. Se recomienda una vigencia de 1 hora para el access token.
-- `POST /auth/refresh` renueva el access token a partir de un refresh token vigente.
-- El ERD no incluye una tabla para refresh tokens, por lo que la persistencia y rotación del refresh token queda pendiente de definición.
-- `POST /auth/logout` cierra la sesión del cliente. Si se implementa revocación, se debe validar el `jti` contra una lista de tokens revocados.
+### Conductor
 
-## 5. Validación en el servidor de tiempo real
+```json
+{
+  "sub": "3",
+  "nombre": "Juan",
+  "apellido": "Pérez",
+  "correo": "conductor1@gotacna.pe",
+  "rol": "conductor",
+  "micro_id": 1,
+  "ruta_id": 1,
+  "empresa_ids": []
+}
+```
 
-- El handshake del WebSocket debe validar la firma y `exp` del JWT.
-- Los eventos de conductor solo se aceptan si `role=conductor` y la asignación `microId`/`rutaId` sigue vigente.
-- Los eventos de pasajero solo se aceptan si el usuario tiene una suscripción activa, cuando el producto lo exija. El servidor debe consultar el estado actual de `SUSCRIPCION`; el claim `suscripcionId` no reemplaza esa validación.
-- La ausencia de `role` o `conductorPerfilId` en un token de conductor produce `403`.
-- Si faltan `microId` o `rutaId`, el conductor puede usar los endpoints generales, pero no puede emitir tracking hasta tener una asignación vigente.
+### Pasajero
 
-## 6. Implementación actual y diferencias
+```json
+{
+  "sub": "5",
+  "nombre": "María",
+  "apellido": "Quispe",
+  "correo": "pasajero@gotacna.pe",
+  "rol": "pasajero",
+  "micro_id": null,
+  "ruta_id": null,
+  "empresa_ids": []
+}
+```
 
-El contrato descrito arriba es el objetivo acordado. La implementación actual de Backend Core (`User::getJWTCustomClaims()`) todavía agrega `name`, `email`, `role` (`pasajero`, `conductor` o `admin`) y `activo`, y no incluye `empresaId`, `conductorPerfilId`, `administradorPerfilId`, `microId`, `rutaId` ni `suscripcionId`.
+Los ejemplos omiten `iss`, `iat`, `exp`, `nbf`, `jti` y `prv` por brevedad;
+el token real siempre los incluye.
 
-Antes de considerar este contrato vigente en producción:
+## Respuesta del login
 
-- Migrar los roles a `pasajero`, `conductor`, `admin_general` y `admin_empresa`.
-- Agregar los claims de perfil y asignación definidos en este documento.
-- Definir si `microId` y `rutaId` se incluyen en el token o se consultan al Backend Core.
-- Alinear Location Service y las pruebas de autorización con los nuevos claims.
-- Gestionar `JWT_SECRET` como secreto por entorno; no documentarlo ni versionarlo.
+```json
+{
+  "success": true,
+  "message": "Inicio de sesión correcto.",
+  "data": {
+    "usuario": {
+      "id": 1,
+      "dni": "70000001",
+      "nombre": "Administrador",
+      "apellido": "General",
+      "correo": "admin@gotacna.pe",
+      "telefono": "999111222",
+      "rol": "admin_general",
+      "activo": true
+    },
+    "token": "<jwt>",
+    "tipo": "bearer"
+  }
+}
+```
+
+## Autorización
+
+- El backend **no confía en los claims** para decidir permisos. En cada petición
+  vuelve a cargar el usuario desde `usuarios` y aplica el rol y el alcance por
+  empresa desde la base de datos.
+- `admin_general` puede gestionar todos los recursos.
+- `admin_empresa` puede consultar y actualizar los datos y el estado de sus
+  empresas, y gestionar sus rutas, micros y conductores según las reglas de cada
+  recurso. El backend limita el acceso a las empresas vinculadas en la base de datos.
+- El administrador de empresa puede consultar las posiciones GPS y los perfiles
+  administrativos de sus empresas. Crear, editar y eliminar estos registros
+  desde `/posiciones` y `/administradores-empresa` corresponde a `admin_general`.
+  Crear y eliminar empresas también requiere `admin_general`.
+- `conductor` accede a `/conductor/perfil`, `/conductor/posicion`,
+  `/conductor/finalizar` y a las rutas públicas.
+- `pasajero` accede a `/mis-suscripciones` y a las rutas públicas.
+- Los endpoints públicos de catálogo (`/rutas`, `/micros/activos`, `/micros/{id}`,
+  `/planes`, `/planes/{id}`) aceptan token opcional. Con un administrador
+  autenticado muestran también registros inactivos y respetan el alcance por
+  empresa; sin token, solo datos activos.
+
+## Integración con el servicio de tiempo real
+
+El JWT que emite Laravel usa `rol`, `micro_id` y `ruta_id`. La sección de
+tracking de [eventos-websocket.md](eventos-websocket.md) aún cita `role`,
+`microId` y `rutaId` como claims. Queda pendiente alinear esa referencia
+y comprobar la integración del servicio de tiempo real con el token de Laravel.
+Los campos de los mensajes WebSocket se definen en su propio contrato.
+
+## Errores de autenticación
+
+| Código | Cuándo |
+|---|---|
+| `401` | Credenciales incorrectas o token ausente, inválido o expirado en una ruta autenticada. |
+| `403` | Cuenta desactivada al iniciar sesión, o acceso rechazado por el middleware de rol o las reglas de empresa. |
+| `422` | Credenciales con formato inválido o campos obligatorios ausentes. |
+
+Formato:
+
+```json
+{
+  "success": false,
+  "message": "No autenticado.",
+  "errors": {}
+}
+```
+
+En producción, el Nginx del host debe enviar `Host`, `X-Forwarded-Host` y
+`X-Forwarded-Proto https`. El gateway y el core confían en esos encabezados para
+que `iss` y los enlaces de paginación conserven el dominio y el esquema
+públicos.

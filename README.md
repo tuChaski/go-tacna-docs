@@ -5,6 +5,7 @@ Documentación compartida de Go-Tacna: contexto del sistema, guías por componen
 ## Empieza aquí
 
 - [Contexto del proyecto](CONTEXTO_PROYECTO_GO_TACNA.md): panorama del sistema y estado de los cinco repositorios.
+- [Despliegue de producción](arquitectura/despliegue-produccion.md): topología Docker Compose, requisitos, operación y diagramas Mermaid del VPS.
 - [CI/CD y despliegues](CI-CD.md): cómo trabajar en local con Docker y cuál es el estado y flujo previsto para producción.
 - [Infraestructura del VPS](INFRASTRUCTURE.md): red, Nginx global, puertos y enrutamiento multidominio.
 

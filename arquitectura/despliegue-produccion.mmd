@@ -1,0 +1,46 @@
+flowchart TB
+    usuario["Usuario<br/>Navegador web"]
+    raiz["go-tacna.site"]
+    www["www.go-tacna.site<br/>DNS A 13.140.174.64"]
+
+    subgraph vps["VPS Contabo · 13.140.174.64"]
+        hostNginx["Nginx del host<br/>:80 / :443<br/>TLS Let's Encrypt"]
+        cert["Certificado TLS<br/>SAN: go-tacna.site<br/>+ www.go-tacna.site"]
+
+        subgraph compose["Docker Compose · proyecto gotacna-local"]
+            ingress["nginx<br/>127.0.0.1:8001 → :80"]
+            frontend["frontend<br/>SPA React + Vite"]
+            gateway["gateway<br/>Laravel API Gateway"]
+            backend["backend<br/>Laravel Core"]
+            websocket["websocket<br/>Node.js + Socket.IO"]
+            postgres[("postgres<br/>PostgreSQL 16 + PostGIS")]
+        end
+
+        k3s["K3s instalado<br/>no participa en esta ruta"]
+    end
+
+    usuario -->|"HTTPS"| raiz
+    raiz -->|"301"| www
+    www -->|"443"| hostNginx
+    hostNginx -->|"proxy_pass 127.0.0.1:8001"| ingress
+    hostNginx -.->|"TLS"| cert
+
+    ingress -->|"/"| frontend
+    ingress -->|"/api/"| gateway
+    ingress -->|"/socket.io/"| websocket
+    gateway -->|"HTTP interno :8000"| backend
+    backend -->|"SQL"| postgres
+    websocket -.->|"persistencia no integrada"| postgres
+    k3s -.->|"alternativa no desplegada para la app"| hostNginx
+
+    classDef client fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+    classDef edge fill:#dcfce7,stroke:#16a34a,color:#14532d
+    classDef service fill:#e0f2fe,stroke:#0284c7,color:#0c4a6e
+    classDef database fill:#ede9fe,stroke:#7c3aed,color:#4c1d95
+    classDef inactive fill:#f3f4f6,stroke:#9ca3af,color:#6b7280,stroke-dasharray: 5 5
+
+    class usuario client
+    class raiz,www,hostNginx,cert edge
+    class ingress,frontend,gateway,backend,websocket service
+    class postgres database
+    class k3s inactive
