@@ -142,8 +142,13 @@ el token real siempre los incluye.
   vuelve a cargar el usuario desde `usuarios` y aplica el rol y el alcance por
   empresa desde la base de datos.
 - `admin_general` puede gestionar todos los recursos.
-- `admin_empresa` solo ve y modifica empresas, rutas, micros, conductores,
-  posiciones y administradores de sus `empresa_ids`.
+- `admin_empresa` puede consultar y actualizar los datos y el estado de sus
+  empresas, y gestionar sus rutas, micros y conductores según las reglas de cada
+  recurso. El backend limita el acceso a las empresas vinculadas en la base de datos.
+- El administrador de empresa puede consultar las posiciones GPS y los perfiles
+  administrativos de sus empresas. Crear, editar y eliminar estos registros
+  desde `/posiciones` y `/administradores-empresa` corresponde a `admin_general`.
+  Crear y eliminar empresas también requiere `admin_general`.
 - `conductor` accede a `/conductor/perfil`, `/conductor/posicion`,
   `/conductor/finalizar` y a las rutas públicas.
 - `pasajero` accede a `/mis-suscripciones` y a las rutas públicas.
@@ -152,12 +157,20 @@ el token real siempre los incluye.
   autenticado muestran también registros inactivos y respetan el alcance por
   empresa; sin token, solo datos activos.
 
+## Integración con el servicio de tiempo real
+
+El JWT que emite Laravel usa `rol`, `micro_id` y `ruta_id`. La sección de
+tracking de [eventos-websocket.md](eventos-websocket.md) aún cita `role`,
+`microId` y `rutaId` como claims. Queda pendiente alinear esa referencia
+y comprobar la integración del servicio de tiempo real con el token de Laravel.
+Los campos de los mensajes WebSocket se definen en su propio contrato.
+
 ## Errores de autenticación
 
 | Código | Cuándo |
 |---|---|
-| `401` | Token ausente, inválido, expirado o usuario inexistente/inactivo. |
-| `403` | El usuario existe y está autenticado, pero su rol o empresa no permite la operación. |
+| `401` | Credenciales incorrectas o token ausente, inválido o expirado en una ruta autenticada. |
+| `403` | Cuenta desactivada al iniciar sesión, o acceso rechazado por el middleware de rol o las reglas de empresa. |
 | `422` | Credenciales con formato inválido o campos obligatorios ausentes. |
 
 Formato:
