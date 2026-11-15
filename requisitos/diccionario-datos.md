@@ -1,7 +1,9 @@
 # Diccionario de Datos
-> **Estado:** En revisión
+> **Estado:** Referencia histórica del diseño inicial
 > **Responsable:** David Montador
 > **Relacionado:** [T008]
+
+El [modelo de datos en revisión](../arquitectura/modelo-de-datos.md) contiene la propuesta de 13 tablas, sus campos y relaciones. Este diccionario conserva el diseño inicial de T008 para trazabilidad.
 
 ## Sistema de Transporte Público — Tacna
 

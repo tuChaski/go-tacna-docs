@@ -1,101 +1,130 @@
 erDiagram
-    USUARIO {
+    %% Propuesta de 13 tablas en revision. Implementacion del backend pendiente.
+    %% created_at y updated_at son comunes a todas las tablas y se omiten aqui.
+    USUARIOS {
         bigint id PK
-        string dni "Único"
+        string dni UK
         string nombre
         string apellido
-        string correo "Único; login"
+        string correo UK
         string telefono
         string password_hash
         string rol "pasajero, conductor, admin_general, admin_empresa"
         boolean activo
-        datetime created_at
-        datetime updated_at
+        bigint creado_por_id FK "Opcional"
+        boolean debe_cambiar_clave
     }
-    EMPRESA {
+    EMPRESAS {
         bigint id PK
-        string ruc "Único"
+        string ruc UK
         string razon_social
         string telefono
         string direccion
         boolean activo
-        datetime created_at
-        datetime updated_at
     }
-    ADMINISTRADOR_EMPRESA_PERFIL {
+    ADMINISTRADOR_EMPRESA_PERFILES {
         bigint id PK
         bigint usuario_id FK
         bigint empresa_id FK
-        string cargo "Ej: Gerente, Supervisor"
-        datetime created_at
-        datetime updated_at
+        string cargo "Opcional"
     }
-    CONDUCTOR_PERFIL {
+    CONDUCTOR_PERFILES {
         bigint id PK
-        bigint usuario_id FK "Único"
+        bigint usuario_id FK, UK
         bigint empresa_id FK
         string licencia_conducir
-        string estado_operativo "disponible, en_recorrido, sin_conexion"
-        datetime created_at
-        datetime updated_at
+        string foto_url "Opcional"
     }
-    RUTA {
+    MICROS {
         bigint id PK
         bigint empresa_id FK
-        string nombre_ruta
-        geometry trazado_ruta "LineString 4326; JSON en SQLite"
-        boolean activo
-        datetime created_at
-        datetime updated_at
-    }
-    MICRO {
-        bigint id PK
-        bigint empresa_id FK
-        bigint ruta_id FK "Nullable"
-        bigint conductor_actual_id FK "Nullable y único"
-        string placa "Única"
+        string placa UK
         int capacidad_pasajeros
-        string estado "disponible, en_recorrido, mantenimiento, inactivo"
-        datetime created_at
-        datetime updated_at
+        string estado_servicio "operativo, mantenimiento, inactivo"
     }
-    POSICION_GPS {
+    RUTAS {
         bigint id PK
+        bigint empresa_id FK
+        string nombre_ruta "Ejemplo 10B"
+        boolean activo
+    }
+    TRAZADOS_RUTA {
+        bigint id PK
+        bigint ruta_id FK
+        int version
+        geometry circuito "LineString 4326 cerrado y ordenado"
+        boolean vigente
+    }
+    ASIGNACIONES {
+        bigint id PK
+        bigint empresa_id FK
+        bigint conductor_id FK
         bigint micro_id FK
+        bigint ruta_id FK
+        bigint asignado_por_id FK
+        datetime inicio
+        datetime fin "Opcional mientras este vigente"
+    }
+    RECORRIDOS {
+        bigint id PK
+        bigint asignacion_id FK
+        bigint trazado_id FK
+        datetime inicio
+        datetime fin "Opcional mientras este abierto"
+        string estado "en_curso, finalizado, interrumpido"
+        string motivo_fin "Opcional"
+    }
+    POSICIONES_GPS {
+        bigint id PK
+        bigint recorrido_id FK
         decimal latitud
         decimal longitud
-        float velocidad "Clave para cálculo de ETA"
-        datetime fecha_hora
-        datetime created_at
-        datetime updated_at
+        float velocidad
+        datetime medida_en
+        datetime recibida_en
     }
-    PLAN {
+    PLANES {
         bigint id PK
-        string nombre_plan "Único"
-        decimal costo
+        string codigo UK "invitado, gratuito, premium"
+        string nombre_plan UK
+        int max_micros_en_vivo
+        int max_rutas_visibles
+        int dias_historial
         boolean activo
-        datetime created_at
-        datetime updated_at
     }
-    SUSCRIPCION {
+    SUSCRIPCIONES {
         bigint id PK
-        bigint usuario_id FK "Pasajero"
+        bigint usuario_id FK
         bigint plan_id FK
-        date fecha_inicio
-        date fecha_vencimiento
+        bigint otorgada_por_id FK
+        datetime inicio
+        datetime vencimiento
         string estado "activa, vencida, cancelada"
-        datetime created_at
-        datetime updated_at
+    }
+    HISTORIAL_BUSQUEDAS {
+        bigint id PK
+        bigint usuario_id FK
+        string consulta
+        datetime realizada_en
     }
 
-    USUARIO ||--o| CONDUCTOR_PERFIL : "tiene"
-    USUARIO ||--o{ ADMINISTRADOR_EMPRESA_PERFIL : "administra"
-    USUARIO ||--o{ SUSCRIPCION : "contrata"
-    EMPRESA ||--o{ RUTA : "opera"
-    EMPRESA ||--o{ MICRO : "posee"
-    EMPRESA ||--o{ CONDUCTOR_PERFIL : "emplea"
-    EMPRESA ||--o{ ADMINISTRADOR_EMPRESA_PERFIL : "tiene"
-    RUTA ||--o{ MICRO : "asigna"
-    CONDUCTOR_PERFIL ||--o| MICRO : "opera_actualmente"
-    MICRO ||--o{ POSICION_GPS : "emite"
-    PLAN ||--o{ SUSCRIPCION : "incluye"
+    USUARIOS |o--o{ USUARIOS : "crea cuentas"
+    USUARIOS ||--o{ ADMINISTRADOR_EMPRESA_PERFILES : "tiene vinculos"
+    EMPRESAS ||--o{ ADMINISTRADOR_EMPRESA_PERFILES : "tiene administradores"
+    USUARIOS ||--o| CONDUCTOR_PERFILES : "tiene perfil"
+    EMPRESAS ||--o{ CONDUCTOR_PERFILES : "agrupa conductores"
+    EMPRESAS ||--o{ MICROS : "posee"
+    EMPRESAS ||--o{ RUTAS : "opera"
+    RUTAS ||--o{ TRAZADOS_RUTA : "tiene versiones"
+    EMPRESAS ||--o{ ASIGNACIONES : "conserva historial"
+    CONDUCTOR_PERFILES ||--o{ ASIGNACIONES : "recibe"
+    MICROS ||--o{ ASIGNACIONES : "tiene en el tiempo"
+    RUTAS ||--o{ ASIGNACIONES : "se asigna"
+    USUARIOS ||--o{ ASIGNACIONES : "registra como administrador"
+    ASIGNACIONES ||--o{ RECORRIDOS : "habilita"
+    TRAZADOS_RUTA ||--o{ RECORRIDOS : "se utiliza en"
+    RECORRIDOS ||--o{ POSICIONES_GPS : "registra"
+    USUARIOS ||--o{ SUSCRIPCIONES : "recibe como pasajero"
+    PLANES ||--o{ SUSCRIPCIONES : "define beneficios"
+    USUARIOS ||--o{ SUSCRIPCIONES : "otorga como administrador general"
+    USUARIOS ||--o{ HISTORIAL_BUSQUEDAS : "realiza"
