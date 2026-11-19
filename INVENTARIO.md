@@ -79,21 +79,23 @@ La carpeta `informe/` aún no existe. Sus capítulos y entregables no se incluye
 
 ### Requisitos
 
-La carpeta `requisitos/` existe, pero solo contiene el diccionario de datos. Los documentos de alcance, requerimientos funcionales, no funcionales y reglas de negocio todavía no están incorporados; no se deben enlazar como si existieran.
+La carpeta `requisitos/` existe, pero solo contiene el diccionario de datos y la definición de perfiles y matriz de acceso. Los documentos de alcance, requerimientos funcionales, no funcionales y reglas de negocio todavía no están incorporados; no se deben enlazar como si existieran.
 
 | Archivo | Contenido | Estado |
 |---|---|---|
 | `diccionario-datos.md` | Entidades, campos y relaciones del modelo de datos | Borrador |
+| `perfiles-y-matriz-acceso.md` | T090: definición de los 4 perfiles de usuario, visitante público y matriz de control de acceso CRUD y multi-empresa | En revisión |
 
 ### `casos-de-uso/` — Todo el equipo
 
 | Archivo | Contenido | Estado |
 |---|---|---|
-| `diagrama_casos_uso_autenticacion.puml` | Casos de uso de autenticación | Borrador |
-| `diagrama_casos_uso_modulo_administrador.puml` | Casos de uso del administrador | Borrador |
-| `diagrama_casos_uso_modulo_conductor.puml` | Casos de uso del conductor | Borrador |
-| `diagrama_casos_uso_modulo_pasajero.puml` | Casos de uso del pasajero | Borrador |
-| `diagrama_casos_uso_modulo_planificacion_premium.puml` | Casos de uso de planificación premium | Borrador |
+| `especificacion-casos-de-uso.md` | T080: especificación detallada en tablas de los 31 casos de uso (`CU-01` a `CU-31`) por módulo | En revisión |
+| `diagrama_casos_uso_autenticacion.puml` | Casos de uso de autenticación | En revisión |
+| `diagrama_casos_uso_modulo_administrador.puml` | Casos de uso del administrador | En revisión |
+| `diagrama_casos_uso_modulo_conductor.puml` | Casos de uso del conductor | En revisión |
+| `diagrama_casos_uso_modulo_pasajero.puml` | Casos de uso del pasajero | En revisión |
+| `diagrama_casos_uso_modulo_planificacion_premium.puml` | Casos de uso de planificación premium | En revisión |
 
 ### `arquitectura/` — David Montoya
 
