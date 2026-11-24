@@ -145,9 +145,12 @@ La carpeta `requisitos/` existe, pero solo contiene el diccionario de datos y la
 
 | Archivo | Contenido | Estado |
 |---|---|---|
-| `plan-de-pruebas.md` | Tipos de prueba, ambientes, datos y criterios de entrada y salida | Pendiente |
-| `matriz-de-trazabilidad.md` | Cada RF y RNF contra el PRB que lo verifica | Pendiente |
-| `informes/` | Resultados de las pruebas de campo en Tacna | Vacía (`.gitkeep`) |
+| `plan-de-pruebas.md` | Tipos de prueba, ambientes, datos y criterios de entrada y salida | En revisión |
+| `matriz-de-trazabilidad.md` | Cada RF y RNF contra el PRB que lo verifica | En revisión |
+| `informes/t054-pruebas-usabilidad-figma.md` | Resultados de usabilidad del prototipo en Figma (`PRB-001` a `PRB-025`) | En revisión |
+| `informes/t095-hallazgos-usabilidad.md` | Informe QA de hallazgos de usabilidad (`HLZ-001` a `HLZ-006`) y ajustes UI | En revisión |
+| `informes/t070-t076-ejecucion-pruebas-backend-seguridad.md` | Ejecución de pruebas de API REST, tiempo real, integración, carga y seguridad (`T070` a `T077`) | En revisión |
+| `informes/t074-t106-pruebas-frontend-consolidado-qa.md` | Pruebas del frontend web (`T074`) y consolidado general de resultados QA (`T106`) | En revisión |
 
 ### `manuales/` — Alex y Royfrankly
 
