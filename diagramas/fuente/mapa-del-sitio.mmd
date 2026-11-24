@@ -1,34 +1,37 @@
-flowchart TD
-    A["Go Tacna"] --> B["Panel administrativo web"]
-    A --> C["Aplicación móvil"]
+flowchart LR
+    GT["Go Tacna"] --> WEB["Web pública"]
+    GT --> ADM["Administración web"]
+    GT --> APP["App Android"]
 
-    B --> D["Inicio de sesión"]
-    D --> E["Panel principal"]
-    E --> F["Gestión de empresas"]
-    E --> G["Gestión de rutas"]
-    E --> H["Gestión de micros"]
-    E --> I["Gestión de conductores"]
-    E --> J["Gestión de usuarios"]
-    E --> K["Supervisión de flota"]
+    WEB --> PUB["Inicio y mapa público"]
+    WEB --> CUENTA["Registro, acceso y cuenta"]
 
-    C --> L["Registro / Inicio de sesión"]
-    L --> M["Modo Pasajero"]
-    L --> N["Modo Conductor"]
+    ADM --> LOGIN["Inicio de sesión por rol"]
+    LOGIN --> GENERAL["Administrador general"]
+    LOGIN --> EMPRESA["Administrador de empresa"]
+    GENERAL --> EMPRESAS["Empresas y cuentas administrativas"]
+    GENERAL -.-> PG["Dashboard general y pasajeros"]
+    GENERAL -.-> PLANES["Planes y beneficios Premium"]
+    GENERAL -.-> GLOBAL["Supervisión general"]
+    EMPRESA --> CONTEXTO["Empresa autorizada seleccionada"]
+    CONTEXTO --> RUTAS["Rutas y trazados"]
+    CONTEXTO --> MICROS["Micros y asignaciones actuales"]
+    CONTEXTO --> CONDUCTORES["Conductores y credenciales"]
+    CONTEXTO -.-> FLOTA["Dashboard y monitoreo de su flota"]
 
-    M --> O["Consulta de rutas"]
-    O --> P["Mapa y micros activos"]
-    P --> Q["Detalle del micro y ETA"]
-    P --> R["Micros cercanos"]
+    APP --> ENTRADA["Bienvenida: invitado o iniciar sesión"]
+    ENTRADA --> PASAJERO["Mapa del pasajero"]
+    ENTRADA --> DRIVER["Modo Conductor con cuenta de empresa"]
+    PASAJERO --> CONSULTA["Ruta, micro, ubicación y ETA"]
+    PASAJERO --> ESPERA["Ubicación y punto de espera"]
+    PASAJERO --> PERFIL["Perfil y favoritos con cuenta"]
+    PASAJERO -.-> HIST["Historial y datos del conductor"]
+    PASAJERO -.-> PREMIUM["Beneficios Premium futuros"]
+    DRIVER --> ASIGNADO["Micro y ruta asignados"]
+    DRIVER --> SALIDA["Inicio, recorrido activo y finalización"]
+    DRIVER --> GPS["Estado del GPS y conexión"]
 
-    N --> S["Micro y ruta asignados"]
-    S --> T["Inicio de recorrido"]
-    T --> U["Recorrido activo"]
-    U --> V["Finalizar recorrido"]
-
-    classDef principal fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
-    classDef web fill:#dcfce7,stroke:#16a34a,color:#14532d
-    classDef movil fill:#fef3c7,stroke:#d97706,color:#78350f
-
-    class A principal
-    class B,D,E,F,G,H,I,J,K web
-    class C,L,M,N,O,P,Q,R,S,T,U,V movil
+    classDef ampliacion fill:#fff7ed,stroke:#c2410c,stroke-dasharray:5 5,color:#7c2d12
+    classDef canal fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+    class PG,PLANES,GLOBAL,FLOTA,HIST,PREMIUM ampliacion
+    class WEB,ADM,APP canal
