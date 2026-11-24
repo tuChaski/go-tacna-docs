@@ -1,157 +1,80 @@
 # Mapa del sitio
 
-> **Estado:** En revision
+> **Estado:** En revisión
 > **Responsable:** Alex Huaracha
-> **Relacionado:** [inventario-de-vistas.md](inventario-de-vistas.md), [guia-de-estilos.md](guia-de-estilos.md)
+> **Relacionado:** [alcance por perfil](alcance-por-perfil.md), [inventario de vistas](inventario-de-vistas.md), [Figma](figma.md), [T091](https://github.com/tuChaski/go-tacna-frontend/issues/52)
 
-## 1. Introducción
+## 1. Qué representa
 
-La arquitectura de contenido de Go Tacna organiza las pantallas y funcionalidades del sistema según los perfiles de usuario y los requerimientos del proyecto. Su propósito es establecer una navegación clara y facilitar el acceso a las funcionalidades principales.
+El mapa muestra cómo se organizan las pantallas de Go Tacna y qué puede encontrar cada perfil. Comprende la web pública, la administración web y la app Android con consulta de pasajero y Modo Conductor.
 
-El mapa del sitio comprende el panel web de administración y la aplicación móvil Android, que incluye los modos Pasajero y Conductor.
+La separación principal es entre el administrador general, que gestiona la plataforma y los accesos de las empresas, y el administrador de empresa, que organiza su propia flota. Las funciones y decisiones pendientes se detallan en [alcance por perfil](alcance-por-perfil.md).
 
-## 2. Objetivo
+El árbol representa la organización prevista, no una lista de funciones ya terminadas. Las líneas discontinuas indican ampliaciones de interfaz pendientes. Las demás ramas pueden estar implementadas en web o representadas solamente en Figma; el estado de cada vista se consulta en el inventario.
 
-Definir la organización jerárquica de las interfaces, los accesos y los flujos de navegación de Go Tacna, considerando los requerimientos funcionales y las restricciones de cada perfil.
+## 2. Diagrama general
 
-## 3. Perfiles de usuario
+El diagrama se incluye en SVG para poder ampliarlo sin perder legibilidad. Su [fuente editable](../diagramas/fuente/mapa-del-sitio.mmd) se mantiene en Mermaid. El PNG anterior de `diagramas/export/mapa-del-sitio.png` corresponde a la versión previa y no se usa como evidencia de este mapa actualizado.
 
-**Pasajero:** consulta las rutas disponibles, visualiza los micros activos, obtiene información de ubicación y consulta el tiempo estimado de llegada.
+![Mapa del sitio de Go Tacna: web pública, administración general, administración de empresa y app Android. Las ramas discontinuas representan ampliaciones pendientes.](../diagramas/export/mapa-del-sitio.svg)
 
-**Conductor:** utiliza el Modo Conductor para gestionar el inicio y finalización de su recorrido, permitiendo la transmisión de su ubicación mientras el recorrido permanece activo.
+## 3. Organización de la administración
 
-**Administrador:** gestiona empresas, rutas, micros, conductores y usuarios, además de supervisar el estado de las unidades registradas.
+| Entrada | Organización prevista | Situación actual |
+|---|---|---|
+| Administrador general | Inicio → Empresas → Detalle de empresa → Cuentas administrativas; ampliaciones de Pasajeros, Premium y supervisión general | `/admin` redirige a `/admin/empresas`; Empresas y sus cuentas tienen interfaz conectada a la API |
+| Administrador de empresa | Empresa autorizada → Inicio de flota → Rutas, Micros, Conductores y Monitoreo | `/admin/empresa` redirige a Rutas; hay selección de empresa y CRUD; faltan dashboard operativo y monitoreo conectado |
+| Micros | Listado → Registro, detalle o edición → Ruta y conductor asignados | La asignación se gestiona desde Micros; puede variar entre jornadas |
+| Conductores | Listado → Registro con credenciales, detalle o edición | El alta incluye la cuenta; la edición web actual permite modificar la licencia, no todos los datos de la cuenta |
 
-## 4. Arquitectura de contenido del panel web
+Las rutas `/admin/rutas`, `/admin/micros` y `/admin/conductores` del mapa anterior eran propuestas. Las rutas existentes de empresa son `/admin/empresa/rutas`, `/admin/empresa/micros` y `/admin/empresa/conductores`. El inventario conserva los identificadores de esas vistas y corrige sus direcciones.
 
-### 4.1. Estructura de navegación
+Los módulos futuros se añaden cuando tengan pantallas y permisos definidos. No se incluyen botones sin acción ni opciones de otra empresa en el menú operativo.
 
-- Inicio de sesión
-  - Panel principal
-    - Gestión de empresas
-    - Gestión de rutas
-    - Gestión de micros
-    - Gestión de conductores
-    - Gestión de usuarios
-    - Supervisión de flota
-      - Micros activos
-      - Micros sin actualización reciente
-      - Última ubicación registrada     
+## 4. Organización del pasajero y del conductor
 
-### 4.2. Pantallas y rutas
+| Área | Contenido y acceso |
+|---|---|
+| Web pública | Inicio, consulta pública de rutas y mapa; acceso a registro e inicio de sesión |
+| Entrada de la app | Continuar como invitado o iniciar sesión; el registro público crea una cuenta de pasajero |
+| Consulta del pasajero | Mapa → Seleccionar ruta → Seleccionar micro → Ver ubicación; detalle, trazado, punto de espera y tiempo estimado de llegada |
+| Cuenta de pasajero | Perfil y favoritos del diseño existente; historial previsto con conservación limitada |
+| Premium | Ampliación futura de capacidad de consulta e historial; ocupación como idea posterior con fuente de datos por definir |
+| Modo Conductor | Acceso con credenciales de empresa → Revisar asignación → Iniciar recorrido → Recorrido activo → Finalizar |
 
-| ID | Pantalla | Ruta propuesta | Requisitos |
-|---|---|---|---|
-| WEB-01 | Inicio de sesión | `/login` | RF-02 |
-| WEB-02 | Panel principal | `/admin` | RF-15, RF-16 |
-| WEB-03 | Gestión de empresas | `/admin/empresas` | RF-15 |
-| WEB-04 | Gestión de rutas | `/admin/rutas` | RF-15 |
-| WEB-05 | Gestión de micros | `/admin/micros` | RF-15 |
-| WEB-06 | Gestión de conductores | `/admin/conductores` | RF-15 |
-| WEB-07 | Gestión de usuarios | `/admin/usuarios` | RF-15 |
-| WEB-08 | Supervisión de flota | `/admin/monitoreo` | RF-16 |
+Una misma app ofrece la consulta de pasajero y el Modo Conductor. La cuenta determina el acceso; el conductor no se registra eligiendo ese rol en el formulario público.
 
-Las rutas indicadas son propuestas de diseño y deberán validarse durante la implementación del frontend web.
+Los máximos de micros, trazados visibles y días de historial quedan pendientes. No se aplica como nueva regla el límite de dos micros del prototipo anterior. Se conservan los [resultados históricos de T054](../pruebas/informes/t054-pruebas-usabilidad-figma.md) y se deberá actualizar el diseño cuando se acuerden los cupos.
 
-## 5. Arquitectura de contenido de la aplicación móvil
+## 5. Flujos principales
 
-### 5.1. Modo Pasajero
+| Objetivo | Recorrido |
+|---|---|
+| Dar acceso a una empresa | General → Empresas → Registrar → Guardar empresa → Detalle → Crear cuenta administrativa → Guardar cuenta |
+| Preparar una flota | Empresa → Registrar ruta → Registrar conductor y credenciales → Registrar micro → Asignar ruta y conductor |
+| Cambiar el conductor del día | Empresa → Micros → Detalle → Editar → Elegir conductor → Revisar cambio propuesto → Guardar; el micro debe estar fuera de recorrido |
+| Consultar la flota | Empresa → Monitoreo → Filtrar por ruta o estado → Seleccionar micro; flujo pendiente de integración web |
+| Consultar un micro como pasajero | Mapa principal → Ruta → Micro → Ver ubicación; acceso básico también como invitado |
+| Consultar al conductor | Detalle del micro → Información del conductor actual; apartado nuevo pendiente de diseño |
+| Iniciar y finalizar la operación | Modo Conductor → Revisar asignación → Iniciar y confirmar → Recorrido activo → Finalizar y confirmar |
 
-- Registro
-- Inicio de sesión
-- Pantalla principal
-  - Consultar rutas disponibles
-  - Seleccionar una ruta
-  - Visualizar recorrido y paraderos
-  - Visualizar micros activos en el mapa
-    - Seleccionar un micro
-    - Consultar información y última actualización
-    - Consultar tiempo estimado de llegada (ETA)
-  - Consultar micros cercanos mediante ubicación actual o punto seleccionado
+La regla de tres toques se aplica desde el mapa principal hasta la ubicación del micro: Ruta → Micro → Ver ubicación. No incluye el registro ni el inicio de sesión. La referencia del diseño se encuentra en [T093](flujo-navegacion-pasajero.md).
 
-### 5.2. Modo Conductor
+## 6. Reglas de navegación y estados
 
-- Inicio de sesión
-- Pantalla principal del conductor
-  - Consultar micro y ruta asignados
-  - Iniciar recorrido
-  - Recorrido activo
-    - Transmisión GPS
-    - Estado de conexión
-  - Finalizar recorrido
+- El inicio de sesión dirige al panel según el rol. El menú no concede permisos por sí mismo.
+- El administrador de empresa solo consulta y modifica recursos de sus empresas autorizadas. Si tiene varias, el nombre de la seleccionada permanece visible.
+- Las pantallas ofrecen una salida al listado o al mapa de origen; cancelar un formulario no anuncia un guardado.
+- Se muestran estados de carga, lista vacía, error y acción pendiente. No se anuncia éxito mientras el servidor no lo confirma.
+- Se distinguen cuenta desactivada, micro fuera de recorrido y falta de señal; no son el mismo estado.
+- Un micro sin asignación válida no permite iniciar recorrido. Un micro en recorrido no permite reasignación de conductor o ruta.
+- Una ubicación antigua conserva la indicación de última actualización; no se presenta como seguimiento en vivo y no ofrece un ETA calculado como si fuera actual.
+- No se incluyen navegación de compra, medios de pago ni cobro de pasajes o de Premium.
 
-### 5.3. Pantallas y rutas propuestas
+## 7. Uso en la sección 1.8 y revisión pendiente
 
-| ID | Pantalla | Ruta conceptual | Perfil | Requisitos |
-|---|---|---|---|---|
-| MOV-01 | Registro | `/registro` | Pasajero | RF-01 |
-| MOV-02 | Inicio de sesión | `/login` | Pasajero / Conductor | RF-02 |
-| MOV-03 | Consulta de rutas | `/pasajero/rutas` | Pasajero | RF-05, RF-06 |
-| MOV-04 | Mapa de micros | `/pasajero/mapa` | Pasajero | RF-07, RF-11, RF-12 |
-| MOV-05 | Detalle de micro y ETA | Panel del mapa | Pasajero | RF-09, RF-10, RF-13 |
-| MOV-06 | Inicio del conductor | `/conductor/inicio` | Conductor | RF-14 |
-| MOV-07 | Recorrido activo | `/conductor/recorrido` | Conductor | RF-08, RF-14 |
+Este documento desarrolla el mapa de la sección 1.8; el [inventario](inventario-de-vistas.md) aporta el detalle de las pantallas. Aprovecha la base de T083 y la amplía para T091, sin crear una segunda numeración de vistas.
 
-Estas rutas representan la navegación conceptual y no implican que las pantallas ya estén implementadas.
+Para el informe final se utiliza el diagrama actualizado y un resumen de la separación de perfiles, junto con la referencia al inventario. La carpeta del informe consolidado todavía no existe; su integración y la aprobación de T091 siguen pendientes. La numeración de figuras y tablas se asigna al consolidar ese informe.
 
-## 6. Flujos principales de navegación
-
-### 6.1. Pasajero
-
-Inicio de sesión → Consultar rutas → Seleccionar ruta → Visualizar mapa → Seleccionar micro → Consultar información y ETA.
-
-El pasajero también podrá utilizar su ubicación actual o seleccionar un punto del mapa para consultar micros cercanos.
-
-### 6.2. Conductor
-
-Inicio de sesión → Consultar micro y ruta asignados → Iniciar recorrido → Transmitir ubicación GPS → Finalizar recorrido.
-
-### 6.3. Administrador
-
-Inicio de sesión → Panel principal → Seleccionar módulo de administración → Consultar, registrar, modificar o desactivar registros.
-
-Para la supervisión: Inicio de sesión → Panel principal → Supervisión de flota → Consultar estado y última ubicación de los micros.
-
-## 7. Reglas y restricciones de navegación
-
-- El acceso a las funcionalidades se restringe según el perfil de usuario.
-- El conductor únicamente puede transmitir la ubicación del micro autorizado.
-- La posición de un micro que ha dejado de transmitir no debe presentarse como actual.
-- El tiempo de llegada se identifica siempre como estimado.
-- El plan gratuito permite visualizar como máximo dos micros simultáneamente.
-- La aplicación debe comunicar los problemas de GPS, conexión y ausencia de unidades disponibles.
-- La actualización de ubicaciones no debe requerir que el pasajero refresque manualmente el mapa.
-
-## 8. Funcionalidades futuras
-
-No forman parte de la navegación obligatoria del MVP:
-
-- Recuperación de cuentas.
-- Acceso público sin cuenta, pendiente de decisión.
-- Gestión de suscripciones Premium.
-- Ocupación de los micros.
-- Alertas de proximidad y favoritos.
-- Historial de recorridos.
-- Planificación avanzada de viajes.
-
-Estas funcionalidades podrán incorporarse a la arquitectura de contenido en futuras versiones.
-
-## 9. Consideraciones finales
-
-La arquitectura de contenido propuesta permite organizar las funcionalidades del sistema de acuerdo con los perfiles definidos, manteniendo separados el panel web administrativo y los dos modos de la aplicación móvil.
-
-El mapa del sitio constituye la referencia para el diseño de prototipos, el desarrollo de las interfaces y la posterior validación de navegación y accesibilidad.
-
-## 10. Diagrama general de navegación
-
-
- ## Diagrama general de navegación
-
-El siguiente diagrama representa la arquitectura de contenido
-del panel administrativo web y de la aplicación móvil Go Tacna.
-
-La aplicación móvil contempla dos perfiles: Pasajero y Conductor.
-
-La fuente editable del diagrama se encuentra en
-[mapa-del-sitio.mmd](../diagramas/fuente/mapa-del-sitio.mmd).
-
+La revisión de esta entrega comprende documentos y código. No constituye una nueva prueba del prototipo, del servidor ni de Android. Los cambios futuros de Figma y las nuevas cuotas requieren su propia validación.

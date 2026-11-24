@@ -43,7 +43,7 @@ Los estados posibles son `Pendiente` (existe el archivo, vacío), `Borrador` (ti
 | `arquitectura/` | Fuente | Modelo del sistema, despliegue de producción, modelo de datos y decisiones | David Montoya | Borrador |
 | `requisitos/` | Fuente | Diccionario de datos y documentos de requisitos aprobados | Royfrankly | Borrador |
 | `contratos/` | Fuente | API, WebSocket y JWT. **Los otros repos implementan lo de aquí** | Royfrankly y David | Esqueleto |
-| `diseno/` | Fuente | Estilos, mapa del sitio, inventario de vistas y Figma | Alex Huaracha | Esqueleto |
+| `diseno/` | Fuente | Estilos, alcance por perfil, mapa del sitio, inventario de vistas y Figma | Alex Huaracha | En revisión |
 | `planificacion/` | Fuente | Resumen de seis fases y cronograma detallado en ProjectLibre | Royfrankly | Borrador |
 | `pruebas/` | Fuente | Plan de pruebas, trazabilidad e informes de campo | Edison Catari | Borrador |
 | `manuales/` | Fuente | Guía del pasajero y manual del administrador | Alex y Royfrankly | Esqueleto |
@@ -129,8 +129,9 @@ La carpeta `requisitos/` existe, pero solo contiene el diccionario de datos y la
 | Archivo | Contenido | Estado |
 |---|---|---|
 | `guia-de-estilos.md` | Paleta, tipografía, componentes y accesibilidad | Pendiente |
-| `mapa-del-sitio.md` | Árbol de pantallas por perfil | Pendiente |
-| `inventario-de-vistas.md` | Una fila por vista: ID, perfil, contenido y acciones | Pendiente |
+| `mapa-del-sitio.md` | T091: árbol de pantallas, separación de administradores y flujos por perfil | En revisión |
+| `inventario-de-vistas.md` | T091: 52 vistas y paneles, con rutas, perfiles, contenido, acciones, estados y referencias de CU | En revisión |
+| `alcance-por-perfil.md` | T091: responsabilidades, asignaciones, ampliaciones futuras y decisiones pendientes de planes | En revisión |
 | `figma.md` | Enlaces a los prototipos | Pendiente |
 | `prototipo-administrador.md` | T053: perfiles administrativos, matriz CRUD, navegación, estados, evidencia y límites del prototipo | En revisión |
 
@@ -167,7 +168,10 @@ La carpeta `requisitos/` existe, pero solo contiene el diccionario de datos y la
 | `fuente/secuencia-autenticacion.mmd` | Secuencia del login y refresh (Mermaid `sequenceDiagram`) | Borrador |
 | `fuente/secuencia-gps-eta.mmd` | Secuencia de posición del micro y ETA (Mermaid `sequenceDiagram`) | Borrador |
 | `fuente/erd.mmd` | Entidades y relaciones (Mermaid `erDiagram`) | Borrador |
-| `export/` | PNG o SVG exportado de cada fuente, con el mismo nombre | Vacía (`.gitkeep`) |
+| `fuente/mapa-del-sitio.mmd` | T091: árbol de navegación por canal y perfil; distingue ampliaciones pendientes | En revisión |
+| `export/mapa-del-sitio.svg` | T091: exportación del mapa actualizado, enlazada desde el documento de arquitectura de contenido | En revisión |
+| `export/mapa-del-sitio.png` | Exportación de la versión anterior; se conserva como referencia, la versión actual está en SVG | Borrador |
+| `export/` | Exportaciones de los diagramas; SVG actualizado, PNG anterior y `.gitkeep` | Borrador |
 
 > Hay fuentes `.mmd` y `.puml` en el repositorio. Antes de convertir o eliminar diagramas, confirmar la convención acordada y comparar los contenidos para evitar perder información.
 
