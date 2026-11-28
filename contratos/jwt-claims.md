@@ -1,130 +1,27 @@
 # Claims del JWT
 
-> **Estado:** Aprobado
-> **Responsable:** Royfrankly y David Montoya
+> **Estado:** Alineado con Backend Core y el servicio de tiempo real
+> **Responsables:** Royfrankly y David Montoya
 > **Relacionado:** [eventos-websocket.md](eventos-websocket.md), [openapi.yaml](openapi.yaml)
 
-## 1. Emisión y firma
+## Emisión y uso
 
-- `POST /auth/login` entrega un token que sirve tanto para la API REST como para el servidor de tiempo real.
-- El token se firma con **HS256** usando `JWT_SECRET`.
-- La API y el servidor de tiempo real deben usar el mismo `JWT_SECRET`.
-- El token se envía en el header `Authorization: Bearer <token>`.
-- Los claims usan `camelCase` para coincidir con los payloads de la API (`microId`, `rutaId`, etc.).
+`POST /api/v1/auth/login` entrega un JWT firmado con el `JWT_SECRET` compartido por Laravel y Node. El cliente lo envía como `Authorization: Bearer <token>`. El servidor Node acepta los claims actuales en `snake_case` y conserva compatibilidad con los nombres anteriores en `camelCase` (`role`, `microId`, `rutaId`).
 
-## 2. Claims
+## Claims actuales de Laravel
 
-| Claim | Tipo | Requerido | Descripción |
-|-------|------|-----------|-------------|
-| `sub` | integer | Sí | ID de `USUARIO` |
-| `role` | string | Sí | `pasajero`, `conductor`, `admin_general` o `admin_empresa` |
-| `empresaId` | integer \| null | Según rol | Empresa del conductor o del administrador de empresa |
-| `conductorPerfilId` | integer \| null | Solo conductor | ID de `CONDUCTOR_PERFIL` |
-| `administradorPerfilId` | integer \| null | Solo admin_empresa | ID de `ADMINISTRADOR_EMPRESA_PERFIL` |
-| `microId` | integer \| null | Solo conductor en turno | Micro asignado actualmente |
-| `rutaId` | integer \| null | Solo conductor en turno | Ruta del micro asignado |
-| `suscripcionId` | integer \| null | Opcional pasajero | Suscripción vigente del pasajero |
-| `iat` | integer | Sí | Fecha de emisión (Unix segundos) |
-| `exp` | integer | Sí | Fecha de expiración (Unix segundos) |
-| `jti` | string | Sí | Identificador único del token |
+| Claim | Tipo | Uso |
+| --- | --- | --- |
+| `sub` | ID del usuario | Identidad estándar de JWTAuth |
+| `rol` | string | `pasajero`, `conductor`, `admin_general` o `admin_empresa` |
+| `nombre`, `apellido`, `correo` | string | Datos del usuario |
+| `micro_id` | integer o null | Micro asignado al conductor cuando se emite el token |
+| `ruta_id` | integer o null | Ruta del micro asignado |
+| `empresa_ids` | array de integer | Empresas del `admin_empresa`; vacío para los demás roles |
+| `iss`, `iat`, `exp`, `nbf`, `jti` | estándar JWTAuth | Emisor, emisión, expiración, vigencia e identificador del token |
 
-## 3. Claims por rol
+`micro_id` y `ruta_id` pueden quedar desactualizados después de una reasignación. Por ello, Laravel consulta la asignación vigente en la base de datos antes de aceptar `POST /api/v1/tracking/position`. Al reenviar la posición a Node, Laravel genera un JWT con los claims actuales de ese usuario. Node verifica firma, expiración, rol y presencia de `micro_id` y `ruta_id`, y usa estos IDs para la sala de ruta. Node no consulta la base de datos por sí mismo.
 
-### Pasajero
+El endpoint público del conductor es `/api/v1/tracking/position`; el endpoint `/tracking/position` de Node es interno en la configuración Docker. El pasajero se conecta a Socket.IO sin JWT en el handshake y se une a una sala mediante `route:join`, según [eventos-websocket.md](eventos-websocket.md).
 
-```json
-{
-  "sub": 21,
-  "role": "pasajero",
-  "empresaId": null,
-  "suscripcionId": 7,
-  "iat": 1700000000,
-  "exp": 1700003600,
-  "jti": "f3b1c9a2-7d4e-4a91-9c1e-2b6a8d5f0c33"
-}
-```
-
-- `suscripcionId` es opcional y solo debe incluirse si el pasajero tiene una suscripción activa.
-- Si el producto exige suscripción para acceder al tracking, el servidor responde `403` cuando no existe una suscripción `activa`.
-
-### Conductor
-
-```json
-{
-  "sub": 15,
-  "role": "conductor",
-  "empresaId": 3,
-  "conductorPerfilId": 8,
-  "microId": 12,
-  "rutaId": 4,
-  "iat": 1700000000,
-  "exp": 1700003600,
-  "jti": "8a7f2e41-5c3d-4b6a-9e10-6f2d7c8b1a55"
-}
-```
-
-- `microId` y `rutaId` representan la asignación vigente al momento de emitir el token.
-- El servidor no debe confiar solo en el token: en cada `POST /tracking/position` y `POST /tracking/stop` debe validar que:
-  - `conductorPerfilId` corresponde a un `CONDUCTOR_PERFIL` de `empresaId`.
-  - `microId` existe, pertenece a `empresaId` y tiene `conductor_actual_id = conductorPerfilId`.
-  - `rutaId` coincide con `MICRO.ruta_id`.
-- Si la asignación cambió o ya no es válida, responde `403`.
-
-### Administrador de empresa
-
-```json
-{
-  "sub": 9,
-  "role": "admin_empresa",
-  "empresaId": 3,
-  "administradorPerfilId": 2,
-  "iat": 1700000000,
-  "exp": 1700003600,
-  "jti": "c1d2e3f4-a5b6-4c7d-8e9f-0a1b2c3d4e5f"
-}
-```
-
-- Todas las consultas y mutaciones quedan limitadas a `empresaId`.
-- El servidor no debe aceptar un `empresaId` distinto en el body o query string.
-
-### Administrador general
-
-```json
-{
-  "sub": 1,
-  "role": "admin_general",
-  "empresaId": null,
-  "iat": 1700000000,
-  "exp": 1700003600,
-  "jti": "0f1e2d3c-4b5a-4968-8776-5a4b3c2d1e0f"
-}
-```
-
-- No está asociado a una empresa y puede operar sobre todas.
-
-## 4. Vigencia y renovación
-
-- `exp` es obligatorio. Se recomienda una vigencia de 1 hora para el access token.
-- `POST /auth/refresh` renueva el access token a partir de un refresh token vigente.
-- El ERD no incluye una tabla para refresh tokens, por lo que la persistencia y rotación del refresh token queda pendiente de definición.
-- `POST /auth/logout` cierra la sesión del cliente. Si se implementa revocación, se debe validar el `jti` contra una lista de tokens revocados.
-
-## 5. Validación en el servidor de tiempo real
-
-- El handshake del WebSocket debe validar la firma y `exp` del JWT.
-- Los eventos de conductor solo se aceptan si `role=conductor` y la asignación `microId`/`rutaId` sigue vigente.
-- Los eventos de pasajero solo se aceptan si el usuario tiene una suscripción activa, cuando el producto lo exija. El servidor debe consultar el estado actual de `SUSCRIPCION`; el claim `suscripcionId` no reemplaza esa validación.
-- La ausencia de `role` o `conductorPerfilId` en un token de conductor produce `403`.
-- Si faltan `microId` o `rutaId`, el conductor puede usar los endpoints generales, pero no puede emitir tracking hasta tener una asignación vigente.
-
-## 6. Implementación actual y diferencias
-
-El contrato descrito arriba es el objetivo acordado. La implementación actual de Backend Core (`User::getJWTCustomClaims()`) todavía agrega `name`, `email`, `role` (`pasajero`, `conductor` o `admin`) y `activo`, y no incluye `empresaId`, `conductorPerfilId`, `administradorPerfilId`, `microId`, `rutaId` ni `suscripcionId`.
-
-Antes de considerar este contrato vigente en producción:
-
-- Migrar los roles a `pasajero`, `conductor`, `admin_general` y `admin_empresa`.
-- Agregar los claims de perfil y asignación definidos en este documento.
-- Definir si `microId` y `rutaId` se incluyen en el token o se consultan al Backend Core.
-- Alinear Location Service y las pruebas de autorización con los nuevos claims.
-- Gestionar `JWT_SECRET` como secreto por entorno; no documentarlo ni versionarlo.
+No se emiten actualmente los claims `empresaId`, `conductorPerfilId`, `administradorPerfilId` ni `suscripcionId` de una propuesta anterior. Las comprobaciones de empresa, perfil y suscripción se realizan contra los datos actuales del Backend Core donde corresponda. Cambiar los claims públicos requiere actualizar este contrato, los emisores y los consumidores de JWT juntos.

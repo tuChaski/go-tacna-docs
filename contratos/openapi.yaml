@@ -20,8 +20,8 @@ info:
 servers:
   - url: https://api.tuchaski.org/api/v1
     description: Producción
-  - url: http://localhost:3001
-    description: Desarrollo local (sin prefijo /api/v1)
+  - url: http://localhost:8001/api/v1
+    description: Desarrollo local mediante el gateway
 tags:
   - name: Auth
     description: Autenticación y sesión
@@ -1294,6 +1294,32 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
+  /conductor/iniciar:
+    post:
+      tags: [Tracking]
+      summary: Iniciar recorrido del conductor
+      description: |
+        Requiere un micro asignado a una ruta activa. Activa el estado operativo
+        del conductor y del micro antes de aceptar posiciones GPS. La unidad
+        aparece en tiempo real al recibir su primera posición.
+      operationId: startConductorTrip
+      x-required-roles: [conductor]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Recorrido iniciado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrackingStartResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+
   /tracking/position:
     post:
       tags: [Tracking]
@@ -1301,9 +1327,9 @@ paths:
       description: |
         Endpoint para que el conductor envíe su posición GPS cada 3-5 segundos.
 
-        Requiere JWT con `role=conductor`, `conductorPerfilId`, `empresaId`,
-        `microId` y `rutaId`. El servidor valida que el conductor siga asignado
-        a `MICRO.conductor_actual_id` y que el micro pertenezca a la ruta.
+        Requiere un JWT de conductor y un recorrido iniciado. Laravel comprueba
+        la asignación actual del micro, persiste la posición y la comunica al
+        servidor de tiempo real mediante su endpoint interno homónimo.
 
         El servidor genera `fechaHora` al persistir la posición en
         `POSICION_GPS`; el cliente no envía timestamp.
@@ -1330,19 +1356,25 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '409':
+          description: El recorrido aún no se ha iniciado
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
         '429':
           $ref: '#/components/responses/TooManyRequests'
+        '503':
+          description: El servicio de tiempo real no está disponible
 
   /tracking/stop:
     post:
       tags: [Tracking]
       summary: Finalizar recorrido del conductor
       description: |
-        Marca el micro como detenido, actualiza el estado operativo del conductor
-        y emite el evento de detención a la sala de la ruta.
+        Endpoint público de Laravel. Marca el micro como disponible y el estado
+        operativo del conductor como sin conexión. La emisión de micro:stopped
+        hacia Socket.IO sigue pendiente de integración.
 
-        Requiere JWT con `role=conductor`, `conductorPerfilId`, `empresaId`,
-        `microId` y `rutaId`.
+        Requiere un JWT de conductor; Laravel consulta su asignación actual.
       operationId: stopTracking
       x-required-roles: [conductor]
       security:
@@ -2110,6 +2142,28 @@ components:
           minimum: 0
           description: Velocidad en m/s
 
+    TrackingStartResponse:
+      type: object
+      required: [success, message, data]
+      additionalProperties: false
+      properties:
+        success:
+          type: boolean
+          const: true
+        message:
+          type: string
+        data:
+          type: object
+          required: [micro_id, estado_operativo]
+          additionalProperties: false
+          properties:
+            micro_id:
+              type: integer
+              minimum: 1
+            estado_operativo:
+              type: string
+              const: en_recorrido
+
     TrackingPositionResponse:
       type: object
       required: [ok]
@@ -2121,12 +2175,24 @@ components:
 
     TrackingStopResponse:
       type: object
-      required: [ok]
+      required: [success, message, data]
       additionalProperties: false
       properties:
-        ok:
+        success:
           type: boolean
           const: true
+        message:
+          type: string
+        data:
+          type: object
+          required: [micro_id, estado_operativo]
+          additionalProperties: false
+          properties:
+            micro_id:
+              type: [integer, 'null']
+            estado_operativo:
+              type: string
+              const: sin_conexion
 
     ErrorResponse:
       type: object
